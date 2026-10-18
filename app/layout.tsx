@@ -49,7 +49,7 @@ export const viewport: Viewport = {
 export const instant = false;
 
 // تم پیش‌فرض daisyUI + خواندن انتخاب کاربر
-const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('vesper-theme');if(t!=='dim'&&t!=='dracula'&&t!=='halloween'){t='dim';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
+const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('vesper-theme');if(t!=='dim'&&t!=='dracula'&&t!=='halloween'&&t!=='luxury'&&t!=='forest'){t='dim';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
