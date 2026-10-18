@@ -120,7 +120,7 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
         <button
           type="submit"
           aria-label="جست‌وجو"
-          className={`absolute end-1 top-1/2 -translate-y-1/2 btn btn-primary btn-square ${large ? "" : "btn-sm"} shrink-0`}
+          className={`absolute end-1 top-1/2 -translate-y-1/2 btn btn-primary ${large ? "rounded-xl" : "btn-sm rounded-lg"} shrink-0`}
         >
           {loading
             ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
