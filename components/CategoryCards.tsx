@@ -40,16 +40,19 @@ export default function CategoryCards({ cats }: { cats: Cat[] }) {
       <div className="flex flex-wrap gap-2.5">
         {cats.map((c) => {
           const isActive = active === c.slug;
+          const hue = [...c.slug].reduce((a, ch) => a + ch.charCodeAt(0), 0) % 360;
+          const grad = { background: `linear-gradient(135deg, hsl(${hue} 70% 55% / 0.14), hsl(${hue} 70% 55% / 0.03))` };
           return (
             <button
               key={c.id}
               onClick={() => go(c.slug)}
               aria-label={c.nameFa}
               aria-current={isActive ? "true" : undefined}
+              style={isActive ? undefined : grad}
               className={`w-[76px] rounded-2xl p-2.5 flex flex-col items-center gap-1.5 text-center transition-all shrink-0 border ${
                 isActive
                   ? "bg-primary text-primary-content border-primary shadow"
-                  : "bg-base-200 text-primary border-base-300/60 hover:border-primary/40 hover:-translate-y-0.5"
+                  : "text-primary border-base-300/60 hover:border-primary/40 hover:-translate-y-0.5"
               } ${pending ? "opacity-70" : ""}`}
             >
               <DbIcon icon={c.icon} className="w-7 h-7 shrink-0" />
