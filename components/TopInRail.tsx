@@ -25,7 +25,7 @@ export default function TopInRail({
   if (!apps.length) return null;
   const moreHref = `/category/${categorySlug}${platform && platform !== "android" ? `?platform=${platform}` : ""}`;
   return (
-    <section aria-label={title} className="mb-10">
+    <section aria-label={title} className="mb-6">
       <div className="flex items-center justify-between mb-4 px-1">
         <h2 className="text-base font-extrabold">{title}</h2>
         <Link href={moreHref} className="inline-flex items-center gap-1 text-xs text-primary font-bold hover:underline">
