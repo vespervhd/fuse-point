@@ -35,7 +35,7 @@ export function InstallButton() {
   };
 
   return (
-    <div className="toast toast-bottom toast-center z-50" role="dialog" aria-label="نصب Vesper">
+    <div className="toast toast-bottom toast-center z-50 mb-20" role="dialog" aria-label="نصب Vesper">
       <div className="alert shadow-lg gap-3">
         <img src="/icons/icon-192.png" alt="لوگوی Vesper" width={40} height={40} className="w-10 h-10 rounded-xl object-cover shrink-0" />
         <div className="flex-1 min-w-0">
