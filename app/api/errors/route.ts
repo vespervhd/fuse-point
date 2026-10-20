@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { logError } from "@/lib/error-log";
+import { apiError } from "@/lib/api-error";
+import { rateLimited, clientIp } from "@/lib/rate-limit";
 
 const Body = z.object({
   message: z.string().trim().min(1).max(2000),
@@ -8,32 +10,23 @@ const Body = z.object({
   url: z.string().max(1000).optional().nullable(),
 });
 
-// POST /api/errors — دریافت خطاهای کلاینت (rate limit ساده)
-const hits = new Map<string, number[]>();
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const arr = (hits.get(ip) || []).filter((t) => now - t < 60_000);
-  arr.push(now);
-  hits.set(ip, arr);
-  return arr.length > 20; // حداکثر ۲۰ خطا در دقیقه از هر IP
-}
+// POST /api/errors — دریافت خطاهای کلاینت (ریت‌لیمیت مشترک: حداکثر ۲۰ خطا در دقیقه از هر IP)
 
 export async function POST(req: NextRequest) {
-  const ip =
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (rateLimited(ip)) {
-    return NextResponse.json({ error: "too many requests" }, { status: 429 });
+  const ip = clientIp(req);
+  if (rateLimited(`errors:${ip}`, 20, 60_000)) {
+    return apiError("too many requests", 429);
   }
 
   let body: unknown;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "bad body" }, { status: 400 });
+    return apiError("bad body", 400);
   }
   const parsed = Body.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "invalid input" }, { status: 400 });
+    return apiError("invalid input", 400);
   }
 
   // نادیده گرفتن نویزهای بی‌ارزش مرورگر

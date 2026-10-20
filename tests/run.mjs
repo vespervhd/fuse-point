@@ -8,6 +8,8 @@
  */
 import { checkNoServerHandlers } from "./static/no-server-handlers.mjs";
 import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 
 let failed = false;
 
@@ -36,7 +38,25 @@ let failed = false;
   }
 }
 
-// 3. Live smoke test (opt-in: needs a deployed URL)
+// 3. Unit tests (Vitest, pure logic — no DB/network)
+{
+  console.log("[test] running unit tests (vitest)...");
+  const vitestBin = join(process.cwd(), "node_modules", ".bin", "vitest");
+  if (!existsSync(vitestBin)) {
+    failed = true;
+    console.error("[test] FAIL: vitest not installed (run npm install)");
+  } else {
+    const r = spawnSync(vitestBin, ["run"], { stdio: "inherit", cwd: process.cwd() });
+    if (r.status !== 0) {
+      failed = true;
+      console.error("[test] FAIL: unit tests");
+    } else {
+      console.log("[test] PASS: unit tests");
+    }
+  }
+}
+
+// 4. Live smoke test (opt-in: needs a deployed URL)
 if (process.env.SMOKE === "1") {
   console.log("[test] running live smoke test...");
   const r = spawnSync("node", ["tests/smoke.mjs"], {

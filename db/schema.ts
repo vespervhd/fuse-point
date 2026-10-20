@@ -81,6 +81,9 @@ export const apps = pgTable("apps", {
   platform: varchar("platform", { length: 16 }).notNull().default("android"),
   githubRepo: varchar("github_repo", { length: 255 }),
   githubStars: integer("github_stars").default(0),
+  // شمارنده‌ی دانلود materialized — در مسیر دانلود (با dedupe ۲۴ساعته) اتمیک زیاد می‌شود؛
+  // بک‌فیل اولیه + تطبیق دوره‌ای از download_events (مایگریشن 0008 و اسپک بک‌اند §۵)
+  downloadCount: integer("download_count").notNull().default(0),
   sourceType: varchar("source_type", { length: 32 }).notNull().default("internal"),
   sourceUrl: text("source_url"),
   externalId: varchar("external_id", { length: 255 }),

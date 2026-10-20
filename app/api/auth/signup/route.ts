@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import * as s from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { hashPassword, createSession, getSessionUser } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 
 const Body = z.object({
   name: z.string().trim().min(2, "نام خیلی کوتاه است").max(100),
@@ -24,20 +25,20 @@ function tooMany(ip: string): boolean {
 // POST /api/auth/signup — ثبت‌نام کاربر عادی
 export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (tooMany(ip)) return NextResponse.json({ error: "تعداد درخواست‌ها بیش از حد مجاز است" }, { status: 429 });
+  if (tooMany(ip)) return apiError("تعداد درخواست‌ها بیش از حد مجاز است", 429);
 
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0]?.message || "ورودی نامعتبر است" }, { status: 400 });
+    return apiError(parsed.error.issues[0]?.message || "ورودی نامعتبر است", 400);
   }
   const { name, email, password } = parsed.data;
   const emailNorm = email.toLowerCase();
 
   const dup = await db.select({ id: s.users.id }).from(s.users).where(eq(s.users.email, emailNorm)).limit(1);
-  if (dup.length) return NextResponse.json({ error: "این ایمیل قبلاً ثبت شده است" }, { status: 409 });
+  if (dup.length) return apiError("این ایمیل قبلاً ثبت شده است", 409);
 
   const roleRows = await db.select({ id: s.roles.id }).from(s.roles).where(eq(s.roles.name, "user")).limit(1);
-  if (!roleRows[0]) return NextResponse.json({ error: "خطای پیکربندی سرور" }, { status: 500 });
+  if (!roleRows[0]) return apiError("خطای پیکربندی سرور", 500);
 
   const [user] = await db.insert(s.users).values({
     email: emailNorm, name, passwordHash: hashPassword(password), roleId: roleRows[0].id,

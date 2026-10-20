@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import * as s from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { requireAdmin } from "@/lib/admin-guard";
+import { apiError } from "@/lib/api-error";
 
 // PATCH /api/admin/errors/[id] — تغییر وضعیت (open/resolved)
 export async function PATCH(
@@ -16,11 +17,11 @@ export async function PATCH(
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "bad body" }, { status: 400 });
+    return apiError("bad body", 400);
   }
   const status = (body as { status?: string })?.status;
   if (status !== "open" && status !== "resolved") {
-    return NextResponse.json({ error: "invalid status" }, { status: 400 });
+    return apiError("invalid status", 400);
   }
   await db
     .update(s.errorLogs)

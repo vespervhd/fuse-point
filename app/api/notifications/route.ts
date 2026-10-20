@@ -3,11 +3,13 @@ import { db } from "@/lib/db";
 import * as s from "@/db/schema";
 import { eq, and, desc, sql } from "drizzle-orm";
 import { getSessionUser } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
+import { rateLimited } from "@/lib/rate-limit";
 
 // GET /api/notifications — فهرست اعلان‌های کاربر
 export async function GET() {
   const me = await getSessionUser();
-  if (!me) return NextResponse.json({ error: "وارد شوید" }, { status: 401 });
+  if (!me) return apiError("وارد شوید", 401);
   const items = await db.select({
     id: s.notifications.id, type: s.notifications.type,
     title: s.notifications.title, message: s.notifications.message,
@@ -27,7 +29,8 @@ export async function GET() {
 // PATCH /api/notifications — خوانده‌شده کردن (یک اعلان یا همه)
 export async function PATCH(req: NextRequest) {
   const me = await getSessionUser();
-  if (!me) return NextResponse.json({ error: "وارد شوید" }, { status: 401 });
+  if (!me) return apiError("وارد شوید", 401);
+  if (rateLimited(`notifications:${me.id}`, 120, 3600_000)) return apiError("تعداد درخواست‌ها بیش از حد مجاز است", 429);
   const body = await req.json().catch(() => ({}));
   if (body.id) {
     await db.update(s.notifications).set({ isRead: true })

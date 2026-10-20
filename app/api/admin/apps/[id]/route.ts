@@ -4,6 +4,8 @@ import { db } from "@/lib/db";
 import * as s from "@/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { requireAdmin } from "@/lib/admin-guard";
+import { apiError } from "@/lib/api-error";
+import { invalidateCatalog } from "@/lib/cache-tags";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -14,7 +16,7 @@ export async function GET(_req: NextRequest, ctx: Ctx) {
 
   const rows = await db.select().from(s.apps).where(eq(s.apps.id, id)).limit(1);
   const app = rows[0];
-  if (!app) return NextResponse.json({ error: "یافت نشد" }, { status: 404 });
+  if (!app) return apiError("یافت نشد", 404);
 
   const versions = await db.select().from(s.appVersions)
     .where(eq(s.appVersions.appId, id)).orderBy(desc(s.appVersions.versionCode));
@@ -45,7 +47,7 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
 
   const parsed = PatchBody.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
-    return NextResponse.json({ error: "ورودی نامعتبر است" }, { status: 400 });
+    return apiError("ورودی نامعتبر است", 400);
   }
   const { categoryIds, ...fields } = parsed.data;
   const clean: Record<string, unknown> = { updatedAt: new Date() };
@@ -64,6 +66,7 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
   await db.insert(s.auditLogs).values({
     userId: auth.user.id, action: "app.update", entity: "app", entityId: id,
   });
+  invalidateCatalog();
   return NextResponse.json({ ok: true });
 }
 
@@ -76,6 +79,7 @@ export async function DELETE(_req: NextRequest, ctx: Ctx) {
   await db.insert(s.auditLogs).values({
     userId: auth.user.id, action: "app.unpublish", entity: "app", entityId: id,
   });
+  invalidateCatalog();
   return NextResponse.json({ ok: true });
 }
 
@@ -98,13 +102,13 @@ export async function POST(req: NextRequest, ctx: Ctx) {
 
   const parsed = VerBody.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0]?.message || "ورودی نامعتبر است" }, { status: 400 });
+    return apiError(parsed.error.issues[0]?.message || "ورودی نامعتبر است", 400);
   }
   const d = parsed.data;
 
   const dup = await db.select({ id: s.appVersions.id }).from(s.appVersions)
     .where(and(eq(s.appVersions.appId, id), eq(s.appVersions.versionCode, d.versionCode))).limit(1);
-  if (dup.length) return NextResponse.json({ error: "این versionCode قبلاً ثبت شده است" }, { status: 409 });
+  if (dup.length) return apiError("این versionCode قبلاً ثبت شده است", 409);
 
   // فقط یک نسخه‌ی جاری
   await db.update(s.appVersions).set({ isCurrent: false }).where(eq(s.appVersions.appId, id));
@@ -120,5 +124,6 @@ export async function POST(req: NextRequest, ctx: Ctx) {
     userId: auth.user.id, action: "version.create", entity: "version", entityId: ver.id,
     meta: { versionName: d.versionName },
   });
+  invalidateCatalog();
   return NextResponse.json({ ok: true, id: ver.id });
 }

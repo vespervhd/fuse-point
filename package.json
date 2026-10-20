@@ -20,7 +20,8 @@
     "eslint-config-next": "16.4.1",
     "tailwindcss": "4.3.3",
     "tsx": "4.23.15",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "^3.2.7"
   },
   "name": "vesper",
   "private": true,
@@ -33,7 +34,8 @@
     "lint": "eslint",
     "start": "next start",
     "test": "node tests/run.mjs",
-    "test:smoke": "SMOKE=1 node tests/run.mjs"
+    "test:smoke": "SMOKE=1 node tests/run.mjs",
+    "test:unit": "vitest run"
   },
   "version": "0.1.0"
 }

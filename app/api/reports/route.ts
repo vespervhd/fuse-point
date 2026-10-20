@@ -3,6 +3,8 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import * as s from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
+import { rateLimited, clientIp } from "@/lib/rate-limit";
 
 const Body = z.object({
   appSlug: z.string().max(255).optional(),
@@ -10,29 +12,21 @@ const Body = z.object({
   message: z.string().trim().min(5, "شرح مشکل خیلی کوتاه است").max(5000),
 });
 
-// POST /api/reports — ثبت گزارش کاربر (با rate limit ساده)
-const hits = new Map<string, number[]>();
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const arr = (hits.get(ip) || []).filter((t) => now - t < 3600_000);
-  arr.push(now);
-  hits.set(ip, arr);
-  return arr.length > 10; // حداکثر ۱۰ گزارش در ساعت
-}
+// POST /api/reports — ثبت گزارش کاربر (ریت‌لیمیت مشترک: حداکثر ۱۰ گزارش در ساعت از هر IP)
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (rateLimited(ip)) {
-    return NextResponse.json({ error: "تعداد درخواست‌ها بیش از حد مجاز است" }, { status: 429 });
+  const ip = clientIp(req);
+  if (rateLimited(`reports:${ip}`, 10, 3600_000)) {
+    return apiError("تعداد درخواست‌ها بیش از حد مجاز است", 429);
   }
 
   let body: unknown;
   try { body = await req.json(); } catch {
-    return NextResponse.json({ error: "بدنه‌ی درخواست نامعتبر است" }, { status: 400 });
+    return apiError("بدنه‌ی درخواست نامعتبر است", 400);
   }
   const parsed = Body.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0]?.message || "ورودی نامعتبر است" }, { status: 400 });
+    return apiError(parsed.error.issues[0]?.message || "ورودی نامعتبر است", 400);
   }
 
   let appId: string | null = null;
@@ -48,7 +42,7 @@ export async function POST(req: NextRequest) {
     }
   }
   if (!appId) {
-    return NextResponse.json({ error: "برنامه‌ای با این مشخصات پیدا نشد" }, { status: 404 });
+    return apiError("برنامه‌ای با این مشخصات پیدا نشد", 404);
   }
 
   await db.insert(s.reports).values({

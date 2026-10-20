@@ -1,29 +1,42 @@
+import { cacheLife, cacheTag } from "next/cache";
 import { connection } from "next/server";
 import { db } from "./db";
 import * as s from "@/db/schema";
-import { eq, and, desc, sql, inArray, like, or } from "drizzle-orm";
+import { eq, and, desc, sql, inArray, type AnyColumn } from "drizzle-orm";
 import { normalizeFa } from "./fa";
+import { CACHE_TAGS, appTag, appIdTag, collectionTag } from "./cache-tags";
 
-// تمام کوئری‌های فروشگاه داینامیک‌اند (هر درخواست، داده‌ی تازه)
+// ─── قرارداد کش (اسپک بک‌اند §۴) ─────────────────────────────────────────────
+// خواندن‌های کاتالوگیِ بی‌ربط به کاربر با Cache Components کش می‌شوند: هر تابع
+// کش‌شده cacheTag(catalog, …) دارد و مسیرهای جهش (ادمین/سینک) با
+// invalidateCatalog() در lib/cache-tags.ts همه را تازه می‌کنند. cacheLife سخاوتمندانه
+// است چون کاتالوگ روزی یک‌بار عوض می‌شود؛ بک‌استاپِ جهش‌های بیرون‌پروسه‌ای (سینک
+// F-Droid لوکال) همان انقضای cacheLife است تا وقتی کرون به endpoint داخلی
+// ‎/api/internal/revalidate وصل شود.
+// داده‌ی کاربرمحور (سشن/علاقه‌مندی/اعلان) این‌جا نیست و کش نمی‌شود.
+// فقط getDashboardStats (پنل ادمین) داینامیک می‌ماند: عددهای عملیاتی باید تازه باشند.
 async function dyn() {
   await connection();
 }
 
-// تعداد دانلود واقعی هر اپ (رویدادهای یکتا)
-const dlCount = sql<number>`(select count(*) from ${s.downloadEvents} where ${s.downloadEvents.appId} = ${s.apps.id})`.as("download_count");
+// نسخه و حجم نسخه‌ی جاری هر اپ (زیرکوئری) — ثابت می‌ماند، جزو اسپک این فاز نیست
 const curVersion = sql<string | null>`(select ${s.appVersions.versionName} from ${s.appVersions} where ${s.appVersions.appId} = ${s.apps.id} and ${s.appVersions.isCurrent} = true and ${s.appVersions.status} = 'active' limit 1)`.as("version_name");
 const curFileSize = sql<number | null>`(select ${s.appVersions.fileSize} from ${s.appVersions} where ${s.appVersions.appId} = ${s.apps.id} and ${s.appVersions.isCurrent} = true and ${s.appVersions.status} = 'active' limit 1)`.as("file_size");
 
+// ستون‌های کارت برنامه — downloadCount از ستون materialized روی apps خوانده می‌شود
+// (قبلاً: زیرکوئری count روی کل download_events به‌ازای هر کارت؛ اسپک §۵)
 const cardCols = {
   id: s.apps.id, slug: s.apps.slug, nameFa: s.apps.nameFa, nameEn: s.apps.nameEn,
   iconUrl: s.apps.iconUrl, shortDesc: s.apps.shortDesc, shortDescFa: s.apps.shortDescFa,
-  versionName: curVersion, fileSize: curFileSize, downloadCount: dlCount, githubStars: s.apps.githubStars,
+  versionName: curVersion, fileSize: curFileSize, downloadCount: s.apps.downloadCount, githubStars: s.apps.githubStars,
   platform: s.apps.platform, isOpenSource: s.apps.isOpenSource, createdAt: s.apps.createdAt,
 };
 
 // آمار نوار صفحه‌ی اصلی (فیلتر پلتفرم‌محور)
 export async function getHomeStats(platform?: Platform) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.home);
   const conds = [pub, plat(platform)];
   const [a, d, c] = await Promise.all([
     db.select({ c: sql<number>`count(*)` }).from(s.apps).where(and(...conds)),
@@ -54,11 +67,20 @@ export const PLATFORMS: { slug: Platform; label: string; icon: string }[] = [
 ];
 const plat = (p?: Platform) => (p ? eq(s.apps.platform, p) : undefined);
 
-// نگاشت هر دسته به ریشه‌اش + گرفتن همه نوادگان یک دسته (شامل خودش)
-async function getCategoryTree() {
-  const cats = await db.select({
+// ردیف‌های خام دسته‌ها (تنها بخش DBای درخت دسته) — جدا کش می‌شود تا خودِ درخت
+// (که تابع برمی‌گرداند و قابل سریال‌سازی نیست) بیرون کش با همان داده ساخته شود
+async function getCategoryRows() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.categories);
+  return db.select({
     id: s.categories.id, parentId: s.categories.parentId,
   }).from(s.categories).where(eq(s.categories.isActive, true));
+}
+
+// نگاشت هر دسته به ریشه‌اش + گرفتن همه نوادگان یک دسته (شامل خودش)
+async function getCategoryTree() {
+  const cats = await getCategoryRows();
   const byId = new Map(cats.map((c) => [c.id, c.parentId]));
   const children = new Map<string, string[]>();
   for (const c of cats) {
@@ -84,7 +106,9 @@ async function getCategoryTree() {
 }
 
 export async function getCollections(platform?: Platform, limit?: number) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.collections);
   const cols = await db.select().from(s.collections)
     .where(eq(s.collections.isActive, true))
     .orderBy(s.collections.sortOrder);
@@ -103,7 +127,9 @@ export async function getCollections(platform?: Platform, limit?: number) {
 }
 
 export async function getCollectionBySlug(slug: string, platform?: Platform) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.collections, collectionTag(slug));
   const rows = await db.select().from(s.collections)
     .where(and(eq(s.collections.slug, slug), eq(s.collections.isActive, true))).limit(1);
   const col = rows[0];
@@ -116,7 +142,9 @@ export async function getCollectionBySlug(slug: string, platform?: Platform) {
 }
 
 export async function getRootCategories(platform?: Platform) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.categories);
   const rows = await db.select({
     id: s.categories.id, slug: s.categories.slug, nameFa: s.categories.nameFa, icon: s.categories.icon,
   }).from(s.categories)
@@ -143,42 +171,54 @@ export async function getRootCategories(platform?: Platform) {
 }
 
 export async function getFeaturedApps(limit = 8, platform?: Platform) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.home);
   return db.select(cardCols).from(s.apps)
     .where(and(pub, eq(s.apps.featured, true), plat(platform)))
     .orderBy(desc(s.apps.updatedAt)).limit(limit);
 }
 
 export async function getEditorChoice(limit = 8, platform?: Platform) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.home);
   return db.select(cardCols).from(s.apps)
     .where(and(pub, eq(s.apps.editorChoice, true), plat(platform)))
     .orderBy(desc(s.apps.updatedAt)).limit(limit);
 }
 
 export async function getPopularApps(limit = 8, platform?: Platform) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.home);
   return db.select(cardCols).from(s.apps)
     .where(and(pub, plat(platform)))
-    .orderBy(desc(dlCount), desc(s.apps.updatedAt)).limit(limit);
+    .orderBy(desc(s.apps.downloadCount), desc(s.apps.updatedAt)).limit(limit);
 }
 
 export async function getLatestApps(limit = 8, platform?: Platform) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.home);
   return db.select(cardCols).from(s.apps)
     .where(and(pub, plat(platform)))
     .orderBy(desc(s.apps.updatedAt)).limit(limit);
 }
 
 export async function getOpenSourceApps(limit = 8, platform?: Platform) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.home);
   return db.select(cardCols).from(s.apps)
     .where(and(pub, eq(s.apps.isOpenSource, true), plat(platform)))
-    .orderBy(desc(dlCount)).limit(limit);
+    .orderBy(desc(s.apps.downloadCount)).limit(limit);
 }
 
 export async function getRelatedApps(appId: string, limit = 8, platform?: Platform) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, appIdTag(appId));
   // برنامه‌های هم‌دسته (به‌جز خودش)، اول آن‌هایی که بیشترین دسته‌ی مشترک را دارند
   // فقط هم‌پلتفرم: شاید بپسندی نباید برنامه‌ی پلتفرم دیگر نشان دهد
   const myCats = await db.select({ categoryId: s.appCategories.categoryId })
@@ -191,7 +231,7 @@ export async function getRelatedApps(appId: string, limit = 8, platform?: Platfo
     .where(and(inArray(s.appCategories.categoryId, catIds), eq(s.apps.isPublished, true), plat(platform), sql`${s.apps.id} != ${appId}`))
     .limit(limit * 4);
   // امتیازدهی: تعداد دسته‌ی مشترک بیشتر = اول‌تر
-  const score = new Map<string, { app: any; n: number }>();
+  const score = new Map<string, { app: (typeof rows)[number]; n: number }>();
   for (const r of rows) {
     const e = score.get(r.id);
     if (e) e.n++;
@@ -201,7 +241,9 @@ export async function getRelatedApps(appId: string, limit = 8, platform?: Platfo
 }
 
 export async function getAppByNameEn(nameEn: string) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog);
   const rows = await db.select(cardCols).from(s.apps)
     .where(and(pub, eq(s.apps.nameEn, nameEn)))
     .limit(1);
@@ -209,7 +251,9 @@ export async function getAppByNameEn(nameEn: string) {
 }
 
 export async function getAppBySlug(slug: string) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, appTag(slug));
   const rows = await db.select({
     id: s.apps.id, slug: s.apps.slug, packageName: s.apps.packageName, platform: s.apps.platform,
     nameFa: s.apps.nameFa, nameEn: s.apps.nameEn,
@@ -217,6 +261,7 @@ export async function getAppBySlug(slug: string) {
     license: s.apps.license, isOpenSource: s.apps.isOpenSource,
     sourceType: s.apps.sourceType, sourceUrl: s.apps.sourceUrl,
     githubRepo: s.apps.githubRepo, githubStars: s.apps.githubStars,
+    downloadCount: s.apps.downloadCount,
     minSdk: s.apps.minSdk, createdAt: s.apps.createdAt, updatedAt: s.apps.updatedAt,
     developerName: s.developers.name, developerWebsite: s.developers.website,
   }).from(s.apps)
@@ -243,14 +288,10 @@ export async function getAppBySlug(slug: string) {
     ? (await db.select().from(s.appPermissions).where(eq(s.appPermissions.versionId, current.id)))
     : [];
 
-  const dl = await db.select({ c: sql<number>`count(*)` }).from(s.downloadEvents)
-    .where(eq(s.downloadEvents.appId, app.id));
-  const downloadCount = Number(dl[0]?.c ?? 0);
-
   // شاید بپسندی: هم‌دسته‌ای‌های هم‌پلتفرم با امتیاز تعداد دسته‌ی مشترک
   const related = await getRelatedApps(app.id, 6, app.platform as Platform);
 
-  return { ...app, versions, categories: cats, screenshots: shots, current, permissions: perms, downloadCount, similar: related };
+  return { ...app, versions, categories: cats, screenshots: shots, current, permissions: perms, downloadCount: app.downloadCount, similar: related };
 }
 
 export type SearchFilters = {
@@ -261,13 +302,19 @@ export type SearchFilters = {
   platform?: Platform;
 };
 
+// جست‌وجو هم کش می‌شود ولی با عمر کوتاه: فضای کوئری نامحدود است و هر ورودیِ کش
+// فقط برای تکرار همان جست‌وجو می‌ارزد (تایپ‌هد و صفحه‌ی نتایج). ترتیب «پرطرفدار»
+// به ستون downloadCount وابسته است که با هر دانلود عوض می‌شود؛ این عمر کوتاه +
+// invalidation تگ catalog سقف کهنگی قابل‌قبول را نگه می‌دارد.
 export async function searchApps(query: string, filters: SearchFilters = {}, limit = 40, offset = 0) {
-  await dyn();
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(CACHE_TAGS.catalog);
   const q = normalizeFa(query);
   const conds = [pub, plat(filters.platform)];
 
   // نرمال‌سازی ی/ک/ه عربی و نیم‌فاصله در سطح SQL تا با normalizeFa سمت کوئری هم‌خوان باشد
-  const normFa = (col: any) => sql`replace(replace(replace(replace(${col}, 'ي', 'ی'), 'ك', 'ک'), 'ة', 'ه'), '\u200c', ' ')`;
+  const normFa = (col: AnyColumn) => sql`replace(replace(replace(replace(${col}, 'ي', 'ی'), 'ك', 'ک'), 'ة', 'ه'), '\u200c', ' ')`;
   const like = `%${q}%`;
   const starts = `${q}%`;
 
@@ -317,7 +364,7 @@ export async function searchApps(query: string, filters: SearchFilters = {}, lim
 
   const orderBys = filters.sort === "newest" ? [desc(s.apps.createdAt)]
     : filters.sort === "name" ? [s.apps.nameFa]
-    : filters.sort === "popular" ? [desc(sql`COALESCE(${s.apps.githubStars}, 0) + ${dlCount} * 10`)]
+    : filters.sort === "popular" ? [desc(sql`COALESCE(${s.apps.githubStars}, 0) + ${s.apps.downloadCount} * 10`)]
     : [desc(rank), desc(s.apps.updatedAt)]; // «مرتبط‌ترین»: اول ارتباط، بعد تازگی
 
   const [items, total] = await Promise.all([
@@ -328,7 +375,9 @@ export async function searchApps(query: string, filters: SearchFilters = {}, lim
 }
 
 export async function getCategoryBySlug(slug: string) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.categories);
   const rows = await db.select().from(s.categories).where(eq(s.categories.slug, slug)).limit(1);
   const cat = rows[0];
   if (!cat || !cat.isActive) return null;
@@ -340,7 +389,9 @@ export async function getCategoryBySlug(slug: string) {
 
 // پیش‌نمایش زیردسته‌ها: هر زیردسته + حداکثر ۱۰ برنامه‌ی برترش (برای صفحه دسته‌ی والد به سبک اپ‌استورها)
 export async function getChildPreviews(parentId: string, perChild = 10, platform?: Platform) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.categories);
   const children = await db.select().from(s.categories)
     .where(and(eq(s.categories.parentId, parentId), eq(s.categories.isActive, true)))
     .orderBy(s.categories.sortOrder);
@@ -361,12 +412,14 @@ export async function getChildPreviews(parentId: string, perChild = 10, platform
 }
 
 export async function getCategoryApps(slug: string, limit = 40, offset = 0, sort: SearchFilters["sort"] = "updated", platform?: Platform) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.categories);
   const cat = await getCategoryBySlug(slug);
   if (!cat) return null;
   const { descendantsOf } = await getCategoryTree();
   const catIds = descendantsOf(cat.id);
-  const orderBy = sort === "popular" ? desc(dlCount) : sort === "name" ? s.apps.nameFa : desc(s.apps.updatedAt);
+  const orderBy = sort === "popular" ? desc(s.apps.downloadCount) : sort === "name" ? s.apps.nameFa : desc(s.apps.updatedAt);
   const cond = and(pub, plat(platform), inArray(s.appCategories.categoryId, catIds));
   // ممکن است یک برنامه در دو زیردسته باشد — با groupBy تکراری‌ها حذف می‌شوند
   const [items, total] = await Promise.all([
@@ -383,9 +436,11 @@ export async function getCategoryApps(slug: string, limit = 40, offset = 0, sort
 }
 
 export async function getCategoryCounts(platform?: Platform) {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.categories);
   // تعداد برنامه‌ها برای هر دسته (فقط خودش) و برای ریشه‌ها (شامل زیردسته‌ها) — فیلتر پلتفرم
-  const { descendantsOf, rootOf } = await getCategoryTree();
+  const { rootOf } = await getCategoryTree();
   const links = await db.select({
     categoryId: s.appCategories.categoryId, appId: s.appCategories.appId,
   }).from(s.appCategories)
@@ -407,12 +462,15 @@ export async function getCategoryCounts(platform?: Platform) {
 }
 
 export async function getAllCategories() {
-  await dyn();
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.categories);
   return db.select().from(s.categories)
     .where(eq(s.categories.isActive, true))
     .orderBy(s.categories.sortOrder, s.categories.nameFa);
 }
 
+// آمار پنل ادمین — داینامیک می‌ماند (اعداد عملیاتی، از جمله گزارش‌های باز، باید تازه باشند)
 export async function getDashboardStats() {
   await dyn();
   const [a, v, d, r] = await Promise.all([
