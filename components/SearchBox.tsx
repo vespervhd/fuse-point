@@ -24,7 +24,7 @@ function platformQs(sp: URLSearchParams): string {
   return plat ? `&platform=${plat}` : "";
 }
 
-function SearchBoxInner({ compact = false, slim = false, large = false }: { compact?: boolean; slim?: boolean; large?: boolean }) {
+function SearchBoxInner({ compact = false, slim = false, large = false, cmdk = false }: { compact?: boolean; slim?: boolean; large?: boolean; cmdk?: boolean }) {
   const [q, setQ] = useState("");
   const [items, setItems] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
@@ -105,32 +105,60 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
 
   return (
     <div ref={boxRef} className={`relative ${compact ? "w-full" : "w-full max-w-xl"}`}>
-      <form onSubmit={submit} role="search" className="relative">
-        <input
-          type="search"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          onFocus={() => { if (items.length > 0) setOpen(true); }}
-          onKeyDown={onKey}
-          placeholder="جست‌وجوی برنامه‌ها..."
-          aria-label="جست‌وجوی برنامه‌ها"
-          autoComplete="off"
-          className={`w-full ${h} ${radius} bg-surface-2 border border-border pe-11 ps-4 text-fg placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition text-sm`}
-        />
-        <button
-          type="submit"
-          aria-label="جست‌وجو"
-          className={`absolute end-1 top-1/2 -translate-y-1/2 btn btn-primary ${large ? "rounded-xl" : "btn-sm rounded-lg"} shrink-0`}
+      {cmdk ? (
+        <form
+          onSubmit={submit}
+          role="search"
+          className="flex items-center gap-2.5 bg-surface border border-border rounded-lg px-3 h-12 focus-within:border-primary transition-colors"
         >
-          {loading
-            ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-            : <Search className="w-4 h-4" strokeWidth={2} aria-hidden="true" />}
-        </button>
-      </form>
+          <span aria-hidden="true" className="font-mono font-bold text-primary shrink-0">&gt;</span>
+          <input
+            type="search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onFocus={() => { if (items.length > 0) setOpen(true); }}
+            onKeyDown={onKey}
+            placeholder="جست‌وجوی برنامه، مثلاً firefox…"
+            aria-label="جست‌وجوی برنامه‌ها"
+            autoComplete="off"
+            className="flex-1 min-w-0 bg-transparent border-0 outline-none text-sm text-fg placeholder:text-muted"
+          />
+          {loading ? (
+            <Loader2 className="w-4 h-4 animate-spin shrink-0 text-muted" aria-hidden="true" />
+          ) : (
+            <kbd className="font-mono text-[10px] text-muted border border-border border-b-2 rounded px-1.5 py-px bg-surface-2 shrink-0" dir="ltr">
+              Ctrl K
+            </kbd>
+          )}
+        </form>
+      ) : (
+        <form onSubmit={submit} role="search" className="relative">
+          <input
+            type="search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onFocus={() => { if (items.length > 0) setOpen(true); }}
+            onKeyDown={onKey}
+            placeholder="جست‌وجوی برنامه‌ها..."
+            aria-label="جست‌وجوی برنامه‌ها"
+            autoComplete="off"
+            className={`w-full ${h} ${radius} bg-surface-2 border border-border pe-11 ps-4 text-fg placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition text-sm`}
+          />
+          <button
+            type="submit"
+            aria-label="جست‌وجو"
+            className={`absolute end-1 top-1/2 -translate-y-1/2 btn btn-primary ${large ? "rounded-xl" : "btn-sm rounded-lg"} shrink-0`}
+          >
+            {loading
+              ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+              : <Search className="w-4 h-4" strokeWidth={2} aria-hidden="true" />}
+          </button>
+        </form>
+      )}
 
       {open && items.length > 0 && (
         <div
-          className="absolute top-full mt-2 inset-x-0 z-50 bg-surface border border-border rounded-xl shadow-xl overflow-hidden animate-fade-up"
+          className={`absolute top-full mt-2 inset-x-0 z-50 bg-surface border border-border shadow-xl overflow-hidden animate-fade-up ${cmdk ? "rounded-lg" : "rounded-xl"}`}
           role="listbox"
           aria-label="پیشنهادهای جست‌وجو"
         >
@@ -173,10 +201,10 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
   );
 }
 
-export default function SearchBox({ compact = false, slim = false, large = false }: { compact?: boolean; slim?: boolean; large?: boolean }) {
+export default function SearchBox({ compact = false, slim = false, large = false, cmdk = false }: { compact?: boolean; slim?: boolean; large?: boolean; cmdk?: boolean }) {
   return (
     <Suspense fallback={null}>
-      <SearchBoxInner compact={compact} slim={slim} large={large} />
+      <SearchBoxInner compact={compact} slim={slim} large={large} cmdk={cmdk} />
     </Suspense>
   );
 }

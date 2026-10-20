@@ -57,6 +57,31 @@ export function timeAgo(d: Date | string | null | undefined): string {
   return `${toFaDigits(Math.floor(months / 12))} سال پیش`;
 }
 
+/** حجم فایل با قالب لاتین — برای متادیتای مونو جهت «ج» (11 MB) */
+export function formatBytesEn(bytes: number | null | undefined): string {
+  if (bytes == null || bytes <= 0) return "—";
+  const units = ["B", "KB", "MB", "GB"];
+  let v = bytes, i = 0;
+  while (v >= 1024 && i < units.length - 1) { v /= 1024; i++; }
+  const rounded = v >= 100 ? Math.round(v) : Math.round(v * 10) / 10;
+  return `${rounded} ${units[i]}`;
+}
+
+const SDK_TO_ANDROID_EN: Record<number, string> = {
+  21: "5", 22: "5.1", 23: "6", 24: "7", 25: "7.1", 26: "8", 27: "8.1",
+  28: "9", 29: "10", 30: "11", 31: "12", 32: "12.1", 33: "13",
+  34: "14", 35: "15",
+};
+
+/** حداقل نسخه‌ی اندروید با قالب لاتین — برای متاگرید مونو جهت «ج» (7+) */
+export function androidVersionEn(sdk: number | null | undefined): string {
+  if (sdk == null) return "—";
+  const v = SDK_TO_ANDROID_EN[sdk];
+  if (v) return `${v}+`;
+  if (sdk < 21) return `${sdk}+`;
+  return "—";
+}
+
 /** نام بسته را به slug تمیز تبدیل می‌کند */
 export function slugify(input: string): string {
   return input.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");

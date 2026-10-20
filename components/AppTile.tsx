@@ -7,7 +7,7 @@ function Initial({ name }: { name: string }) {
   const ch = (name || "?").trim().charAt(0);
   return (
     <span
-      className="w-full h-full rounded-[24%] bg-primary-soft text-primary flex items-center justify-center text-4xl font-bold"
+      className="w-full h-full rounded-[20%] bg-primary-soft text-primary flex items-center justify-center text-4xl font-bold"
       aria-hidden="true"
     >
       {ch}
@@ -30,7 +30,7 @@ export default function AppTile({ app, index = 0 }: { app: CardApp; index?: numb
             alt={`آیکون ${app.nameFa}`}
             width={192}
             height={192}
-            className="w-full h-full rounded-[24%] object-cover shadow-md"
+            className="w-full h-full rounded-[20%] object-cover"
           />
         ) : (
           <Initial name={app.nameFa} />

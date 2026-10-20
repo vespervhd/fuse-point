@@ -28,15 +28,6 @@ export function platformIcon(platform: string, className: string) {
   return <AndroidIcon className={className} />;
 }
 
-// رنگ دیزی هر پلتفرم/مقصد
-const BTN_TINT: Record<string, string> = {
-  android: "btn-success",
-  windows: "btn-info",
-  linux: "btn-warning",
-  web: "btn-accent",
-  github: "btn-neutral",
-};
-
 const platformFa: Record<string, string> = {
   android: "اندروید",
   windows: "ویندوز",
@@ -47,14 +38,13 @@ type PillProps = {
   href: string;
   external?: boolean;
   downloadable?: boolean;
-  tint: string;
   icon: React.ReactNode;
   label: string;
   text: string;
 };
 
-// دکمه‌ی دانلود دیزی: آیکون پلتفرم + نام + آیکون دانلود
-function NeonPill({ href, external, downloadable, tint, icon, label, text }: PillProps) {
+// دکمه‌ی اصلی — تنها عنصر توپر صفحه (جهت «ج»): سبز توپر، تمام‌عرض، شعاع کم
+function PrimaryPill({ href, external, downloadable, icon, label, text, versionName }: PillProps & { versionName?: string | null }) {
   return (
     <a
       href={href}
@@ -63,11 +53,32 @@ function NeonPill({ href, external, downloadable, tint, icon, label, text }: Pil
       download={downloadable ? "" : undefined}
       title={label}
       aria-label={label}
-      className={`btn rounded-full ${tint}`}
+      className="flex items-center justify-center gap-2 w-full bg-primary text-primary-content rounded-lg py-3 px-4 text-[15px] font-extrabold"
     >
       <span className="[&>svg]:w-5 [&>svg]:h-5">{icon}</span>
       {text}
+      {versionName && (
+        <span className="font-mono text-[11px] font-medium opacity-80" dir="ltr">v{versionName}</span>
+      )}
       <Download className="w-5 h-5" aria-hidden="true" />
+    </a>
+  );
+}
+
+// گزینه‌های فرعی — قرص خطی موبرگی
+function GhostPill({ href, external, downloadable, icon, label, text }: PillProps) {
+  return (
+    <a
+      href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
+      download={downloadable ? "" : undefined}
+      title={label}
+      aria-label={label}
+      className="inline-flex items-center gap-1.5 border border-border rounded-lg px-3.5 py-1.5 text-[12.5px] font-bold text-fg/85 hover:border-primary hover:text-primary transition-colors"
+    >
+      <span className="[&>svg]:w-4 [&>svg]:h-4">{icon}</span>
+      {text}
     </a>
   );
 }
@@ -80,7 +91,7 @@ const CLEAN_LABEL: Record<string, string> = {
   fdroid: "دانلود",
 };
 
-// دکمه‌های دانلود — قرصی دیزی با رنگ هر پلتفرم
+// دکمه‌های دانلود — جهت «ج»: اصلیِ سبز توپر تمام‌عرض + فرعی‌های خطی
 export default function DownloadButtons({ app }: { app: DownloadAppInfo }) {
   const opts = getDownloadOptions(app);
   if (!opts.length) return null;
@@ -90,28 +101,30 @@ export default function DownloadButtons({ app }: { app: DownloadAppInfo }) {
 
   return (
     <section aria-label="دانلود">
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <NeonPill
-          href={primary.href}
-          external={primary.external}
-          downloadable={!primary.external}
-          tint={BTN_TINT[app.platform] ?? BTN_TINT.android}
-          icon={platformIcon(app.platform, "")}
-          label={`دانلود برای ${platformFa[app.platform] ?? app.platform}`}
-          text="دانلود"
-        />
-        {rest.map((o) => (
-          <NeonPill
-            key={o.key}
-            href={o.href}
-            external={o.external}
-            tint={BTN_TINT[o.key] ?? BTN_TINT.web}
-            icon={o.icon}
-            label={CLEAN_LABEL[o.key] ?? "دانلود"}
-            text={CLEAN_LABEL[o.key] ?? "دانلود"}
-          />
-        ))}
-      </div>
+      <PrimaryPill
+        href={primary.href}
+        external={primary.external}
+        downloadable={!primary.external}
+        icon={platformIcon(app.platform, "")}
+        label={`دانلود برای ${platformFa[app.platform] ?? app.platform}`}
+        text="دانلود"
+        versionName={primary.key === "apk" ? app.version?.versionName : null}
+      />
+      {rest.length > 0 && (
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-2.5">
+          {rest.map((o) => (
+            <GhostPill
+              key={o.key}
+              href={o.href}
+              external={o.external}
+              downloadable={!o.external}
+              icon={o.icon}
+              label={CLEAN_LABEL[o.key] ?? "دانلود"}
+              text={CLEAN_LABEL[o.key] ?? "دانلود"}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

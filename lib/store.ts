@@ -18,6 +18,7 @@ const cardCols = {
   id: s.apps.id, slug: s.apps.slug, nameFa: s.apps.nameFa, nameEn: s.apps.nameEn,
   iconUrl: s.apps.iconUrl, shortDesc: s.apps.shortDesc, shortDescFa: s.apps.shortDescFa,
   versionName: curVersion, fileSize: curFileSize, downloadCount: dlCount, githubStars: s.apps.githubStars,
+  license: s.apps.license,
   platform: s.apps.platform, isOpenSource: s.apps.isOpenSource, createdAt: s.apps.createdAt,
 };
 

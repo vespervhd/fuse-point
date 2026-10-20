@@ -39,12 +39,13 @@ export default function ReportButton({ appId, appName }: { appId: string; appNam
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="btn btn-ghost btn-sm"
+        aria-expanded={open}
+        className="inline-flex items-center gap-1.5 text-muted text-[12.5px] font-medium hover:text-fg transition-colors"
       >
-        <Flag className="w-4 h-4" /> گزارش مشکل
+        <Flag className="w-3.5 h-3.5" /> گزارش مشکل
       </button>
       {open && (
-        <div className="mt-3 bg-surface-2 border border-border rounded-2xl p-4">
+        <div className="mt-3 bg-surface-2 border border-border rounded-lg p-4 text-start">
           <p className="text-sm font-bold mb-2">مشکل «{appName}» چیه؟</p>
           <select
             value={reason}

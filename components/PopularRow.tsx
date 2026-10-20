@@ -6,42 +6,63 @@ export type PopularApp = {
   id: string; slug: string; nameFa: string; nameEn: string;
   iconUrl: string | null; shortDesc: string | null; shortDescFa: string | null;
   fileSize: number | null; isOpenSource: boolean | null; platform?: string | null;
+  versionName?: string | null; license?: string | null;
   createdAt?: Date | string | null;
 };
 
-// کارت فشرده «پرطرفدارها» — رتبه + آیکون + اسم (سایز تطبیقی)
+// حجم فایل با قالب مونو لاتین — مثل مرجع جهت «ج» (11 MB)
+function fmtSize(bytes: number | null | undefined): string | null {
+  if (bytes == null || bytes <= 0) return null;
+  const units = ["B", "KB", "MB", "GB"];
+  let v = bytes, i = 0;
+  while (v >= 1024 && i < units.length - 1) { v /= 1024; i++; }
+  const r = v >= 100 ? Math.round(v) : Math.round(v * 10) / 10;
+  return `${r} ${units[i]}`;
+}
+
+// ردیف «پکیج» جهت «ج» — آیکون ۳۲px + نام + متادیتای مونو (نسخه · حجم · مجوز) + دکمه‌ی دریافت
 export default function PopularRow({ app, platform, index = 0 }: { app: PopularApp; platform?: string; index?: number }) {
   const href = platform && platform !== "android" ? `/app/${app.slug}?platform=${platform}` : `/app/${app.slug}`;
-  const rank = (index + 1).toLocaleString("fa-IR");
-  const top3 = index < 3;
-  const nameLen = app.nameFa.length;
-  const nameSize = nameLen > 22 ? "text-[11px]" : nameLen > 14 ? "text-[12px]" : "text-[13px]";
+  const size = fmtSize(app.fileSize);
   return (
     <Link
       href={href}
       title={app.nameFa}
-      aria-label={`${rank} — ${app.nameFa}`}
-      className="card bg-base-200 transition-all hover:scale-[1.03]"
+      aria-label={app.nameFa}
+      className="flex items-center gap-3 py-2.5 border-b border-border group"
     >
-      <div className="card-body p-3 flex flex-row items-center gap-2.5">
-        <span
-          className={`font-extrabold text-lg shrink-0 w-6 text-center ${top3 ? "text-warning" : "opacity-40"}`}
-          aria-hidden="true"
-        >
-          {rank}
+      {app.iconUrl ? (
+        <PxImg src={px(app.iconUrl) || "/icons/icon-192.png"} alt="" width={32} height={32}
+          className="w-8 h-8 rounded-[7px] object-cover shrink-0" />
+      ) : (
+        <span className="w-8 h-8 rounded-[7px] bg-surface-2 grid place-items-center text-sm font-bold text-muted shrink-0" dir="ltr">
+          {app.nameEn.charAt(0)}
         </span>
-        {app.iconUrl ? (
-          <PxImg src={px(app.iconUrl) || "/icons/icon-192.png"} alt="" width={44} height={44}
-            className="w-11 h-11 rounded-xl object-cover shrink-0" />
-        ) : (
-          <span className="w-11 h-11 rounded-xl bg-base-300 grid place-items-center text-lg font-bold opacity-60 shrink-0" dir="ltr">
-            {app.nameEn.charAt(0)}
+      )}
+      <span className="flex-1 min-w-0">
+        <span className="block font-bold text-[13.5px] leading-[1.4] truncate">
+          {app.nameFa}
+          {app.nameEn && app.nameEn !== app.nameFa && (
+            <span className="font-semibold text-[11.5px] text-muted ms-1.5" dir="ltr">{app.nameEn}</span>
+          )}
+        </span>
+        {(app.versionName || size || app.license) && (
+          <span className="block font-mono text-[10.5px] text-muted mt-px truncate" dir="ltr" style={{ textAlign: "right" }}>
+            {app.versionName && <b className="font-medium text-fg/85">v{app.versionName}</b>}
+            {size && <>{app.versionName ? " · " : ""}{size}</>}
+            {app.license && <>{app.versionName || size ? " · " : ""}{app.license}</>}
           </span>
         )}
-        <span className={`flex-1 min-w-0 font-bold leading-5 line-clamp-2 ${nameSize}`}>
-          {app.nameFa}
-        </span>
-      </div>
+      </span>
+      <span
+        className={`flex-none rounded-md px-3 py-[5px] text-[12.5px] font-bold border transition-colors ${
+          index === 0
+            ? "bg-primary text-primary-content border-primary"
+            : "border-primary text-primary group-hover:bg-primary-soft"
+        }`}
+      >
+        دریافت
+      </span>
     </Link>
   );
 }

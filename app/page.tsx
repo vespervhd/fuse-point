@@ -46,6 +46,11 @@ async function HomeSlide({ platform }: { platform?: Platform }) {
       {/* جست‌وجوی اصلی — وسط صفحه */}
       <HeroSearch />
 
+      {/* خط داده‌ی مونو — جهت «ج» */}
+      <div dir="ltr" className="max-w-2xl mx-auto font-mono text-[10.5px] leading-[1.8] text-muted px-0.5 pt-2.5 mb-8 text-left">
+        catalog: <b className="font-medium text-primary">{stats.apps.toLocaleString("en-US")}</b> packages · downloads: <b className="font-medium text-primary">{stats.downloads.toLocaleString("en-US")}</b> · categories: <b className="font-medium text-primary">{stats.categories.toLocaleString("en-US")}</b> · trackers: <b className="font-medium text-primary">none</b>
+      </div>
+
       {/* پیشنهادهای هفته — ۶ اپ منتخب سردبیر با آیکون کوچک */}
       <WeeklyPicks apps={weeklyPicks} platform={platform} />
 
@@ -68,32 +73,32 @@ async function HomeSlide({ platform }: { platform?: Platform }) {
       <CollectionBrowser collections={collections} platform={platform} />
 
       {/* نوار آمار — daisyUI stats */}
-      <div className="stats w-full bg-base-200 shadow-sm mb-10" role="status" aria-label="آمار فروشگاه">
+      <div className="stats w-full bg-surface border border-border rounded-lg shadow-none mb-10" role="status" aria-label="آمار فروشگاه">
         <div className="stat px-4 py-3">
           <div className="stat-figure text-primary">
             <LayoutGrid className="w-6 h-6" aria-hidden="true" />
           </div>
           <div className="stat-title text-[11px]">برنامه</div>
-          <div className="stat-value text-xl">{toFaDigits(stats.apps)}</div>
+          <div className="stat-value text-xl font-mono">{stats.apps.toLocaleString("en-US")}</div>
         </div>
         <div className="stat px-4 py-3">
           <div className="stat-figure text-secondary">
             <Download className="w-6 h-6" aria-hidden="true" />
           </div>
           <div className="stat-title text-[11px]">دانلود</div>
-          <div className="stat-value text-xl">{toFaDigits(stats.downloads)}</div>
+          <div className="stat-value text-xl font-mono">{stats.downloads.toLocaleString("en-US")}</div>
         </div>
         <div className="stat px-4 py-3">
           <div className="stat-figure text-accent">
             <Tags className="w-6 h-6" aria-hidden="true" />
           </div>
           <div className="stat-title text-[11px]">دسته‌بندی</div>
-          <div className="stat-value text-xl">{toFaDigits(stats.categories)}</div>
+          <div className="stat-value text-xl font-mono">{stats.categories.toLocaleString("en-US")}</div>
         </div>
       </div>
 
       {/* تازه‌ها — اسکرولر افقی */}
-      <Section title="تازه‌ها" href={platform ? `/latest?platform=${platform}` : "/latest"}>
+      <Section title="تازه‌ها" code="// latest" href={platform ? `/latest?platform=${platform}` : "/latest"}>
         <div className="flex gap-3.5 overflow-x-auto pb-3 snap-x scrollbar-none">
           {latest.map((a) => (
             <Link key={a.id} href={appHref(a.slug, platform)}
@@ -116,8 +121,8 @@ async function HomeSlide({ platform }: { platform?: Platform }) {
       </Section>
 
       {/* پرطرفدارها — گرید فشرده بدون اسکرول */}
-      <Section title="پرطرفدارها" href={platform ? `/popular?platform=${platform}` : "/popular"} empty="هنوز آماری ثبت نشده است.">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+      <Section title="پرطرفدارها" code="// popular" href={platform ? `/popular?platform=${platform}` : "/popular"} empty="هنوز آماری ثبت نشده است.">
+        <div className="grid gap-x-10 lg:grid-cols-2">
           {popular.map((a, i) => <PopularRow key={a.id} app={a} platform={platform} index={i} />)}
         </div>
       </Section>

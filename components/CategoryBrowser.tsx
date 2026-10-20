@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { toFaDigits } from "@/lib/fa";
-import DbIcon from "./DbIcon";
+import { ChevronLeft } from "lucide-react";
 
 type Cat = { id: string; slug: string; nameFa: string; icon?: string | null; appCount?: number };
 
-// مرور مینیمال دسته‌ها — چیپ‌های کوچک افقی
+// فهرست ایندکسی دسته‌ها — جهت «ج»: اسلاگ مونو سبز + نام فارسی + شمارش مونو
 export default function CategoryBrowser({
   cats,
   platform,
@@ -20,23 +19,29 @@ export default function CategoryBrowser({
 
   return (
     <section aria-label="دسته‌بندی‌ها" className="mb-10">
-      <h2 className="text-base font-extrabold mb-4 px-1">دسته‌بندی‌ها</h2>
-      <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x">
+      <div className="mb-1.5">
+        <span className="block font-mono text-[10.5px] text-primary" dir="ltr" style={{ textAlign: "right" }}>
+          {"// categories"}
+        </span>
+        <h2 className="text-[15.5px] font-extrabold">دسته‌بندی‌ها</h2>
+      </div>
+      <div>
         {cats.map((c) => (
           <Link
             key={c.id}
             href={href(c.slug)}
-            className="snap-start shrink-0 flex flex-col items-center gap-2 w-[72px] group"
+            className="flex items-center gap-3 py-2.5 border-b border-border group"
           >
-            <span className="w-14 h-14 rounded-2xl bg-surface border border-border grid place-items-center text-primary group-hover:border-primary/50 group-hover:scale-105 transition">
-              <DbIcon icon={c.icon} className="w-6 h-6" />
+            <span className="font-mono text-[11.5px] text-primary w-[118px] flex-none truncate" dir="ltr" style={{ textAlign: "left" }}>
+              {c.slug}
             </span>
-            <span className="text-[11px] font-bold leading-4 text-center line-clamp-2">
+            <span className="font-bold text-[13.5px] flex-1 group-hover:text-primary transition-colors">
               {c.nameFa}
             </span>
-            <span className="text-[10px] text-muted -mt-1">
-              {toFaDigits(c.appCount ?? 0)}
+            <span className="font-mono text-[10.5px] text-muted">
+              {(c.appCount ?? 0).toLocaleString("en-US")}
             </span>
+            <ChevronLeft className="w-4 h-4 text-muted shrink-0" aria-hidden="true" />
           </Link>
         ))}
       </div>

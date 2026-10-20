@@ -17,29 +17,29 @@ export default async function CategoriesPage({ searchParams }: Props) {
 
   return (
     <div className="animate-fade-up">
+      <span className="block font-mono text-[10.5px] text-primary mb-1" dir="ltr" style={{ textAlign: "right" }}>{"// categories"}</span>
       <h1 className="text-2xl font-extrabold mb-6">دسته‌بندی‌ها</h1>
       <div className="space-y-6">
         {roots.map((r) => {
           const kids = childrenOf(r.id);
           return (
-            <section key={r.id} className="bg-surface border border-border rounded-3xl p-6" aria-label={r.nameFa}>
+            <section key={r.id} className="bg-surface border border-border rounded-lg p-5" aria-label={r.nameFa}>
               <Link href={`/category/${r.slug}`} className="flex items-center gap-3 mb-4 group">
-                <span className="w-11 h-11 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <span className="w-11 h-11 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
                   <DbIcon icon={r.icon} className="w-6 h-6" />
                 </span>
                 <h2 className="text-lg font-extrabold group-hover:text-primary transition">{r.nameFa}</h2>
-                <span className="text-xs font-bold bg-primary-soft text-primary rounded-full px-2.5 py-1">
-                  {(counts.get(r.id) ?? 0).toLocaleString("fa-IR")} برنامه
+                <span className="font-mono text-[11px] text-muted" dir="ltr">
+                  {(counts.get(r.id) ?? 0).toLocaleString("en-US")} apps
                 </span>
-                <span className="text-primary text-sm">←</span>
               </Link>
               {kids.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {kids.map((k) => (
                     <Link key={k.id} href={`/category/${k.slug}`}
-                      className="text-sm bg-surface-2 hover:bg-primary-soft hover:text-primary border border-border rounded-full px-4 py-2 transition flex items-center gap-1.5">
+                      className="text-sm bg-surface-2 hover:bg-primary-soft hover:text-primary border border-border rounded-lg px-3.5 py-1.5 transition flex items-center gap-1.5">
                       <DbIcon icon={k.icon} className="w-4 h-4" /> {k.nameFa}
-                      <span className="text-xs text-muted font-bold">{(counts.get(k.id) ?? 0).toLocaleString("fa-IR")}</span>
+                      <span className="font-mono text-[10.5px] text-muted" dir="ltr">{(counts.get(k.id) ?? 0).toLocaleString("en-US")}</span>
                     </Link>
                   ))}
                 </div>
