@@ -1,12 +1,10 @@
 import SearchBox from "./SearchBox";
 
-// جست‌وجوی اصلی صفحه‌ی خانه — وسط صفحه
+// جست‌وجوی اصلی صفحه‌ی خانه — نوار فرمان جهت «ج» (پرامپت ‎>‎ و راهنمای Ctrl K)
 export default function HeroSearch() {
   return (
-    <section aria-label="جست‌وجوی سریع" className="mb-10">
-      <div className="bg-surface border border-border rounded-3xl p-5 sm:p-6 max-w-2xl mx-auto">
-        <SearchBox compact large />
-      </div>
+    <section aria-label="جست‌وجوی سریع" className="max-w-2xl mx-auto">
+      <SearchBox compact cmdk />
     </section>
   );
 }

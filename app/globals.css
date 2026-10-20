@@ -1,6 +1,42 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: dim --default, dracula, halloween, luxury, forest;
+  themes: protool --default, dim, dracula, halloween, luxury, forest;
+}
+
+/* تم «پروتول» — جهت طراحی «ج» (ابزار حرفه‌ای تیره): مشکی عمیق، خط‌های موبرگ، سبز ترمینالی */
+@plugin "daisyui/theme" {
+  name: "protool";
+  default: true;
+  prefersdark: true;
+  color-scheme: "dark";
+  --color-base-100: #0b0c0e;
+  --color-base-200: #101114;
+  --color-base-300: #232529;
+  --color-base-content: #e7e9eb;
+  --color-primary: #4cc38a;
+  --color-primary-content: #06130c;
+  --color-secondary: #8b9096;
+  --color-secondary-content: #0b0c0e;
+  --color-accent: #4cc38a;
+  --color-accent-content: #06130c;
+  --color-neutral: #17181c;
+  --color-neutral-content: #c8ccd0;
+  --color-info: #7d8ca3;
+  --color-info-content: #0b0c0e;
+  --color-success: #4cc38a;
+  --color-success-content: #06130c;
+  --color-warning: #d8a13a;
+  --color-warning-content: #171106;
+  --color-error: #e5534b;
+  --color-error-content: #1c0705;
+  --radius-selector: 0.25rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
 }
 
 :root {
@@ -40,6 +76,7 @@
   --font-sans: var(--font-inter), var(--font-vazir), system-ui, sans-serif;
   --font-head: var(--font-inter), var(--font-vazir), system-ui, sans-serif;
   --font-wordmark: var(--font-cinzel), "Times New Roman", serif;
+  --font-mono: var(--font-jbmono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 html {
@@ -112,22 +149,6 @@ body {
   animation-timing-function: ease;
 }
 
-/* هاله‌های پس‌زمینه — ظریف، هماهنگ با حس گرم هر تم */
-.bg-glows { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.bg-glows span { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.16; }
-.bg-glows .g1 { width: 480px; height: 480px; background: color-mix(in oklab, var(--color-primary) 55%, transparent); top: -160px; right: -140px; }
-.bg-glows .g2 { width: 380px; height: 380px; background: color-mix(in oklab, var(--color-secondary) 55%, transparent); bottom: 8%; left: -160px; opacity: 0.12; }
-.bg-glows .g3 { display: none; }
-
-/* بوردر گرادیانی ظریف — فقط برای تأکید، نه همه‌جا */
-.grad-border { position: relative; }
-.grad-border::before {
-  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
-  background: linear-gradient(140deg, color-mix(in oklab, var(--color-primary) 40%, transparent), transparent 45%, transparent 55%, color-mix(in oklab, var(--color-secondary) 30%, transparent));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor; mask-composite: exclude;
-  pointer-events: none;
-}
 
 /* درخشش متن هیرو — ملایم */
 .hero-glow { text-shadow: 0 0 28px color-mix(in oklab, var(--color-primary) 35%, transparent); }

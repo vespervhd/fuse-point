@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ALTERNATIVES, findAlternatives } from "@/data/alternatives";
+import { connection } from "next/server";
+import { ALTERNATIVES } from "@/data/alternatives";
 import { getAppByNameEn } from "@/lib/store";
 import AppTile from "@/components/AppTile";
-import PxImg from "@/components/PxImg";
-import { px } from "@/lib/img";
 import { ArrowLeft, Leaf } from "lucide-react";
 
 function slugify(name: string) {
@@ -27,6 +26,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 export default async function AlternativePage({ params }: { params: Promise<{ slug: string }> }) {
+  // پارامترها استاتیک‌اند (از فایل داده) ولی محتوای صفحه از کاتالوگ می‌آید؛ رندر به
+  // زمان درخواست موکول می‌شود تا داده‌ی کاتالوگ موقع بیلد پخته نشود — همان رفتار
+  // قبل از کش‌شدن store (آن‌جا connection() داخل خود توابع بود). getAppByNameEn
+  // کش‌شده در زمان درخواست اجرا/خوانده می‌شود.
+  await connection();
   const { slug } = await params;
   const entry = ALTERNATIVES.find((a) => slugify(a.for) === slug);
   if (!entry) notFound();

@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MoonStar, Crown, TreePine } from "lucide-react";
+import { MoonStar, Crown, TreePine, Terminal } from "lucide-react";
 
-const THEMES = ["dim", "dracula", "halloween", "luxury", "forest"] as const;
+const THEMES = ["protool", "dim", "dracula", "halloween", "luxury", "forest"] as const;
 type Theme = (typeof THEMES)[number];
 const LABELS: Record<Theme, string> = {
+  protool: "حرفه‌ای",
   dim: "دیم",
   dracula: "دراکولا",
   halloween: "هالووین",
@@ -40,6 +41,7 @@ function PumpkinIcon() {
 }
 
 function ThemeIcon({ theme }: { theme: Theme }) {
+  if (theme === "protool") return <Terminal className="h-5 w-5" aria-hidden="true" />;
   if (theme === "dracula") {
     return (
       <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5" aria-hidden="true">
@@ -54,7 +56,7 @@ function ThemeIcon({ theme }: { theme: Theme }) {
 }
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("dim");
+  const [theme, setTheme] = useState<Theme>("protool");
 
   useEffect(() => {
     const t = localStorage.getItem("vesper-theme");

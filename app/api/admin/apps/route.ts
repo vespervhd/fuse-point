@@ -5,6 +5,8 @@ import * as s from "@/db/schema";
 import { eq, desc, sql } from "drizzle-orm";
 import { requireAdmin } from "@/lib/admin-guard";
 import { slugify } from "@/lib/fa";
+import { apiError } from "@/lib/api-error";
+import { invalidateCatalog } from "@/lib/cache-tags";
 
 const AppBody = z.object({
   packageName: z.string().min(3).max(255),
@@ -41,13 +43,13 @@ export async function POST(req: NextRequest) {
 
   const parsed = AppBody.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0]?.message || "ورودی نامعتبر است" }, { status: 400 });
+    return apiError(parsed.error.issues[0]?.message || "ورودی نامعتبر است", 400);
   }
   const d = parsed.data;
 
   const dup = await db.select({ id: s.apps.id }).from(s.apps)
     .where(eq(s.apps.packageName, d.packageName)).limit(1);
-  if (dup.length) return NextResponse.json({ error: "این نام بسته قبلاً ثبت شده است" }, { status: 409 });
+  if (dup.length) return apiError("این نام بسته قبلاً ثبت شده است", 409);
 
   const [app] = await db.insert(s.apps).values({
     slug: slugify(d.packageName), packageName: d.packageName,
@@ -70,5 +72,6 @@ export async function POST(req: NextRequest) {
     meta: { packageName: d.packageName },
   });
 
+  invalidateCatalog();
   return NextResponse.json({ ok: true, id: app.id });
 }

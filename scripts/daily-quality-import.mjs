@@ -181,6 +181,21 @@ async function main() {
   const totals = await sql`SELECT platform, COUNT(*) AS c FROM apps WHERE is_published = true GROUP BY platform`;
   console.log("آمار:", JSON.stringify(stats));
   console.log("جمع کل:", JSON.stringify(totals));
+  // تازه‌کردن کش کاتالوگ اپ (Cache Components) — این اسکریپت مستقیم روی DB می‌نویسد
+  // و به revalidateTag دسترسی ندارد؛ اگر endpoint داخلی پیکربندی شده باشد خبرش می‌کند.
+  // REVALIDATE_URL مثلاً: https://<site>/api/internal/revalidate
+  if (process.env.REVALIDATE_URL && process.env.REVALIDATE_TOKEN) {
+    try {
+      const r = await fetch(process.env.REVALIDATE_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-revalidate-token": process.env.REVALIDATE_TOKEN },
+        body: "{}",
+      });
+      console.log("کش کاتالوگ:", r.ok ? "تازه شد" : `خطا ${r.status}`);
+    } catch (e) {
+      console.log("تازه‌کردن کش ناموفق بود:", e.message);
+    }
+  }
   await sql.end();
 }
 

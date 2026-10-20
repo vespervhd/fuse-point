@@ -4,11 +4,13 @@ import { db } from "@/lib/db";
 import * as s from "@/db/schema";
 import { eq, and, desc, sql } from "drizzle-orm";
 import { getSessionUser } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
+import { rateLimited } from "@/lib/rate-limit";
 
 // GET /api/reviews?appId=... — نظرات تأییدشده + میانگین امتیاز
 export async function GET(req: NextRequest) {
   const appId = new URL(req.url).searchParams.get("appId");
-  if (!appId) return NextResponse.json({ error: "appId لازم است" }, { status: 400 });
+  if (!appId) return apiError("appId لازم است", 400);
 
   const [list, agg] = await Promise.all([
     db.select({
@@ -41,16 +43,19 @@ const Body = z.object({
 // POST /api/reviews — ثبت نظر (وضعیت: در انتظار تأیید)
 export async function POST(req: NextRequest) {
   const u = await getSessionUser();
-  if (!u) return NextResponse.json({ error: "برای ثبت نظر وارد شوید" }, { status: 401 });
+  if (!u) return apiError("برای ثبت نظر وارد شوید", 401);
+  if (rateLimited(`reviews:${u.id}`, 10, 3600_000)) {
+    return apiError("تعداد درخواست‌ها بیش از حد مجاز است", 429);
+  }
 
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0]?.message || "ورودی نامعتبر است" }, { status: 400 });
+    return apiError(parsed.error.issues[0]?.message || "ورودی نامعتبر است", 400);
   }
 
   const app = await db.select({ id: s.apps.id }).from(s.apps)
     .where(and(eq(s.apps.id, parsed.data.appId), eq(s.apps.isPublished, true))).limit(1);
-  if (!app[0]) return NextResponse.json({ error: "برنامه یافت نشد" }, { status: 404 });
+  if (!app[0]) return apiError("برنامه یافت نشد", 404);
 
   // هر کاربر یک نظر برای هر برنامه (به‌روزرسانی نظر قبلی)
   const existing = await db.select({ id: s.reviews.id }).from(s.reviews)

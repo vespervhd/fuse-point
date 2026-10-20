@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import * as s from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { verifyPassword, createSession, getSessionUser } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 
 const Body = z.object({
   email: z.string().email("ایمیل نامعتبر است"),
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const parsed = Body.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "ورودی نامعتبر است" }, { status: 400 });
+    return apiError("ورودی نامعتبر است", 400);
   }
 
   const rows = await db.select({
@@ -38,9 +39,9 @@ export async function POST(req: NextRequest) {
 
   const ok = u && u.isActive && u.role !== "user" && verifyPassword(parsed.data.password, u.passwordHash);
   if (!ok) {
-    if (tooMany(ip)) return NextResponse.json({ error: "تلاش‌های ناموفق زیاد است؛ ۱۵ دقیقه صبر کنید" }, { status: 429 });
+    if (tooMany(ip)) return apiError("تلاش‌های ناموفق زیاد است؛ ۱۵ دقیقه صبر کنید", 429);
     // پیام کلی برای جلوگیری از نشت اطلاعات
-    return NextResponse.json({ error: "ایمیل یا رمز عبور نادرست است" }, { status: 401 });
+    return apiError("ایمیل یا رمز عبور نادرست است", 401);
   }
 
   await createSession(u.id);

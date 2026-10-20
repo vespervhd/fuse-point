@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { decodeProxyParam } from "@/lib/img";
+import { apiError } from "@/lib/api-error";
 
 // GET /api/img?u=<base64url> — پروکسی تصاویر f-droid.org با کش حافظه
 // چون f-droid.org ممکن است برای برخی کاربران قابل دسترس نباشد، تصاویر از خودِ سرور سرو می‌شوند.
@@ -33,7 +34,7 @@ const ALLOWED_TYPES = new Set([
 export async function GET(req: NextRequest) {
   const b64 = new URL(req.url).searchParams.get("u");
   const target = b64 ? decodeProxyParam(b64) : null;
-  if (!target) return NextResponse.json({ error: "آدرس نامعتبر است" }, { status: 400 });
+  if (!target) return apiError("آدرس نامعتبر است", 400);
 
   const hit = cache.get(target);
   if (hit) {
@@ -52,11 +53,11 @@ export async function GET(req: NextRequest) {
       headers: { "User-Agent": "Vesper/1.0 (image proxy)" },
       signal: AbortSignal.timeout(15000),
     });
-    if (!r.ok) return NextResponse.json({ error: "دریافت تصویر ناموفق بود" }, { status: 502 });
+    if (!r.ok) return apiError("دریافت تصویر ناموفق بود", 502);
     const type = (r.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
-    if (!ALLOWED_TYPES.has(type)) return NextResponse.json({ error: "نوع فایل مجاز نیست" }, { status: 415 });
+    if (!ALLOWED_TYPES.has(type)) return apiError("نوع فایل مجاز نیست", 415);
     const buf = Buffer.from(await r.arrayBuffer());
-    if (!buf.length) return NextResponse.json({ error: "تصویر خالی است" }, { status: 502 });
+    if (!buf.length) return apiError("تصویر خالی است", 502);
     put(target, buf, type);
     return new NextResponse(new Uint8Array(buf), {
       headers: {
@@ -66,6 +67,6 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch {
-    return NextResponse.json({ error: "خطا در دریافت تصویر" }, { status: 502 });
+    return apiError("خطا در دریافت تصویر", 502);
   }
 }

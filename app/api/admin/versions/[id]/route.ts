@@ -5,6 +5,8 @@ import * as s from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { requireAdmin } from "@/lib/admin-guard";
 import { notifyVersionPublished } from "@/lib/notify";
+import { apiError } from "@/lib/api-error";
+import { invalidateCatalog } from "@/lib/cache-tags";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -21,11 +23,11 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
   const { id } = await ctx.params;
 
   const parsed = PatchBody.safeParse(await req.json().catch(() => null));
-  if (!parsed.success) return NextResponse.json({ error: "ورودی نامعتبر است" }, { status: 400 });
+  if (!parsed.success) return apiError("ورودی نامعتبر است", 400);
 
   const rows = await db.select().from(s.appVersions).where(eq(s.appVersions.id, id)).limit(1);
   const ver = rows[0];
-  if (!ver) return NextResponse.json({ error: "یافت نشد" }, { status: 404 });
+  if (!ver) return apiError("یافت نشد", 404);
 
   const set: Record<string, unknown> = {};
   if (parsed.data.status) {
@@ -50,6 +52,7 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
   if (parsed.data.status === "active") {
     notifyVersionPublished(ver.appId, id).catch(() => {});
   }
+  invalidateCatalog();
   return NextResponse.json({ ok: true });
 }
 
@@ -61,5 +64,6 @@ export async function DELETE(_req: NextRequest, ctx: Ctx) {
   await db.insert(s.auditLogs).values({
     userId: auth.user.id, action: "version.disable", entity: "version", entityId: id,
   });
+  invalidateCatalog();
   return NextResponse.json({ ok: true });
 }
