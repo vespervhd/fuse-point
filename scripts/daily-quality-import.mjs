@@ -18,7 +18,7 @@ const perPlatform = parseInt((args.find((a) => a.startsWith("--per-platform=")) 
 const only = (args.find((a) => a.startsWith("--only=")) || "").split("=")[1] || null; // android|linux|windows
 
 const sql = postgres(process.env.DATABASE_URL, {
-  ssl: { rejectUnauthorized: false, servername: process.env.DB_SSL_SERVERNAME },
+  ssl: process.env.DB_NO_SSL ? false : { rejectUnauthorized: false, servername: process.env.DB_SSL_SERVERNAME },
   connect_timeout: 30,
 });
 
