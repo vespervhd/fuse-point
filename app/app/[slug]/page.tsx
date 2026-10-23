@@ -13,7 +13,7 @@ import FavoriteButton from "@/components/FavoriteButton";
 import FollowButton from "@/components/FollowButton";
 import ShareButton from "@/components/ShareButton";
 import VersionsDrawer from "@/components/VersionsDrawer";
-import DownloadButtons, { platformIcon } from "@/components/DownloadButtons";
+import DownloadButtons, { PlatformIcon } from "@/components/DownloadButtons";
 import Gallery from "@/components/Gallery";
 import { computeTags } from "@/lib/tags";
 import { px } from "@/lib/img";
@@ -138,7 +138,7 @@ export default async function AppPage({ params }: Props) {
                 <p className="text-[13px] opacity-60 mt-0.5">{app.developerName}</p>
               )}
               <p className="text-[12px] mt-1.5 flex items-center gap-1.5 opacity-60">
-                {platformIcon(app.platform, "w-4 h-4")}
+                <PlatformIcon platform={app.platform} className="w-4 h-4" />
                 {v?.versionName && <span dir="ltr">{v.versionName}</span>}
               </p>
             </div>

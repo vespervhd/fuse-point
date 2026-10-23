@@ -28,6 +28,10 @@ export function platformIcon(platform: string, className: string) {
   return <AndroidIcon className={className} />;
 }
 
+export function PlatformIcon({ platform, className }: { platform: string; className?: string }) {
+  return platformIcon(platform, className ?? "");
+}
+
 // رنگ دیزی هر پلتفرم/مقصد
 const BTN_TINT: Record<string, string> = {
   android: "btn-success",
