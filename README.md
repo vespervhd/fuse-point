@@ -9,7 +9,7 @@
   ╚═══╝  ╚══════╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝
 ```
 
-# Vesper
+# Fuse Point
 
 **فروشگاه اپ‌های آزاد** — A Persian app store for Android, Windows and Linux.
 
@@ -23,7 +23,7 @@
 
 <div dir="rtl">
 
-وسپر یه فروشگاه فارسی برای معرفی و دانلود امن نرم‌افزاره — اندروید، ویندوز و لینوکس. یه پروژه‌ی شخصیه که از یه ایده‌ی ساده شروع شد: نرم‌افزار خوب، به زبان خودت.
+Fuse Point یه فروشگاه فارسی برای معرفی و دانلود امن نرم‌افزاره — اندروید، ویندوز و لینوکس. یه پروژه‌ی شخصیه که از یه ایده‌ی ساده شروع شد: نرم‌افزار خوب، به زبان خودت.
 
 ۲٬۳۶۸ برنامه‌ی واقعی (اندروید ۸۲۶، لینوکس ۸۲۳، ویندوز ۷۱۹) از F-Droid و گیت‌هاب — بدون تبلیغ، بدون آمار جعلی. اعتماد اولویت اوله: هش SHA-256 هر فایل، لینک منبع رسمی، و دکمه‌ی گزارش مشکل توی خود صفحه‌ی هر برنامه.
 
@@ -73,7 +73,7 @@ MIT
 
 ## English
 
-Vesper is a Persian store for discovering and safely downloading software — Android, Windows and Linux. A personal project that started from a simple idea: good software, in your own language.
+Fuse Point is a Persian store for discovering and safely downloading software — Android, Windows and Linux. A personal project that started from a simple idea: good software, in your own language.
 
 2,368 real apps (Android 826, Linux 823, Windows 719) sourced from F-Droid and GitHub — no ads, no fake stats. Trust comes first: SHA-256 hash per file, official source links, and in-page issue reporting on every app page.
 

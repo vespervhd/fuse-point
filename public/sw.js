@@ -1,4 +1,4 @@
-// Service Worker Vesper — کش هوشمند
+// Service Worker Fuse Point — کش هوشمند
 const CACHE = "vesper-v6"; // v6: هدر جدید
 const STATIC_ASSETS = ["/", "/icons/icon-192.png", "/icons/icon-512.png"];
 

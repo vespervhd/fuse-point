@@ -22,8 +22,8 @@ export default function Footer() {
   return (
     <footer className="bg-base-200 text-base-content mt-12">
       <div className="max-w-3xl mx-auto px-6 py-10 flex flex-col items-center text-center">
-        <img src="/icons/icon-192.png" alt="لوگوی Vesper" width={36} height={36} className="w-9 h-9 rounded-xl object-cover" />
-        <p className="font-extrabold text-base mt-2">Vesper</p>
+        <img src="/icons/icon-192.png" alt="لوگوی Fuse Point" width={36} height={36} className="w-9 h-9 rounded-xl object-cover" />
+        <p className="font-extrabold text-base mt-2">Fuse Point</p>
         <p className="text-xs opacity-60 mt-0.5">فروشگاه اپ‌های آزاد</p>
 
         <div className="flex items-center gap-2 mt-3 text-[11px] opacity-60">
@@ -54,7 +54,7 @@ export default function Footer() {
           ))}
         </nav>
 
-        <p className="text-[11px] opacity-40 mt-4">© ۱۴۰۵ Vesper</p>
+        <p className="text-[11px] opacity-40 mt-4">© ۱۴۰۵ Fuse Point</p>
       </div>
     </footer>
   );

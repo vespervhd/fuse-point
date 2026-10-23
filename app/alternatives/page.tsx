@@ -8,7 +8,7 @@ function slugify(name: string) {
 }
 
 export const metadata: Metadata = {
-  title: "جایگزین‌های آزاد | Vesper",
+  title: "جایگزین‌های آزاد | Fuse Point",
   description: "جایگزین‌های آزاد و متن‌باز برای برنامه‌های معروف: به‌جای واتساپ، گوگل مپ، کروم و...",
 };
 

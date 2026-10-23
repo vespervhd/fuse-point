@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const r = await fetch(target, {
-      headers: { "User-Agent": "Vesper/1.0 (image proxy)" },
+      headers: { "User-Agent": "FusePoint/1.0 (image proxy)" },
       signal: AbortSignal.timeout(15000),
     });
     if (!r.ok) return NextResponse.json({ error: "دریافت تصویر ناموفق بود" }, { status: 502 });

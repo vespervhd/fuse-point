@@ -39,7 +39,7 @@ function Form() {
       <div className="bg-surface border border-border rounded-3xl p-10 text-center max-w-xl mx-auto">
         <CheckCircle2 className="w-10 h-10 mx-auto mb-3 text-primary" aria-hidden="true" />
         <p className="font-extrabold mb-1">گزارش شما ثبت شد</p>
-        <p className="text-sm text-muted">تیم Vesper آن را بررسی می‌کند. ممنون از همراهی شما!</p>
+        <p className="text-sm text-muted">تیم Fuse Point آن را بررسی می‌کند. ممنون از همراهی شما!</p>
       </div>
     );
   }

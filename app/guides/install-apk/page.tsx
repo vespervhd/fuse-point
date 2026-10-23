@@ -3,8 +3,8 @@ import Link from "next/link";
 import { ArrowLeft, Smartphone, CheckCircle2, AlertTriangle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "راهنمای نصب APK در اندروید | Vesper",
-  description: "آموزش قدم‌به‌قدم نصب فایل APK در اندروید: دانلود از Vesper، فعال‌سازی نصب از منابع ناشناس، و تأیید هش.",
+  title: "راهنمای نصب APK در اندروید | Fuse Point",
+  description: "آموزش قدم‌به‌قدم نصب فایل APK در اندروید: دانلود از Fuse Point، فعال‌سازی نصب از منابع ناشناس، و تأیید هش.",
 };
 
 const steps = [
@@ -35,7 +35,7 @@ export default function InstallApkGuide() {
       <div className="text-center mb-10">
         <Smartphone className="w-12 h-12 mx-auto mb-4 text-primary" aria-hidden="true" />
         <h1 className="text-2xl sm:text-3xl font-extrabold mb-3">راهنمای نصب APK در اندروید</h1>
-        <p className="text-muted">در ۴ قدم ساده، هر برنامه‌ای را از Vesper نصب کنید.</p>
+        <p className="text-muted">در ۴ قدم ساده، هر برنامه‌ای را از Fuse Point نصب کنید.</p>
       </div>
       <div className="space-y-4">
         {steps.map((s) => (
@@ -48,7 +48,7 @@ export default function InstallApkGuide() {
       <div className="mt-6 bg-amber-500/10 border border-amber-500/30 rounded-3xl p-6 flex gap-3">
         <AlertTriangle className="w-6 h-6 shrink-0 text-amber-500" aria-hidden="true" />
         <p className="text-sm leading-7">
-          <b>نکته‌ی امنیتی:</b> فقط از Vesper یا وب‌سایت رسمی پروژه دانلود کنید. فایل APK از کانال‌های ناشناس تلگرام یا سایت‌های متفرقه ممکن است دست‌کاری شده باشد.
+          <b>نکته‌ی امنیتی:</b> فقط از Fuse Point یا وب‌سایت رسمی پروژه دانلود کنید. فایل APK از کانال‌های ناشناس تلگرام یا سایت‌های متفرقه ممکن است دست‌کاری شده باشد.
         </p>
       </div>
       <div className="mt-6 text-center">

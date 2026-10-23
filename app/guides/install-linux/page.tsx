@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, Terminal, CheckCircle2 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "راهنمای نصب برنامه در لینوکس | Vesper",
+  title: "راهنمای نصب برنامه در لینوکس | Fuse Point",
   description: "آموزش نصب برنامه در لینوکس: از مخزن رسمی، فلت‌هاب، یا فایل دانلودشده.",
 };
 
@@ -15,7 +15,7 @@ const steps: { title: string; text: string; code?: string[] }[] = [
   },
   {
     title: "۲. فلت‌هاب برای برنامه‌های جدیدتر",
-    text: "اگر نسخه‌ی مخزن قدیمی بود، فلت‌هاب (Flathub) نسخه‌های به‌روز را با یک کلیک نصب می‌کند. خیلی از برنامه‌های Vesper لینک فلت‌هاب دارند.",
+    text: "اگر نسخه‌ی مخزن قدیمی بود، فلت‌هاب (Flathub) نسخه‌های به‌روز را با یک کلیک نصب می‌کند. خیلی از برنامه‌های Fuse Point لینک فلت‌هاب دارند.",
     code: ["flatpak install flathub org.videolan.VLC"],
   },
   {

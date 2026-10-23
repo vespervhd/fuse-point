@@ -20,7 +20,7 @@ export default function ShareButton({ appName, slug }: { appName: string; slug: 
 
   const share = async () => {
     const url = `${window.location.origin}/app/${slug}`;
-    const text = `«${appName}» در Vesper — فروشگاه اپ‌های آزاد`;
+    const text = `«${appName}» در Fuse Point — فروشگاه اپ‌های آزاد`;
     if (navigator.share) {
       try {
         await navigator.share({ title: appName, text, url });

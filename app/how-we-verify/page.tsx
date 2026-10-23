@@ -3,8 +3,8 @@ import Link from "next/link";
 import { ShieldCheck, Hash, Link2, Flag, CheckCircle2 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "چطور برنامه‌ها را بررسی می‌کنیم | Vesper",
-  description: "روش بررسی امنیتی Vesper: هش SHA-256، لینک منبع رسمی، و چطور خودتان صحت فایل را تأیید کنید.",
+  title: "چطور برنامه‌ها را بررسی می‌کنیم | Fuse Point",
+  description: "روش بررسی امنیتی Fuse Point: هش SHA-256، لینک منبع رسمی، و چطور خودتان صحت فایل را تأیید کنید.",
 };
 
 const steps = [

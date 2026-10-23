@@ -11,8 +11,8 @@ export default function Header() {
       <header className="sticky top-0 z-40 bg-base-100/80 backdrop-blur border-b border-base-300">
         <div className="navbar max-w-7xl mx-auto px-4 sm:px-6 min-h-14 h-14 p-0">
           <div className="navbar-start">
-            <Link href="/" aria-label="Vesper - صفحه‌ی اصلی" className="shrink-0">
-              <img src="/icons/icon-192.png" alt="Vesper" width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
+            <Link href="/" aria-label="Fuse Point - صفحه‌ی اصلی" className="shrink-0">
+              <img src="/icons/icon-192.png" alt="Fuse Point" width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
             </Link>
           </div>
           <div className="navbar-end">

@@ -33,9 +33,9 @@ export default function AdminLogin() {
     <div className="min-h-[70vh] flex items-center justify-center">
       <form onSubmit={submit} className="w-full max-w-sm bg-surface border border-border rounded-3xl p-8 space-y-5">
         <div className="text-center">
-          <img src="/icons/icon-192.png" alt="لوگوی Vesper" width={48} height={48} className="inline-flex w-12 h-12 rounded-2xl object-cover mb-3" />
+          <img src="/icons/icon-192.png" alt="لوگوی Fuse Point" width={48} height={48} className="inline-flex w-12 h-12 rounded-2xl object-cover mb-3" />
           <h1 className="text-xl font-extrabold">ورود به پنل مدیریت</h1>
-          <p className="text-xs text-muted mt-1">Vesper — دسترسی محدود</p>
+          <p className="text-xs text-muted mt-1">Fuse Point — دسترسی محدود</p>
         </div>
         <div>
           <label htmlFor="email" className="block text-sm font-bold mb-2">ایمیل</label>

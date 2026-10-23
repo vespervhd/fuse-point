@@ -5,7 +5,7 @@ import type { Platform } from "@/lib/store";
 import { toFaDigits } from "@/lib/fa";
 import DbIcon from "@/components/DbIcon";
 
-export const metadata: Metadata = { title: "کالکشن‌ها", description: "لیست‌های دست‌چین برنامه‌ها در Vesper" };
+export const metadata: Metadata = { title: "کالکشن‌ها", description: "لیست‌های دست‌چین برنامه‌ها در Fuse Point" };
 
 type Props = { searchParams: Promise<{ platform?: string }> };
 

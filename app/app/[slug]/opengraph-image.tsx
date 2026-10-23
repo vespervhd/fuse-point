@@ -8,7 +8,7 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
   const { slug } = await params;
   const app = await getAppBySlug(slug);
 
-  const name = app?.nameFa || "Vesper";
+  const name = app?.nameFa || "Fuse Point";
   const platFa =
     app?.platform === "android" ? "اندروید" : app?.platform === "windows" ? "ویندوز" : app?.platform === "linux" ? "لینوکس" : "";
 
@@ -30,7 +30,7 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
       >
         <div style={{ fontSize: 64, fontWeight: 800, marginBottom: 16 }}>{name}</div>
         {platFa && <div style={{ fontSize: 32, color: "#2dd4bf" }}>دانلود برای {platFa}</div>}
-        <div style={{ fontSize: 28, color: "#888", marginTop: 32 }}>Vesper · فروشگاه فارسی نرم‌افزار</div>
+        <div style={{ fontSize: 28, color: "#888", marginTop: 32 }}>Fuse Point · فروشگاه فارسی نرم‌افزار</div>
       </div>
     ),
     { ...size }

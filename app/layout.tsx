@@ -20,7 +20,7 @@ const inter = Inter({
   display: "swap",
 });
 
-// فونت وردمارک لاتین Vesper — هم‌سبک حکاکی روی لوگو
+// فونت وردمارک لاتین Fuse Point — هم‌سبک حکاکی روی لوگو
 const cinzel = Cinzel({
   variable: "--font-cinzel",
   subsets: ["latin"],
@@ -30,12 +30,12 @@ const cinzel = Cinzel({
 
 
 export const metadata: Metadata = {
-  title: { default: "Vesper | فروشگاه اپ‌های آزاد", template: "%s | Vesper" },
-  description: "Vesper — فروشگاه اپ‌های آزاد؛ معرفی و دانلود امن نرم‌افزار برای اندروید، ویندوز و لینوکس با لینک مستقیم",
+  title: { default: "Fuse Point | فروشگاه اپ‌های آزاد", template: "%s | Fuse Point" },
+  description: "Fuse Point — فروشگاه اپ‌های آزاد؛ معرفی و دانلود امن نرم‌افزار برای اندروید، ویندوز و لینوکس با لینک مستقیم",
   metadataBase: new URL(siteUrl()),
-  openGraph: { locale: "fa_IR", type: "website", siteName: "Vesper" },
+  openGraph: { locale: "fa_IR", type: "website", siteName: "Fuse Point" },
   robots: { index: true, follow: true },
-  appleWebApp: { capable: true, title: "Vesper", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "Fuse Point", statusBarStyle: "default" },
   icons: { apple: "/icons/apple-touch-icon.png" },
 };
 

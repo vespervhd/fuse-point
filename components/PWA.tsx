@@ -49,11 +49,11 @@ export function InstallButton() {
   };
 
   return (
-    <div className="toast toast-bottom toast-center z-50 mb-20" role="dialog" aria-label="نصب Vesper">
+    <div className="toast toast-bottom toast-center z-50 mb-20" role="dialog" aria-label="نصب Fuse Point">
       <div className="alert shadow-lg gap-3">
-        <img src="/icons/icon-192.png" alt="لوگوی Vesper" width={40} height={40} className="w-10 h-10 rounded-xl object-cover shrink-0" />
+        <img src="/icons/icon-192.png" alt="لوگوی Fuse Point" width={40} height={40} className="w-10 h-10 rounded-xl object-cover shrink-0" />
         <div className="flex-1 min-w-0">
-          <p className="font-bold text-sm">Vesper را نصب کنید</p>
+          <p className="font-bold text-sm">Fuse Point را نصب کنید</p>
           <p className="text-xs opacity-70">دسترسی سریع‌تر، مثل یک اپ واقعی</p>
         </div>
         <button onClick={install} className="btn btn-primary btn-sm shrink-0 gap-1">

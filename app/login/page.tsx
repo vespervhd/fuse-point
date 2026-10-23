@@ -32,7 +32,7 @@ export default function LoginPage() {
     <div className="min-h-[60vh] flex items-center justify-center">
       <form onSubmit={submit} className="w-full max-w-sm bg-surface border border-border rounded-3xl p-8 space-y-5">
         <div className="text-center">
-          <img src="/icons/icon-192.png" alt="لوگوی Vesper" width={48} height={48} className="inline-flex w-12 h-12 rounded-2xl object-cover mb-3" />
+          <img src="/icons/icon-192.png" alt="لوگوی Fuse Point" width={48} height={48} className="inline-flex w-12 h-12 rounded-2xl object-cover mb-3" />
           <h1 className="text-xl font-extrabold">ورود به حساب</h1>
         </div>
         <div>

@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const col = await getCollectionBySlug(slug);
   if (!col) return { title: "یافت نشد" };
-  return { title: col.nameFa, description: col.description || `کالکشن ${col.nameFa} در Vesper` };
+  return { title: col.nameFa, description: col.description || `کالکشن ${col.nameFa} در Fuse Point` };
 }
 
 export default async function CollectionPage({ params }: Props) {
