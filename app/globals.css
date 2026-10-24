@@ -511,7 +511,7 @@ body {
 .dl2-icon::after { content: ""; position: absolute; inset: -5px; border: 1px solid color-mix(in srgb, var(--primary) 15%, transparent); border-radius: 32px; pointer-events: none; }
 .dl2-icon img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .dl2-title { margin: 0; direction: ltr; font-size: clamp(1.9rem, 6vw, 2.1rem); line-height: 1.4; font-weight: 800; letter-spacing: -0.05em; overflow-wrap: anywhere; }
-.dl2-subtitle { margin: 7px 0 0; max-width: 340px; color: var(--muted-foreground); font-size: 0.82rem; line-height: 2; }
+.dl2-subtitle { margin: 7px 0 0; max-width: 340px; color: var(--muted-foreground); font-size: 0.76rem; line-height: 2; }
 .dl2-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 15px; }
 .dl2-version {
   display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 30px; direction: ltr;
@@ -565,7 +565,7 @@ body {
   .dl2-card { padding: 19px 14px; }
   .dl2-icon { width: 86px; height: 86px; }
   .dl2-title { font-size: 1.9rem; }
-  .dl2-subtitle { font-size: 0.76rem; }
+  .dl2-subtitle { font-size: 0.70rem; }
   .dl2-meta { gap: 6px; }
   .dl2-meta-item { padding: 12px 5px; }
   .dl2-meta-value { font-size: 0.7rem; }

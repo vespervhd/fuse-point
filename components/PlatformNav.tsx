@@ -32,10 +32,11 @@ function PlatformMark({ platform }: { platform: Platform }) {
   return <AndroidMark />;
 }
 
-// نوار ثابت پایین — سوییچ فضای پلتفرم (دقیقاً ۳ گزینه، بدون «همه»)، عین نمونه
+// نوار ثابت پایین — سوییچ فضای پلتفرم (دقیقاً ۳ گزینه، بدون «همه»)
 // در صفحه‌ی اپ مخفی است: آن‌جا رکورد خود برنامه پلتفرمش را مشخص می‌کند
-// دکمه‌ها بدون بوردر و فقط آیکون‌اند؛ پلتفرم فعال با رنگ اکسنت (پررنگ + پس‌زمینه‌ی
-// ملایم اکسنت) مشخص می‌شود، نه با بوردر
+// فقط یک کپسول کوچک وسط‌چین پایین صفحه است — نه نوار عریض سراسری، نه بوردر:
+// کپسول به اندازه‌ی سه دکمه‌اش است و شناور روی محتواست. دکمه‌ها فقط آیکون‌اند؛
+// پلتفرم فعال با رنگ اکسنت (پررنگ + پس‌زمینه‌ی ملایم اکسنت) مشخص می‌شود
 function PlatformNavInner({ locale }: { locale: Locale }) {
   const sp = useSearchParams();
   const pathname = usePathname();
@@ -95,10 +96,10 @@ function PlatformNavInner({ locale }: { locale: Locale }) {
   return (
     <>
       <nav
-        className="fixed bottom-0 inset-x-0 z-40 flex justify-center px-4 pt-2.5 pb-[calc(10px+env(safe-area-inset-bottom))] bg-background/[0.84] backdrop-blur-xl border-t border-border"
+        className="fixed bottom-[calc(12px+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-40"
         aria-label={d.platform}
       >
-        <div className="inline-flex bg-card rounded-full p-1 gap-0.5" role="tablist" aria-label={d.platform}>
+        <div className="inline-flex bg-card rounded-full p-1 gap-0.5 shadow-md" role="tablist" aria-label={d.platform}>
           {PLATFORMS.map((p) => {
             const active = current === p;
             const label = p === "android" ? d.plat_android : p === "windows" ? d.plat_windows : d.plat_linux;
@@ -137,7 +138,10 @@ export default function PlatformNav({ locale = "fa" }: { locale?: Locale }) {
   );
 }
 
-// فاصله‌گذار انتهای صفحه تا محتوای پایانی زیر نوار ثابت نرود (در صفحه‌ی اپ رندر نمی‌شود)
+// فاصله‌گذار انتهای صفحه تا محتوای پایانی زیر کپسول شناور نرود (در صفحه‌ی اپ
+// رندر نمی‌شود). ارتفاع کپسول ۵۸px است (دکمه‌ی ۵۰px + پدینگ ۸px) + فاصله‌ی
+// ۱۲px از پایین = ۷۰px؛ ۷۶px حاشیه‌ی ۶px هم می‌دهد تا هیچ کارتی از پشت
+// کپسول سرک نکشد
 export function BottomSpacer() {
   const pathname = usePathname();
   if (pathname === "/app" || pathname.startsWith("/app/")) return null;

@@ -78,7 +78,7 @@ export default function VersionsDrawer({
                     {date && <span className="ver-date">{dateL(date, locale)}</span>}
                   </div>
                   <div className="ver-meta">
-                    {v.fileSize ? `${d.fileSize}: ${bytesL(v.fileSize, locale)}` : ""}
+                    {`${d.fileSize}: ${bytesL(v.fileSize, locale)}`}
                   </div>
                   {log && <p className="ver-log">{log.split("\n")[0]}</p>}
                 </div>

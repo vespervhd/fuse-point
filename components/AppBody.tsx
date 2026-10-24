@@ -19,6 +19,7 @@ import { findAlternatives } from "@/data/alternatives";
 import { px } from "@/lib/img";
 import { getAppBySlugCore, type Platform } from "@/lib/store";
 import { STR, appName, appShort, appDesc, catName, dateL, type Locale } from "@/lib/i18n";
+import BidiText from "@/components/BidiText";
 
 // پاک‌سازی نشانه‌های مارک‌داون از توضیحات (دیتای دیتابیس دست‌نخورده می‌ماند)
 function stripMd(t: string | null | undefined): string {
@@ -148,7 +149,7 @@ export async function AppRest({ slug, locale }: { slug: string; locale: Locale }
       {aboutText && (
         <section className="mt-9" aria-label={d.about}>
           <SectionHead title={d.about} locale={locale} />
-          <p className="text-[15px] leading-8 whitespace-pre-line text-foreground/90">{stripMd(aboutText)}</p>
+          <p className="text-[14px] leading-8 whitespace-pre-line text-foreground/90"><BidiText text={stripMd(aboutText)} /></p>
         </section>
       )}
 

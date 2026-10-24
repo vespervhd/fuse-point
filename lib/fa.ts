@@ -21,7 +21,9 @@ export function normalizeFa(text: string): string {
 }
 
 export function formatBytes(bytes: number | null | undefined): string {
-  if (bytes == null || bytes <= 0) return "نامشخص";
+  // حجم نامشخص عمداً با واژه‌ی انگلیسی «Varies» نشان داده می‌شود (مثل
+  // «Varies with device» در استورهای دیگر) — در هر دو زبان، بدون ترجمه
+  if (bytes == null || bytes <= 0) return "Varies";
   const units = ["بایت", "کیلوبایت", "مگابایت", "گیگابایت"];
   let v = bytes, i = 0;
   while (v >= 1024 && i < units.length - 1) { v /= 1024; i++; }

@@ -174,6 +174,7 @@ const fa = {
   category: "دسته‌بندی",
   terms: "قوانین",
   privacy: "حریم خصوصی",
+  contentUpdated: "آخرین به‌روزرسانی:",
   aboutUs: "درباره‌ی ما",
   reqStatus_pending: "در حال بررسی",
   reqStatus_added: "اضافه شد",
@@ -323,7 +324,7 @@ const fa = {
   ext_altIntro: "به‌جای {name} می‌توانید از این برنامه‌های آزاد استفاده کنید — بدون ردیاب، بدون تبلیغ، با احترام به حریم خصوصی شما.",
   ext_altComingSoon: "به‌زودی جایگزین‌ها اضافه می‌شوند.",
   ext_compare: "مقایسه برنامه‌ها",
-  ext_compareMetaDesc: "مقایسه‌ی کنار هم برنامه‌ها در نرم‌استور",
+  ext_compareMetaDesc: "مقایسه‌ی کنار هم برنامه‌ها در فیوز پوینت",
   ext_top: "برترین‌های هر دسته",
   ext_topMetaDesc: "برترین برنامه‌های هر دسته‌بندی: توسعه، مدیا، امنیت و...",
   ext_topSub: "محبوب‌ترین برنامه‌های هر دسته‌بندی، یک‌جا.",
@@ -538,6 +539,7 @@ const en: Dict = {
   category: "Category",
   terms: "Terms",
   privacy: "Privacy",
+  contentUpdated: "Last updated:",
   aboutUs: "About us",
   reqStatus_pending: "Under review",
   reqStatus_added: "Added",
@@ -745,7 +747,7 @@ export function num(n: number | string, l: Locale): string {
 }
 export function bytesL(bytes: number | null | undefined, l: Locale): string {
   if (l === "fa") return formatBytes(bytes);
-  if (bytes == null || bytes <= 0) return "Unknown";
+  if (bytes == null || bytes <= 0) return "Varies";
   const units = ["B", "KB", "MB", "GB"];
   let v = bytes, i = 0;
   while (v >= 1024 && i < units.length - 1) { v /= 1024; i++; }
