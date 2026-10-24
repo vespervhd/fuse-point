@@ -73,6 +73,10 @@ export const apps = pgTable("apps", {
   description: text("description"),
   shortDescFa: text("short_desc_fa"),
   descriptionFa: text("description_fa"),
+  // منشأ متن فارسی: ‎'official'‎ (متن رسمی F-Droid) یا ‎'machine'‎ (ترجمه‌ی ماشینی)؛
+  // ‎NULL‎ یعنی متنِ قدیمی/دستیِ قبل از این ستون — هرگز «ماشینی» برچسب نمی‌خورد
+  shortDescFaSource: varchar("short_desc_fa_source", { length: 16 }),
+  descriptionFaSource: varchar("description_fa_source", { length: 16 }),
   developerId: text("developer_id").references(() => developers.id, { onDelete: "set null" }),
   license: varchar("license", { length: 128 }),
   isOpenSource: boolean("is_open_source").notNull().default(false),

@@ -221,6 +221,7 @@ type Props = {
   permissions: string[];
   appId: string;
   appName: string;
+  appSlug?: string;
   developerHref?: string | null;
   locale?: Locale;
 };
@@ -228,7 +229,7 @@ type Props = {
 // کشوی «مشخصات کامل» — عین طرح تأییدشده؛ همه‌ی مقادیر واقعی از دیتابیس
 export default function AppDetailsDrawer({
   developer, license, updatedLabel, sourceHref, sourceLabel,
-  minAndroidLabel, verifiedLabel, sha256, permissions, appId, appName,
+  minAndroidLabel, verifiedLabel, sha256, permissions, appId, appName, appSlug,
   developerHref, locale = "fa",
 }: Props) {
   const [copyStatus, setCopyStatus] = useState("");
@@ -363,6 +364,7 @@ export default function AppDetailsDrawer({
         <ReportButton
           appId={appId}
           appName={appName}
+          appSlug={appSlug}
           triggerClassName="dt-report"
           triggerIcon={<TriangleAlert aria-hidden="true" />}
           locale={locale}

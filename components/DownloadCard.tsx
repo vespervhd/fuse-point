@@ -108,6 +108,7 @@ function smartSource(app: DownloadAppInfo): { href: string; github: boolean } | 
 type CardProps = {
   title: string;
   subtitle: string | null;
+  subtitleNote?: string | null;
   iconUrl: string | null;
   versionName: string | null;
   platform: string;
@@ -130,7 +131,7 @@ type CardProps = {
 // پنل اعتماد («تجربه دانلود بهتر») به دستور مالک کاملاً حذف شده و کپسول‌ها
 // پایینِ کارت، زیر ناحیه‌ی دانلود، قرار می‌گیرند
 export function DownloadCard({
-  title, subtitle, iconUrl, versionName, platform, fileSize, fileType, fileUrl,
+  title, subtitle, subtitleNote, iconUrl, versionName, platform, fileSize, fileType, fileUrl,
   downloadHref, downloadExternal, pendingBadge, source, hasOlderVersions, locale, capsules,
 }: CardProps) {
   const d = STR[locale];
@@ -161,6 +162,7 @@ export function DownloadCard({
           </div>
           <h1 className="dl2-title">{title}</h1>
           {subtitle && <p className="dl2-subtitle"><BidiText text={subtitle} /></p>}
+          {subtitleNote && <p className="dl2-subtitle-note">{subtitleNote}</p>}
           <div className="dl2-badges">
             {versionChip && (
               <span className="dl2-version"><i />{versionChip}</span>
@@ -245,6 +247,7 @@ type SectionProps = {
   app: DownloadAppInfo;
   title: string;
   subtitle: string | null;
+  subtitleNote?: string | null;
   iconUrl: string | null;
   hasOlderVersions: boolean;
   locale: Locale;
@@ -254,7 +257,7 @@ type SectionProps = {
 // بخش دانلود اصلی صفحه‌ی اپ — کارت همیشه بالای صفحه است و دکمه‌اش از مسیر
 // ترکینگ داخلی می‌گذرد؛ لینک ثانویه طبق قانون منبع هوشمند است و «نسخه‌های دیگر»
 // کشوی نسخه‌های قبلیِ همان صفحه را باز می‌کند (نه لینک خارجی ریلیزها)
-export default function DownloadCardSection({ app, title, subtitle, iconUrl, hasOlderVersions, locale, capsules }: SectionProps) {
+export default function DownloadCardSection({ app, title, subtitle, subtitleNote, iconUrl, hasOlderVersions, locale, capsules }: SectionProps) {
   const opts = getDownloadOptions(app);
   const primary = opts.find((o) => o.primary) ?? opts[0] ?? null;
   const v = app.version;
@@ -263,6 +266,7 @@ export default function DownloadCardSection({ app, title, subtitle, iconUrl, has
     <DownloadCard
       title={title}
       subtitle={subtitle}
+      subtitleNote={subtitleNote}
       iconUrl={iconUrl}
       versionName={v?.versionName ?? null}
       platform={app.platform}

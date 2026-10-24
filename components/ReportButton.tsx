@@ -17,9 +17,9 @@ const COPY = {
 } as const;
 
 export default function ReportButton({
-  appId, appName, triggerClassName, triggerIcon, locale = "fa",
+  appId, appName, appSlug, triggerClassName, triggerIcon, locale = "fa",
 }: {
-  appId: string; appName: string;
+  appId: string; appName: string; appSlug?: string;
   triggerClassName?: string; triggerIcon?: React.ReactNode;
   locale?: Locale;
 }) {
@@ -44,6 +44,7 @@ export default function ReportButton({
         <ReportDialog
           appId={appId}
           appName={appName}
+          appSlug={appSlug}
           locale={locale}
           onClose={() => setOpen(false)}
           onDone={() => { setDone(true); setOpen(false); }}

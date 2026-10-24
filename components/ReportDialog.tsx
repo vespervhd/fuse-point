@@ -27,7 +27,7 @@ const COPY = {
     desc: (n: string) => `فرم گزارش مشکل ${n}`,
     reasonLabel: "دلیل گزارش",
     pick: "انتخاب کن…",
-    reasons: { "broken-link": "لینک دانلود خرابه", "wrong-info": "اطلاعات اشتباهه", malware: "مشکوک به بدافزار", other: "مورد دیگه" } as Record<string, string>,
+    reasons: { "broken-link": "لینک دانلود خرابه", "wrong-info": "اطلاعات اشتباهه", malware: "مشکوک به بدافزار", "bad-translation": "ترجمه اشتباهه", other: "مورد دیگه" } as Record<string, string>,
     detailPh: "توضیح بیشتر (اختیاری)",
     sending: "در حال ارسال…",
     submit: "ثبت گزارش",
@@ -37,15 +37,15 @@ const COPY = {
     desc: (n: string) => `Report form for ${n}`,
     reasonLabel: "Reason",
     pick: "Pick one…",
-    reasons: { "broken-link": "Download link is broken", "wrong-info": "Wrong information", malware: "Suspected malware", other: "Something else" } as Record<string, string>,
+    reasons: { "broken-link": "Download link is broken", "wrong-info": "Wrong information", malware: "Suspected malware", "bad-translation": "Bad translation", other: "Something else" } as Record<string, string>,
     detailPh: "More detail (optional)",
     sending: "Sending…",
     submit: "Submit report",
   },
 } as const;
 
-export default function ReportDialog({ appId, appName, locale, onClose, onDone }: {
-  appId: string; appName: string; locale: Locale;
+export default function ReportDialog({ appId, appName, appSlug, locale, onClose, onDone }: {
+  appId: string; appName: string; appSlug?: string; locale: Locale;
   onClose: () => void; onDone: () => void;
 }) {
   const [reason, setReason] = useState("");
@@ -53,14 +53,26 @@ export default function ReportDialog({ appId, appName, locale, onClose, onDone }
   const [sending, setSending] = useState(false);
   const c = COPY[locale];
 
+  // نگاشت دلیل دیالوگ به نوع گزارش API — پیش از این دیالوگ فیلدهای اشتباه
+  // (appId/reason/detail) می‌فرستاد و API همیشه ۴۰۰ می‌داد؛ گزارش‌ها هرگز ثبت نمی‌شدند
+  const TYPE_MAP: Record<string, string> = {
+    "broken-link": "broken_link", "wrong-info": "wrong_info",
+    malware: "malware_suspicion", "bad-translation": "bad_translation", other: "other",
+  };
   const submit = async () => {
     if (!reason) return;
     setSending(true);
     try {
+      const msg = detail.trim();
       const r = await fetch("/api/reports", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ appId, reason, detail }),
+        body: JSON.stringify({
+          appSlug: appSlug ?? appName,
+          type: TYPE_MAP[reason] ?? "other",
+          // API حداقل ۵ کاراکتر می‌خواهد؛ اگر کاربر توضیح نداد، خودِ برچسب دلیل پیام می‌شود
+          message: msg.length >= 5 ? msg : (c.reasons[reason] ?? reason),
+        }),
       });
       if (r.ok) onDone();
     } catch {}
