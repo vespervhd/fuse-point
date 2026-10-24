@@ -33,7 +33,6 @@ export default function Footer({ locale = "fa" }: { locale?: Locale }) {
           <span className="w-2 h-2 rounded-full bg-[#43b581] shadow-[0_0_9px_#43b581] mt-[7px] shrink-0" aria-hidden="true" />
           <div>
             <b className="block text-[13.5px] font-extrabold">{d.footStatus}</b>
-            <span className="block text-muted-foreground text-xs mt-0.5">{d.footStatusSub}</span>
           </div>
         </div>
 

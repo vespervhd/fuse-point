@@ -3,7 +3,6 @@
 // آپدیت — هر دو به نشستِ کاربر وابسته‌اند و هرگز نباید کش شوند. بقیه‌ی بدنه (کارت
 // دانلود، گالری، درباره، مشخصات، نسخه‌ها، مشابه‌ها) عمومی است و با revalidate ۳۶۰۰
 // ثانیه کش می‌شود؛ کلیدِ کش از روی slug و زبان ساخته می‌شود.
-import Link from "next/link";
 import { cacheLife } from "next/cache";
 import { db } from "@/lib/db";
 import * as s from "@/db/schema";
@@ -196,10 +195,6 @@ export async function AppRest({ slug, locale }: { slug: string; locale: Locale }
           <Alternatives entry={altEntry} apps={altApps} locale={locale} />
         </section>
       )}
-
-      <div className="mt-8">
-        <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">← {d.backHome}</Link>
-      </div>
     </>
   );
 }
