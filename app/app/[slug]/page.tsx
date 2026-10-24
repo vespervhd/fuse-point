@@ -21,7 +21,7 @@ import { RefreshCw } from "lucide-react";
 import { siteUrl } from "@/lib/site-url";
 import { px } from "@/lib/img";
 import { getLocale } from "@/lib/i18n-server";
-import { STR, appName, appShort, appDesc, dateL, type Locale } from "@/lib/i18n";
+import { STR, appName, appShort, appDesc, catName, dateL, type Locale } from "@/lib/i18n";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -159,7 +159,7 @@ export default async function AppPage({ params }: Props) {
             : null,
         }}
         title={appName(app, locale)}
-        subtitle={appShort(app, locale) || app.categories[0]?.nameFa || null}
+        subtitle={appShort(app, locale) || (app.categories[0] ? catName(app.categories[0], locale) : null)}
         iconUrl={app.iconUrl}
         locale={locale}
       />

@@ -291,7 +291,7 @@ export async function getAppBySlug(slug: string) {
   const versionsTotal = Number(vTotal[0]?.c ?? versions.length);
 
   const cats = await db.select({
-    slug: s.categories.slug, nameFa: s.categories.nameFa, icon: s.categories.icon,
+    slug: s.categories.slug, nameFa: s.categories.nameFa, nameEn: s.categories.nameEn, icon: s.categories.icon,
   }).from(s.appCategories)
     .innerJoin(s.categories, eq(s.appCategories.categoryId, s.categories.id))
     .where(eq(s.appCategories.appId, app.id));

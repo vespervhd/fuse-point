@@ -25,6 +25,49 @@ const client = postgres(_dbUrl, { ssl: _ssl });
 const db = drizzle(client, { schema: s });
 
 // ─── دسته‌بندی‌ها ────────────────────────────────────────────────
+// نام انگلیسی هر دسته — بدون این، حالت EN به نام فارسی برمی‌گردد
+const CATEGORY_NAME_EN: Record<string, string> = {
+  "tools": "Utilities",
+  "internet": "Internet & Network",
+  "communication": "Communication",
+  "multimedia": "Multimedia",
+  "productivity": "Productivity & Education",
+  "security": "Security & Privacy",
+  "personalization": "Personalization",
+  "system": "System & Advanced Tools",
+  "maps": "Maps & Navigation",
+  "file-manager": "File Management",
+  "media-player": "Audio & Video Players",
+  "notes": "Notes",
+  "pdf": "PDF Tools",
+  "transfer": "File Transfer",
+  "recorder": "Voice Recorders",
+  "browser": "Web Browsers",
+  "vpn": "VPN & Proxy",
+  "network": "Network Tools",
+  "store": "App Stores",
+  "messenger": "Messengers",
+  "sms": "SMS",
+  "email": "Email",
+  "podcast": "Podcasts",
+  "gallery": "Gallery & Camera",
+  "online-media": "Online Streaming",
+  "tasks": "Task Management",
+  "ebook": "E-book Readers",
+  "habit": "Habit Trackers",
+  "flashcard": "Flashcards",
+  "radio": "Radio",
+  "2fa": "Two-Factor Authentication",
+  "encryption": "Encryption",
+  "firewall": "Firewalls & Privacy",
+  "adblock": "Ad Blockers",
+  "password": "Password Managers",
+  "launcher": "Launchers",
+  "keyboard": "Keyboards",
+  "terminal": "Terminals",
+  "sync": "Sync & Backup",
+};
+
 // [slug, nameFa, icon, parentSlug]
 const CATEGORIES: [string, string, string, string | null][] = [
   ["tools", "ابزارهای کاربردی", "🛠️", null],
@@ -520,8 +563,15 @@ async function main() {
   const catIds: Record<string, string> = {};
   for (const [slug, nameFa, icon] of CATEGORIES) {
     const ex = await db.select().from(s.categories).where(eq(s.categories.slug, slug));
-    if (ex.length) { catIds[slug] = ex[0].id; continue; }
-    const [c] = await db.insert(s.categories).values({ slug, nameFa, icon, sortOrder: 0 }).returning();
+    if (ex.length) {
+      catIds[slug] = ex[0].id;
+      // ردیف قدیمی بدون نام انگلیسی: همان‌جا کاملش کن تا حالت EN فارسی نشان ندهد
+      if (!ex[0].nameEn && CATEGORY_NAME_EN[slug]) {
+        await db.update(s.categories).set({ nameEn: CATEGORY_NAME_EN[slug] }).where(eq(s.categories.slug, slug));
+      }
+      continue;
+    }
+    const [c] = await db.insert(s.categories).values({ slug, nameFa, nameEn: CATEGORY_NAME_EN[slug] ?? null, icon, sortOrder: 0 }).returning();
     catIds[slug] = c.id;
   }
   // والدها

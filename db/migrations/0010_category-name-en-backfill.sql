@@ -1,0 +1,55 @@
+-- نام انگلیسی دسته‌بندی‌ها — بدون name_en، حالت انگلیسی سایت به نام فارسی برمی‌گردد
+-- (مثلاً «ابزارهای کاربردی» کنار «Development»). این پچ فقط ردیف‌های خالی را پر می‌کند؛
+-- idempotent است و اجرای دوباره‌اش بی‌اثر. روی دیتابیس تولید اجرا شود.
+UPDATE categories SET name_en = 'Utilities' WHERE slug = 'tools' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Internet & Network' WHERE slug = 'internet' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Communication' WHERE slug = 'communication' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Multimedia' WHERE slug = 'multimedia' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Productivity & Education' WHERE slug = 'productivity' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Security & Privacy' WHERE slug = 'security' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Personalization' WHERE slug = 'personalization' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'System & Advanced Tools' WHERE slug = 'system' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Maps & Navigation' WHERE slug = 'maps' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'File Management' WHERE slug = 'file-manager' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Audio & Video Players' WHERE slug = 'media-player' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Notes' WHERE slug = 'notes' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'PDF Tools' WHERE slug = 'pdf' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'File Transfer' WHERE slug = 'transfer' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Voice Recorders' WHERE slug = 'recorder' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Web Browsers' WHERE slug = 'browser' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'VPN & Proxy' WHERE slug = 'vpn' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Network Tools' WHERE slug = 'network' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'App Stores' WHERE slug = 'store' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Messengers' WHERE slug = 'messenger' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'SMS' WHERE slug = 'sms' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Email' WHERE slug = 'email' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Podcasts' WHERE slug = 'podcast' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Gallery & Camera' WHERE slug = 'gallery' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Online Streaming' WHERE slug = 'online-media' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Task Management' WHERE slug = 'tasks' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'E-book Readers' WHERE slug = 'ebook' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Habit Trackers' WHERE slug = 'habit' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Flashcards' WHERE slug = 'flashcard' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Radio' WHERE slug = 'radio' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Two-Factor Authentication' WHERE slug = '2fa' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Encryption' WHERE slug = 'encryption' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Firewalls & Privacy' WHERE slug = 'firewall' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Ad Blockers' WHERE slug = 'adblock' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Password Managers' WHERE slug = 'password' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Launchers' WHERE slug = 'launcher' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Keyboards' WHERE slug = 'keyboard' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Terminals' WHERE slug = 'terminal' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Sync & Backup' WHERE slug = 'sync' AND (name_en IS NULL OR name_en = '');
+-- اسلاگ‌های آمده از نگاشت دسته‌های F-Droid (scripts/daily-quality-import.mjs)
+UPDATE categories SET name_en = 'Games' WHERE slug = 'games' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Graphics' WHERE slug = 'graphics' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Office' WHERE slug = 'office' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Utilities' WHERE slug = 'utilities' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Development' WHERE slug = 'development' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Education' WHERE slug = 'education' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Health' WHERE slug = 'health' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Finance' WHERE slug = 'finance' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Navigation' WHERE slug = 'navigation' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Reading' WHERE slug = 'reading' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Music' WHERE slug = 'music' AND (name_en IS NULL OR name_en = '');
+UPDATE categories SET name_en = 'Video' WHERE slug = 'video' AND (name_en IS NULL OR name_en = '');
