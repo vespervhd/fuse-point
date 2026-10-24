@@ -11,6 +11,7 @@ import Capsules from "@/components/Capsules";
 import { siteUrl } from "@/lib/site-url";
 import { px } from "@/lib/img";
 import { getLocale } from "@/lib/i18n-server";
+import { toPlainText } from "@/lib/text";
 import { STR, type Locale } from "@/lib/i18n";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -25,9 +26,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = locale === "fa"
     ? `دانلود ${app.nameFa} برای ${platFa}`
     : `Download ${app.nameEn || app.nameFa} for ${platEn}`;
-  const desc = locale === "fa"
+  const desc = toPlainText(locale === "fa"
     ? app.shortDescFa || app.shortDesc || `دانلود ${app.nameFa} برای ${platFa} با لینک مستقیم و بررسی امنیتی`
-    : app.shortDesc || app.shortDescFa || `Download ${app.nameEn || app.nameFa} for ${platEn} — direct link, security-checked`;
+    : app.shortDesc || app.shortDescFa || `Download ${app.nameEn || app.nameFa} for ${platEn} — direct link, security-checked`);
   return {
     title,
     description: desc,
