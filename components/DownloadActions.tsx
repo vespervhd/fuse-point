@@ -30,6 +30,8 @@ export type DownloadAppInfo = {
     fileType: string;
     fileUrl?: string | null;
   } | null;
+  // true یعنی version در واقع جدیدترین نسخه‌ی در انتظار بازبینی است (نه نسخه‌ی فعال)
+  pending?: boolean;
 };
 
 type Option = {

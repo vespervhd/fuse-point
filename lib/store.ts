@@ -349,6 +349,14 @@ export async function getAppBySlugCore(slug: string) {
     .where(eq(s.appScreenshots.appId, app.id)).orderBy(s.appScreenshots.sortOrder);
 
   const current = versions.find((v) => v.isCurrent) ?? versions[0] ?? null;
+  // فالبک دانلود (گزینه‌ی ۱ مالک): اگر هیچ نسخه‌ی فعالی نیست، جدیدترین نسخه‌ی در
+  // انتظار بازبینی را برای کارت دانلود برمی‌گردانیم — بدون اینکه فعال شود یا وارد
+  // فهرست نسخه‌ها/مجوزها شود؛ دروازه‌ی بازبینی سر جایش می‌ماند.
+  const pendingVersion = versions.length === 0
+    ? (await db.select().from(s.appVersions)
+        .where(and(eq(s.appVersions.appId, app.id), eq(s.appVersions.status, "pending")))
+        .orderBy(desc(s.appVersions.versionCode)).limit(1))[0] ?? null
+    : null;
   const perms = current
     ? (await db.select().from(s.appPermissions).where(eq(s.appPermissions.versionId, current.id)))
     : [];
@@ -360,7 +368,7 @@ export async function getAppBySlugCore(slug: string) {
   // شاید بپسندی: هم‌دسته‌ای‌های هم‌پلتفرم با امتیاز تعداد دسته‌ی مشترک
   const related = await getRelatedAppsCore(app.id, 6, app.platform as Platform);
 
-  return { ...app, versions, versionsTotal, categories: cats, screenshots: shots, current, permissions: perms, downloadCount, similar: related };
+  return { ...app, versions, versionsTotal, categories: cats, screenshots: shots, current, pendingVersion, permissions: perms, downloadCount, similar: related };
 }
 
 export async function getAppBySlug(slug: string) {

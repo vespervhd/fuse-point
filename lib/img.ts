@@ -16,10 +16,21 @@ function isAllowed(url: string): boolean {
 // بدون تغییر اندازه می‌مانند.
 export const ICON_PROXY_SIZE = 96;
 
+// base64url بدون Buffer — پالی‌فیلِ Buffer در باندل کلاینت، انکدینگ base64url
+// را نمی‌شناسد و روی گوشی خطای «Unknown encoding: base64url» می‌داد و JS صفحه
+// را می‌شکست. این پیاده‌سازی فقط با APIهای وب است و در Node و مرورگر یکسان
+// عمل می‌کند (خروجی‌اش با Buffer.from(url).toString("base64url") بایت‌به‌بایت یکی است).
+function base64url(input: string): string {
+  const bytes = new TextEncoder().encode(input);
+  let bin = "";
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
 export function px(url: string | null | undefined, kind?: "icon"): string | null {
   if (!url) return null;
   if (!isAllowed(url)) return url; // فقط دامنه‌های مجاز پروکسی می‌شوند
-  const b64 = Buffer.from(url).toString("base64url");
+  const b64 = base64url(url);
   return kind === "icon" ? `/api/img?u=${b64}&s=${ICON_PROXY_SIZE}` : `/api/img?u=${b64}`;
 }
 

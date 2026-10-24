@@ -61,13 +61,14 @@ type CardProps = {
   fileSize: number | null;
   downloadHref: string | null;
   downloadExternal?: boolean;
+  pendingBadge?: string | null;
   locale: Locale;
 };
 
 // کارت دانلود — عین طرح تأییدشده‌ی مالک، با داده‌ی واقعی و رنگ‌های توکنی تم
 export function DownloadCard({
   title, subtitle, iconUrl, versionName, platform, fileSize,
-  downloadHref, downloadExternal, locale,
+  downloadHref, downloadExternal, pendingBadge, locale,
 }: CardProps) {
   const d = STR[locale];
   const versionChip = versionName
@@ -90,6 +91,7 @@ export function DownloadCard({
           {subtitle && <p className="dl-subtitle">{subtitle}</p>}
         </div>
         {versionChip && <span className="dl-version">{versionChip}</span>}
+        {pendingBadge && <span className="dl-pending">{pendingBadge}</span>}
       </header>
 
       <div className="dl-rule" />
@@ -168,6 +170,7 @@ export default function DownloadCardSection({ app, title, subtitle, iconUrl, loc
         fileSize={app.version?.fileSize ?? null}
         downloadHref={primary?.href ?? null}
         downloadExternal={primary?.external}
+        pendingBadge={app.pending ? STR[locale].pendingReview : null}
         locale={locale}
       />
       {rest.length > 0 && (
