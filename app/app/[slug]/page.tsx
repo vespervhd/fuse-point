@@ -226,7 +226,7 @@ export default async function AppPage({ params }: Props) {
       {/* ۶) نسخه‌های قبلی */}
       {app.versions.length > 1 && (
         <section className="mt-4" aria-label={d.versions}>
-          <VersionsDrawer versions={app.versions} currentId={v?.id ?? null} locale={locale} sourceLabel={versionsSource} />
+          <VersionsDrawer versions={app.versions} currentId={v?.id ?? null} locale={locale} sourceLabel={versionsSource} totalOlder={app.versionsTotal - (v ? 1 : 0)} />
         </section>
       )}
 

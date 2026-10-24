@@ -3,6 +3,7 @@ import {
   pgTable, text, varchar, integer, bigint, boolean, timestamp,
   primaryKey, index, unique, uniqueIndex, jsonb,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 // ─── نقش‌ها و کاربران ─────────────────────────────────────────────
 
@@ -117,6 +118,8 @@ export const appVersions = pgTable("app_versions", {
   uniqueIndex("app_versions_app_code_uidx").on(t.appId, t.versionCode),
   index("app_versions_app_status_idx").on(t.appId, t.status),
   index("app_versions_current_idx").on(t.isCurrent),
+  // حداکثر یک نسخه‌ی «فعلی» برای هر رکورد برنامه (رکوردها تک‌پلتفرمی‌اند) — مایگریشن 0009
+  uniqueIndex("app_versions_one_current_per_app_uidx").on(t.appId).where(sql`${t.isCurrent} = true`),
 ]);
 
 export const appCategories = pgTable("app_categories", {

@@ -35,11 +35,13 @@ export default function VersionsDrawer({
   currentId,
   locale = "fa",
   sourceLabel,
+  totalOlder,
 }: {
   versions: Version[];
   currentId?: string | null;
   locale?: Locale;
   sourceLabel?: string | null;
+  totalOlder?: number;
 }) {
   const d = STR[locale];
   const older = currentId ? versions.filter((v) => v.id !== currentId) : versions.slice(1);
@@ -95,6 +97,13 @@ export default function VersionsDrawer({
             );
           })}
         </div>
+        {totalOlder != null && totalOlder > older.length && (
+          <p className="ver-src">
+            {d.versionsShowing
+              .replace("{shown}", num(older.length, locale))
+              .replace("{total}", num(totalOlder, locale))}
+          </p>
+        )}
       </div>
     </details>
   );
