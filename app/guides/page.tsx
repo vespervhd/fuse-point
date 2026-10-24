@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BookOpen, Smartphone, Terminal, Monitor } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "راهنماهای نصب | Fuse Point",
+  title: "راهنماهای نصب",
   description: "آموزش قدم‌به‌قدم نصب برنامه در اندروید، لینوکس و ویندوز.",
 };
 

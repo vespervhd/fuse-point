@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, Monitor, CheckCircle2, AlertTriangle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "راهنمای نصب برنامه در ویندوز | Fuse Point",
+  title: "راهنمای نصب برنامه در ویندوز",
   description: "آموزش نصب امن برنامه در ویندوز: از وب‌سایت رسمی یا گیت‌هاب، بدون نرم‌افزارهای تبلیغاتی.",
 };
 

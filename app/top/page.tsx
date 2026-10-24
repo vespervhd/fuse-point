@@ -4,7 +4,7 @@ import TopInRail from "@/components/TopInRail";
 import { getRootCategories, getCategoryApps, type Platform } from "@/lib/store";
 
 export const metadata: Metadata = {
-  title: "برترین‌های هر دسته | Fuse Point",
+  title: "برترین‌های هر دسته",
   description: "برترین برنامه‌های هر دسته‌بندی: توسعه، مدیا، امنیت و...",
 };
 

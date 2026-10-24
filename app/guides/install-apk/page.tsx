@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, Smartphone, CheckCircle2, AlertTriangle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "راهنمای نصب APK در اندروید | Fuse Point",
+  title: "راهنمای نصب APK در اندروید",
   description: "آموزش قدم‌به‌قدم نصب فایل APK در اندروید: دانلود از Fuse Point، فعال‌سازی نصب از منابع ناشناس، و تأیید هش.",
 };
 

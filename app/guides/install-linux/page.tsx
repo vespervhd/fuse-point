@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, Terminal, CheckCircle2 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "راهنمای نصب برنامه در لینوکس | Fuse Point",
+  title: "راهنمای نصب برنامه در لینوکس",
   description: "آموزش نصب برنامه در لینوکس: از مخزن رسمی، فلت‌هاب، یا فایل دانلودشده.",
 };
 

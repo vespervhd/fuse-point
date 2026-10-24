@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: desc,
     alternates: { canonical: `/app/${app.slug}` },
     openGraph: {
-      title: `دانلود ${app.nameFa} برای ${platFa} | Fuse Point`,
+      title: `دانلود ${app.nameFa} برای ${platFa}`,
       description: desc,
       images: app.iconUrl && px(app.iconUrl) ? [siteUrl() + px(app.iconUrl)!] : undefined,
     },

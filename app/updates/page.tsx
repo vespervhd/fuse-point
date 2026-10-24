@@ -9,7 +9,7 @@ import { px } from "@/lib/img";
 import { Inbox, RefreshCw, CheckCircle2 } from "lucide-react";
 import PxImg from "@/components/PxImg";
 
-export const metadata = { title: "به‌روزرسانی‌ها | Fuse Point" };
+export const metadata = { title: "به‌روزرسانی‌ها" };
 
 export default async function UpdatesPage() {
   const user = await getSessionUser();
