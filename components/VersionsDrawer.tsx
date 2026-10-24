@@ -29,18 +29,20 @@ const DownloadGlyph = () => (
 const stripMd = (s: string) =>
   s.replace(/\*\*|__|`/g, "").replace(/^#+\s*/gm, "").replace(/\[(.*?)\]\(.*?\)/g, "$1").trim();
 
-// کشوی «نسخه‌های قبلی» — هم‌خانواده‌ی کشوی مشخصات؛ نسخه‌ی فعلی تکرار نمی‌شود
+// کشوی «نسخه‌های قبلی» — هم‌خانواده‌ی کشوی مشخصات؛ نسخه‌ی فعلی (بر اساس شناسه، نه ترتیب) تکرار نمی‌شود
 export default function VersionsDrawer({
   versions,
+  currentId,
   locale = "fa",
   sourceLabel,
 }: {
   versions: Version[];
+  currentId?: string | null;
   locale?: Locale;
   sourceLabel?: string | null;
 }) {
   const d = STR[locale];
-  const older = versions.slice(1);
+  const older = currentId ? versions.filter((v) => v.id !== currentId) : versions.slice(1);
   if (!older.length) return null;
 
   return (
@@ -78,15 +80,17 @@ export default function VersionsDrawer({
                   </div>
                   {log && <p className="ver-log">{log.split("\n")[0]}</p>}
                 </div>
-                <a
-                  className="ver-dl"
-                  href={`/api/download/${v.id}`}
-                  download
-                  aria-label={`${d.download} ${v.versionName ?? ""}`}
-                >
-                  <DownloadGlyph />
-                  {d.download}
-                </a>
+                {v.fileUrl && (
+                  <a
+                    className="ver-dl"
+                    href={`/api/download/${v.id}`}
+                    download
+                    aria-label={`${d.download} ${v.versionName ?? ""}`}
+                  >
+                    <DownloadGlyph />
+                    {d.download}
+                  </a>
+                )}
               </div>
             );
           })}

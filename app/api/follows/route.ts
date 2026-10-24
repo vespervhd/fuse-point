@@ -23,6 +23,9 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "وارد شوید" }, { status: 401 });
   const { appId } = await req.json().catch(() => ({}));
   if (!appId) return NextResponse.json({ error: "appId لازم است" }, { status: 400 });
+  const app = await db.select({ id: s.apps.id }).from(s.apps)
+    .where(and(eq(s.apps.id, appId), eq(s.apps.isPublished, true))).limit(1);
+  if (!app[0]) return NextResponse.json({ error: "برنامه یافت نشد" }, { status: 404 });
   await db.insert(s.follows).values({ userId: user.id, appId }).onConflictDoNothing();
   return NextResponse.json({ following: true });
 }

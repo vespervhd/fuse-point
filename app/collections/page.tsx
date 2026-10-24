@@ -7,7 +7,15 @@ import { ChevronLeft, Layers } from "lucide-react";
 import { getLocale } from "@/lib/i18n-server";
 import { STR, appsCount } from "@/lib/i18n";
 
-export const metadata: Metadata = { title: "مجموعه‌ها", description: "لیست‌های دست‌چین برنامه‌ها در Fuse Point" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return {
+    title: STR[locale].cols,
+    description: locale === "fa"
+      ? "لیست‌های دست‌چین برنامه‌ها در Fuse Point"
+      : "Hand-picked app lists on Fuse Point",
+  };
+}
 
 type Props = { searchParams: Promise<{ platform?: string }> };
 

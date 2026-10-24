@@ -12,7 +12,9 @@ type Props = { searchParams: Promise<{ q?: string; sort?: string; page?: string;
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const sp = await searchParams;
   const q = sp.q || "";
-  return { title: q ? `جست‌وجو: ${q}` : "جست‌وجوی پیشرفته", robots: { index: false } };
+  const locale = await getLocale();
+  const d = STR[locale];
+  return { title: q ? (locale === "fa" ? `جست‌وجو: ${q}` : `Search: ${q}`) : d.advSearch, robots: { index: false } };
 }
 
 const SORTS: { key: NonNullable<SearchFilters["sort"]>; fa: string; en: string }[] = [

@@ -32,15 +32,20 @@ const cinzel = Cinzel({
 });
 
 
-export const metadata: Metadata = {
-  title: { default: "Fuse Point | فروشگاه اپ‌های آزاد", template: "%s | Fuse Point" },
-  description: "Fuse Point — فروشگاه اپ‌های آزاد؛ معرفی و دانلود امن نرم‌افزار برای اندروید، ویندوز و لینوکس با لینک مستقیم",
-  metadataBase: new URL(siteUrl()),
-  openGraph: { locale: "fa_IR", type: "website", siteName: "Fuse Point" },
-  robots: { index: true, follow: true },
-  appleWebApp: { capable: true, title: "Fuse Point", statusBarStyle: "default" },
-  icons: { apple: "/icons/apple-touch-icon.png" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return {
+    title: { default: "Fuse Point | فروشگاه اپ‌های آزاد", template: "%s | Fuse Point" },
+    description: locale === "fa"
+      ? "Fuse Point — فروشگاه اپ‌های آزاد؛ معرفی و دانلود امن نرم‌افزار برای اندروید، ویندوز و لینوکس با لینک مستقیم"
+      : "Fuse Point — the free-software app store; discover and safely download software for Android, Windows and Linux with direct links",
+    metadataBase: new URL(siteUrl()),
+    openGraph: { locale: locale === "fa" ? "fa_IR" : "en_US", type: "website", siteName: "Fuse Point" },
+    robots: { index: true, follow: true },
+    appleWebApp: { capable: true, title: "Fuse Point", statusBarStyle: "default" },
+    icons: { apple: "/icons/apple-touch-icon.png" },
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",

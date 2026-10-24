@@ -1,8 +1,12 @@
 import FavoritesPage from "./FavoritesPage";
 import { getLocale } from "@/lib/i18n-server";
+import { STR } from "@/lib/i18n";
 import type { Platform } from "@/lib/store";
 
-export const metadata = { title: "علاقه‌مندی‌های من", robots: { index: false } };
+export async function generateMetadata() {
+  const locale = await getLocale();
+  return { title: STR[locale].favs, robots: { index: false } };
+}
 
 type Props = { searchParams: Promise<{ platform?: string }> };
 

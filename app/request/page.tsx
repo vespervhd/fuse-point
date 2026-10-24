@@ -11,7 +11,10 @@ import { getLocale } from "@/lib/i18n-server";
 import { STR, platName, dateL, type Locale } from "@/lib/i18n";
 import type { Platform } from "@/lib/store";
 
-export const metadata: Metadata = { title: "درخواست اپ" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: STR[locale].reqApp };
+}
 
 type Props = { searchParams: Promise<{ platform?: string }> };
 

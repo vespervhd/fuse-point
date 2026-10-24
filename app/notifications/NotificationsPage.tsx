@@ -6,8 +6,9 @@ import { BackLink, ViewHead, EmptyState } from "@/components/Bits";
 import { STR, dateL, type Locale } from "@/lib/i18n";
 
 type Notif = {
-  id: string; title: string; message: string | null; isRead: boolean;
-  createdAt: string; appSlug: string | null; versionName: string | null;
+  id: string; type: string; title: string; message: string | null; isRead: boolean;
+  createdAt: string; appSlug: string | null; appName: string | null; appNameEn: string | null;
+  versionName: string | null;
 };
 
 // نمای اعلان‌ها — کارت‌های نمونه؛ خوانده‌شدن با API واقعی اعلان‌ها
@@ -73,8 +74,15 @@ export default function NotificationsPage({ locale }: { locale: Locale }) {
                   <BellRing className="w-[22px] h-[22px]" strokeWidth={1.8} aria-hidden="true" />
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="font-extrabold text-[14.5px] m-0 leading-[1.7]">{n.title}</p>
-                  {n.message && <p className="text-muted-foreground text-[13px] mt-0.5 m-0 leading-[1.8]">{n.message}</p>}
+                  {/* اعلان نسخه: متن در لحظه با زبان فعال ساخته می‌شود تا در حالت انگلیسی فارسی نماند */}
+                  <p className="font-extrabold text-[14.5px] m-0 leading-[1.7]">
+                    {n.type === "version" && n.appName
+                      ? d.notifNew.replace("{n}", locale === "fa" ? n.appName : n.appNameEn || n.appName)
+                      : n.title}
+                  </p>
+                  {(n.type === "version" && n.versionName
+                    ? <p className="text-muted-foreground text-[13px] mt-0.5 m-0 leading-[1.8]">{d.notifVer.replace("{v}", n.versionName)}</p>
+                    : n.message && <p className="text-muted-foreground text-[13px] mt-0.5 m-0 leading-[1.8]">{n.message}</p>)}
                   <p className="text-muted-foreground text-xs mt-1.5 m-0">{dateL(n.createdAt, locale)}</p>
                   {n.appSlug && (
                     <Link

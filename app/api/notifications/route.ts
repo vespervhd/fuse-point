@@ -12,7 +12,7 @@ export async function GET() {
     id: s.notifications.id, type: s.notifications.type,
     title: s.notifications.title, message: s.notifications.message,
     isRead: s.notifications.isRead, createdAt: s.notifications.createdAt,
-    appId: s.notifications.appId, appName: s.apps.nameFa, appSlug: s.apps.slug,
+    appId: s.notifications.appId, appName: s.apps.nameFa, appNameEn: s.apps.nameEn, appSlug: s.apps.slug,
     versionName: s.appVersions.versionName,
   }).from(s.notifications)
     .leftJoin(s.apps, eq(s.apps.id, s.notifications.appId))

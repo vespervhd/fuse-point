@@ -3,6 +3,7 @@ import PxImg from "@/components/PxImg";
 import { px } from "@/lib/img";
 import { ArrowLeftRight, ChevronLeft, Leaf } from "lucide-react";
 import type { AlternativeEntry } from "@/data/alternatives";
+import { STR, type Locale } from "@/lib/i18n";
 
 type AltApp = {
   nameEn: string;
@@ -16,14 +17,18 @@ type AltApp = {
 export default function Alternatives({
   entry,
   apps,
+  locale = "fa",
 }: {
   entry: AlternativeEntry;
   apps: AltApp[]; // فقط اپ‌هایی که در DB پیدا شدند
+  locale?: Locale;
 }) {
   if (!apps.length) return null;
+  const d = STR[locale];
+  const targetName = locale === "fa" ? entry.forFa : entry.for;
 
   return (
-    <section aria-label={`جایگزین‌های ${entry.forFa}`} className="mt-8">
+    <section aria-label={`${d.altFree} ${targetName}`} className="mt-8">
       {/* قاب گرادیانی متمایز */}
       <div className="rounded-3xl p-[2px] bg-gradient-to-bl from-primary via-primary/40 to-transparent">
         <div className="rounded-[22px] bg-card p-5 md:p-6 relative overflow-hidden">
@@ -40,11 +45,11 @@ export default function Alternatives({
             </span>
             <div>
               <h2 className="font-head text-xl leading-tight">
-                به‌جای <span className="text-muted-foreground">{entry.forFa}</span>…
+                {d.altInstead} <span className="text-muted-foreground">{targetName}</span>…
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5 inline-flex items-center gap-1">
                 <Leaf className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
-                جایگزین‌های آزاد و رایگان
+                {d.altFree}
               </p>
             </div>
           </div>
@@ -70,7 +75,7 @@ export default function Alternatives({
 
                   {/* نام و دلیل */}
                   <span className="flex-1 min-w-0">
-                    <span className="block font-extrabold text-[15px] leading-snug">{a.nameFa}</span>
+                    <span className="block font-extrabold text-[15px] leading-snug">{locale === "fa" ? a.nameFa : a.nameEn || a.nameFa}</span>
                     <span className="block text-[13px] text-muted-foreground leading-relaxed mt-0.5">
                       <span className="text-primary font-bold">◂ </span>
                       {a.why}
@@ -79,8 +84,10 @@ export default function Alternatives({
 
                   {/* دکمه خاص مشاهده */}
                   <span className="shrink-0 inline-flex items-center gap-1 text-[13px] font-extrabold text-primary border border-primary/40 rounded-full px-3.5 py-1.5 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
-                    مشاهده
-                    <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" aria-hidden="true" />
+                    {d.altView}
+                    <span className="flip-x inline-grid place-items-center" aria-hidden="true">
+                      <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" aria-hidden="true" />
+                    </span>
                   </span>
                 </Link>
               );
@@ -88,7 +95,7 @@ export default function Alternatives({
           </div>
 
           <p className="text-[11px] text-muted-foreground mt-4 relative">
-            این پیشنهادها دست‌چین شده‌اند؛ هرکدام برای یک نیاز خاص بهتر جواب می‌دهند.
+            {d.altNote}
           </p>
         </div>
       </div>

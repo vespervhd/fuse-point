@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams, usePathname } from "next/navigation";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { STR, type Locale } from "@/lib/i18n";
@@ -14,6 +14,7 @@ const PLATFORMS: Platform[] = ["android", "windows", "linux"];
 function PlatformNavInner({ locale }: { locale: Locale }) {
   const sp = useSearchParams();
   const pathname = usePathname();
+  const router = useRouter();
   const [stored, setStored] = useState<Platform | null>(null);
   const d = STR[locale];
 
@@ -27,6 +28,18 @@ function PlatformNavInner({ locale }: { locale: Locale }) {
       setStored(null);
     }
   }, [pathname]);
+
+  // چسبندگی فضای پلتفرم: اگر کاربر قبلاً ویندوز/لینوکس را انتخاب کرده و این صفحه
+  // پارامتر platform ندارد، همان فضا روی URL اعمال می‌شود تا محتوای صفحه با
+  // فضای انتخابی یکی بماند (لینک‌های ساده‌ی هدر/فوتر پارامتر را حمل نمی‌کنند).
+  useEffect(() => {
+    if (!stored || onAppPage) return;
+    if (sp.get("platform")) return;
+    if (/^\/(admin|login|signup|report)(\/|$)/.test(pathname)) return;
+    const params = new URLSearchParams(sp.toString());
+    params.set("platform", stored);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [stored, onAppPage, pathname, sp, router]);
 
   if (onAppPage) return null;
 
@@ -94,5 +107,5 @@ export default function PlatformNav({ locale = "fa" }: { locale?: Locale }) {
 export function BottomSpacer() {
   const pathname = usePathname();
   if (pathname === "/app" || pathname.startsWith("/app/")) return null;
-  return <div className="h-[76px]" aria-hidden="true" />;
+  return <div className="h-[calc(76px+env(safe-area-inset-bottom))]" aria-hidden="true" />;
 }

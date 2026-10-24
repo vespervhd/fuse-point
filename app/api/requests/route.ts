@@ -24,14 +24,32 @@ export async function GET() {
 
 const Body = z.object({
   appName: z.string().trim().min(1).max(255),
-  sourceLink: z.string().trim().max(1000).optional().nullable(),
+  sourceLink: z.string().trim().max(1000).optional().nullable()
+    .refine((v) => {
+      if (!v) return true;
+      try {
+        const u = new URL(v);
+        return u.protocol === "http:" || u.protocol === "https:";
+      } catch { return false; }
+    }, "لینک منبع باید یک نشانی http/https معتبر باشد"),
   platform: z.enum(["android", "windows", "linux"]).default("android"),
   note: z.string().trim().max(1000).optional().nullable(),
 });
 
+// محدودیت ساده‌ی هم‌سبک با /api/reports — حداکثر ۱۰ درخواست در ساعت برای هر کاربر
+const hits = new Map<string, number[]>();
+function rateLimited(userId: string): boolean {
+  const now = Date.now();
+  const arr = (hits.get(userId) || []).filter((t) => now - t < 3600_000);
+  arr.push(now);
+  hits.set(userId, arr);
+  return arr.length > 10;
+}
+
 export async function POST(req: NextRequest) {
   const u = await getSessionUser();
   if (!u) return NextResponse.json({ error: "برای ثبت درخواست وارد شوید" }, { status: 401 });
+  if (rateLimited(u.id)) return NextResponse.json({ error: "تعداد درخواست‌ها بیش از حد مجاز است" }, { status: 429 });
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "ورودی نامعتبر است" }, { status: 400 });
   const d = parsed.data;

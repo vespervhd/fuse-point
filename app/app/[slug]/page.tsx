@@ -28,15 +28,22 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const app = await getAppBySlug(slug);
-  if (!app) return { title: "یافت نشد" };
+  const locale = await getLocale();
+  if (!app) return { title: locale === "fa" ? "یافت نشد" : "Not found" };
   const platFa = app.platform === "android" ? "اندروید" : app.platform === "windows" ? "ویندوز" : "لینوکس";
-  const desc = app.shortDescFa || app.shortDesc || `دانلود ${app.nameFa} برای ${platFa} با لینک مستقیم و بررسی امنیتی`;
+  const platEn = app.platform === "android" ? "Android" : app.platform === "windows" ? "Windows" : "Linux";
+  const title = locale === "fa"
+    ? `دانلود ${app.nameFa} برای ${platFa}`
+    : `Download ${app.nameEn || app.nameFa} for ${platEn}`;
+  const desc = locale === "fa"
+    ? app.shortDescFa || app.shortDesc || `دانلود ${app.nameFa} برای ${platFa} با لینک مستقیم و بررسی امنیتی`
+    : app.shortDesc || app.shortDescFa || `Download ${app.nameEn || app.nameFa} for ${platEn} — direct link, security-checked`;
   return {
-    title: `دانلود ${app.nameFa} برای ${platFa}`,
+    title,
     description: desc,
     alternates: { canonical: `/app/${app.slug}` },
     openGraph: {
-      title: `دانلود ${app.nameFa} برای ${platFa}`,
+      title,
       description: desc,
       images: app.iconUrl && px(app.iconUrl) ? [siteUrl() + px(app.iconUrl)!] : undefined,
     },
@@ -183,6 +190,7 @@ export default async function AppPage({ params }: Props) {
           <SectionHead title={d.preview} locale={locale} />
           <Gallery
             appName={appName(app, locale)}
+            locale={locale}
             shots={app.screenshots.map((sh) => ({ id: sh.id, url: px(sh.url) || sh.url }))}
           />
         </section>
@@ -218,7 +226,7 @@ export default async function AppPage({ params }: Props) {
       {/* ۶) نسخه‌های قبلی */}
       {app.versions.length > 1 && (
         <section className="mt-4" aria-label={d.versions}>
-          <VersionsDrawer versions={app.versions} locale={locale} sourceLabel={versionsSource} />
+          <VersionsDrawer versions={app.versions} currentId={v?.id ?? null} locale={locale} sourceLabel={versionsSource} />
         </section>
       )}
 
@@ -237,7 +245,7 @@ export default async function AppPage({ params }: Props) {
       {/* جایگزین‌های آزاد (ویژگی موجود تولید) */}
       {altEntry && altApps.length > 0 && (
         <section className="mt-10">
-          <Alternatives entry={altEntry} apps={altApps} />
+          <Alternatives entry={altEntry} apps={altApps} locale={locale} />
         </section>
       )}
 

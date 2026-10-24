@@ -6,7 +6,10 @@ import { LayoutGrid } from "lucide-react";
 import { getLocale } from "@/lib/i18n-server";
 import { STR, catName, appsCount } from "@/lib/i18n";
 
-export const metadata = { title: "دسته‌بندی‌ها" };
+export async function generateMetadata() {
+  const locale = await getLocale();
+  return { title: STR[locale].cats };
+}
 
 type Props = { searchParams: Promise<{ platform?: string }> };
 

@@ -12,8 +12,14 @@ type Props = { params: Promise<{ name: string }>; searchParams: Promise<{ platfo
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { name } = await params;
   const data = await getDeveloperPage(decodeURIComponent(name));
-  if (!data) return { title: "یافت نشد" };
-  return { title: data.developer.name, description: `برنامه‌های ${data.developer.name} در Fuse Point` };
+  const locale = await getLocale();
+  if (!data) return { title: locale === "fa" ? "یافت نشد" : "Not found" };
+  return {
+    title: data.developer.name,
+    description: locale === "fa"
+      ? `برنامه‌های ${data.developer.name} در Fuse Point`
+      : `Apps by ${data.developer.name} on Fuse Point`,
+  };
 }
 
 // صفحه‌ی توسعه‌دهنده — همه‌ی برنامه‌های او؛ نمایش در فضای پلتفرم فعال

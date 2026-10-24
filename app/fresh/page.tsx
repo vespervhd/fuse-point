@@ -6,7 +6,10 @@ import { BackLink, ViewHead, SectionHead, EmptyState } from "@/components/Bits";
 import { getLocale } from "@/lib/i18n-server";
 import { STR, catName } from "@/lib/i18n";
 
-export const metadata: Metadata = { title: "تازه‌ها" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: STR[locale].fresh };
+}
 
 type Props = { searchParams: Promise<{ platform?: string }> };
 

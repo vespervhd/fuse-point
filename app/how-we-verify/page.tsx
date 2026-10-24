@@ -4,10 +4,15 @@ import { BackLink, ViewHead } from "@/components/Bits";
 import { getLocale } from "@/lib/i18n-server";
 import { STR, type Locale } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: "چرا فیوز پوینت؟",
-  description: "روش کار Fuse Point: منبع رسمی، هش SHA-256، بازبینی پیش از انتشار، گزارش مشکل، بدون تبلیغ و ردیاب.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return {
+    title: STR[locale].whyTitle,
+    description: locale === "fa"
+      ? "روش کار Fuse Point: منبع رسمی، هش SHA-256، بازبینی پیش از انتشار، گزارش مشکل، بدون تبلیغ و ردیاب."
+      : "How Fuse Point works: official sources, SHA-256 hashes, review before publishing, issue reports, no ads or trackers.",
+  };
+}
 
 type Block = { Icon: LucideIcon; fa: [string, string]; en: [string, string] };
 
