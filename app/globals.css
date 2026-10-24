@@ -732,6 +732,7 @@ body {
 }
 
 /* کرونا — چرخش پرتوها و مدارها (عین نمونه) */
+.corona-paused .rays, .corona-paused .orbit-a, .corona-paused .orbit-b { animation-play-state: paused; }
 .corona .rays { transform-box: fill-box; transform-origin: center; animation: corona-spin 90s linear infinite; }
 .corona .orbit-a { transform-box: fill-box; transform-origin: center; animation: corona-spin 55s linear infinite; }
 .corona .orbit-b { transform-box: fill-box; transform-origin: center; animation: corona-spin-rev 40s linear infinite; }

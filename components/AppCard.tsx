@@ -36,7 +36,7 @@ function Initial({ name }: { name: string }) {
 function Icon({ app }: { app: CardApp }) {
   return app.iconUrl ? (
     <PxImg
-      src={px(app.iconUrl) || app.iconUrl}
+      src={px(app.iconUrl, "icon") || app.iconUrl}
       alt={`آیکون ${app.nameFa}`}
       width={56}
       height={56}

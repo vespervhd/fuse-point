@@ -1,7 +1,7 @@
 // Service Worker Fuse Point — کش امن در برابر پوسته‌ی کهنه
 // قانون طلایی: اسناد (ناوبری‌ها) همیشه network-first؛ کش سند فقط فال‌بک آفلاین است.
 // این‌طوری هیچ نسخه‌ی قدیمی‌ای از HTML روی دستگاه کاربر گیر نمی‌کند.
-const CACHE = "fuse-point-v7";
+const CACHE = "fuse-point-v8";
 const PRECACHE = ["/icons/icon-192.png", "/icons/icon-512.png"];
 
 self.addEventListener("install", (event) => {
@@ -37,6 +37,23 @@ self.addEventListener("fetch", (event) => {
 
   // فقط درخواست‌های همین مبدأ
   if (url.origin !== self.location.origin) return;
+  // استثنای مجاز: /api/img پاسخِ immutable دارد (تصویر با URL ثابت) — cache-first
+  // با به‌روزرسانیِ پس‌زمینه. این شاخه فقط تصویر است؛ HTML هرگز به آن نمی‌رسد.
+  if (url.pathname === "/api/img") {
+    event.respondWith(
+      caches.open(CACHE).then(async (cache) => {
+        const cached = await cache.match(request);
+        const network = fetch(request)
+          .then((res) => {
+            if (res.ok) cache.put(request, res.clone());
+            return res;
+          })
+          .catch(() => cached);
+        return cached || network;
+      })
+    );
+    return;
+  }
   // API و ادمین: هرگز کش نشوند، مستقیم از شبکه
   if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/admin")) return;
 

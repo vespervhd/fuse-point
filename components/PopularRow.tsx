@@ -31,7 +31,7 @@ export default function PopularRow({ app, platform, index = 0 }: { app: PopularA
           {rank}
         </span>
         {app.iconUrl ? (
-          <PxImg src={px(app.iconUrl) || "/icons/icon-192.png"} alt="" width={44} height={44}
+          <PxImg src={px(app.iconUrl, "icon") || "/icons/icon-192.png"} alt="" width={44} height={44}
             className="w-11 h-11 rounded-xl object-cover shrink-0" />
         ) : (
           <span className="w-11 h-11 rounded-xl bg-muted grid place-items-center text-lg font-bold opacity-60 shrink-0" dir="ltr">

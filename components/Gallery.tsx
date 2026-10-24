@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import PxImg from "@/components/PxImg";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { STR, num, type Locale } from "@/lib/i18n";
+
+// لایت‌باکس (و کدِ Radix Dialog) فقط وقتی کاربر روی اسکرین‌شات کلیک می‌کند بارگذاری می‌شود
+const GalleryLightbox = dynamic(() => import("./GalleryLightbox"), { ssr: false });
 
 type Shot = { id: string; url: string };
 
@@ -78,65 +80,21 @@ export default function Gallery({ shots, appName, locale = "fa" }: { shots: Shot
         ))}
       </div>
 
-      <Dialog open={open !== null} onOpenChange={(o) => { if (!o) close(); }}>
-        <DialogContent
-          showCloseButton={false}
-          aria-label={`${d.preview} ${appName}`}
-          className="top-0 left-0 flex h-dvh w-full max-w-none translate-x-0 translate-y-0 flex-col gap-0 rounded-none border-0 bg-black/95 p-0 text-white shadow-none sm:max-w-none data-[state=open]:animate-[fade-in_0.2s_ease] data-[state=closed]:animate-[fade-out_0.2s_ease]"
-        >
-          <DialogTitle className="sr-only">{`${d.preview} ${appName}`}</DialogTitle>
-          {current && (
-            <>
-              <div className="flex items-center justify-between p-4 text-white">
-                <span className="text-sm font-bold">{appName} — {fill(d.galCounter, open! + 1)}</span>
-                <Button onClick={close} variant="ghost" size="icon" aria-label={d.galClose}
-                  className="rounded-full text-white hover:bg-white/20 hover:text-white">
-                  ✕
-                </Button>
-              </div>
-              <div className="flex-1 flex items-center justify-center gap-2 px-2 pb-4 min-h-0">
-                <Button onClick={() => step(-1)} variant="ghost" size="icon" aria-label={d.galPrev}
-                  className="size-11 shrink-0 rounded-full text-white hover:bg-white/20 hover:text-white z-10">
-                  {rtl ? "›" : "‹"}
-                </Button>
-                <div className="flex-1 flex items-center justify-center min-h-0 h-full relative">
-                  {failed ? (
-                    <div className="flex flex-col items-center gap-3 text-white/80">
-                      <span className="text-sm">{d.galFailed}</span>
-                      <Button
-                        variant="ghost"
-                        onClick={() => { setFailedUrl(null); setRetry((r) => r + 1); }}
-                        className="rounded-full text-white hover:bg-white/20 hover:text-white">
-                        {d.galRetry}
-                      </Button>
-                    </div>
-                  ) : (
-                    <img
-                      key={`${current.id}-${retry}`}
-                      src={current.url}
-                      alt={fill(d.galImgAlt, open! + 1)}
-                      loading="eager"
-                      decoding="async"
-                      className="max-h-full max-w-full w-auto h-auto object-contain rounded-lg"
-                      onError={() => setFailedUrl(current.url)}
-                    />
-                  )}
-                </div>
-                <button onClick={() => step(1)} aria-label={d.galNext}
-                  className="w-11 h-11 shrink-0 rounded-full bg-white/10 hover:bg-white/20 text-white text-xl transition z-10">
-                  {rtl ? "‹" : "›"}
-                </button>
-              </div>
-              <div className="flex justify-center gap-2 pb-6">
-                {shots.map((sh, i) => (
-                  <button key={sh.id} onClick={() => setOpen(i)} aria-label={fill(d.galImgAlt, i + 1)}
-                    className={`w-2.5 h-2.5 rounded-full transition ${i === open ? "bg-white scale-125" : "bg-white/30 hover:bg-white/50"}`} />
-                ))}
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      {open !== null && (
+        <GalleryLightbox
+          open={open}
+          shots={shots}
+          appName={appName}
+          locale={locale}
+          failed={failed}
+          retry={retry}
+          onClose={close}
+          onStep={step}
+          onSelect={setOpen}
+          onRetry={() => { setFailedUrl(null); setRetry((r) => r + 1); }}
+          onImageError={() => { if (current) setFailedUrl(current.url); }}
+        />
+      )}
     </>
   );
 }

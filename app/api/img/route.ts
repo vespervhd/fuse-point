@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { decodeProxyParam } from "@/lib/img";
+import sharp from "sharp";
 
-// GET /api/img?u=<base64url> — پروکسی تصاویر f-droid.org با کش حافظه
+// GET /api/img?u=<base64url>[&s=<width>] — پروکسی تصاویر با کش حافظه
 // چون f-droid.org ممکن است برای برخی کاربران قابل دسترس نباشد، تصاویر از خودِ سرور سرو می‌شوند.
+// پارامتر s فقط برای آیکن‌هاست: تصویرِ رستری به عرضِ خواسته‌شده کوچک و (اگر مرورگر
+// بپذیرد) به WebP تبدیل می‌شود. SVG و GIF هرگز دست نمی‌خورند (مقیاس‌پذیر / متحرک‌اند)
+// و اسکرین‌شات‌ها (بدون s) با اندازه‌ی کامل می‌مانند. کلیدِ کش نسخه‌دار است تا نسخه‌ی
+// کوچک‌شده با نسخه‌ی کامل قاطی نشود.
 
 type Entry = { buf: Buffer; type: string; size: number; at: number };
 const cache = new Map<string, Entry>();
@@ -30,14 +35,23 @@ const ALLOWED_TYPES = new Set([
   "image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml",
 ]);
 
+const RASTER_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
+
 export async function GET(req: NextRequest) {
-  const b64 = new URL(req.url).searchParams.get("u");
+  const sp = new URL(req.url).searchParams;
+  const b64 = sp.get("u");
   const target = b64 ? decodeProxyParam(b64) : null;
   if (!target) return NextResponse.json({ error: "آدرس نامعتبر است" }, { status: 400 });
+  const sizeParam = sp.get("s");
+  const width = sizeParam ? parseInt(sizeParam, 10) : NaN;
+  const wantResize = Number.isFinite(width) && width >= 16 && width <= 512;
+  const acceptWebp = (req.headers.get("accept") || "").includes("image/webp");
+  // کلیدِ کش: آدرس + اندازه + فرمتِ خروجی — تا واریانت‌ها با هم قاطی نشوند
+  const key = wantResize ? `${target}|w${width}|${acceptWebp ? "webp" : "orig"}` : target;
 
-  const hit = cache.get(target);
+  const hit = cache.get(key);
   if (hit) {
-    touch(target, hit);
+    touch(key, hit);
     return new NextResponse(new Uint8Array(hit.buf), {
       headers: {
         "Content-Type": hit.type,
@@ -57,10 +71,32 @@ export async function GET(req: NextRequest) {
     if (!ALLOWED_TYPES.has(type)) return NextResponse.json({ error: "نوع فایل مجاز نیست" }, { status: 415 });
     const buf = Buffer.from(await r.arrayBuffer());
     if (!buf.length) return NextResponse.json({ error: "تصویر خالی است" }, { status: 502 });
-    put(target, buf, type);
-    return new NextResponse(new Uint8Array(buf), {
+
+    // کوچک‌سازی + تبدیل فقط برای رسترها وقتی s خواسته شده؛ در غیر این صورت بایتِ اصلی
+    let outBuf = buf;
+    let outType = type;
+    if (wantResize && RASTER_TYPES.has(type)) {
+      try {
+        const pipeline = sharp(buf).resize(width, width, { fit: "inside", withoutEnlargement: true });
+        if (acceptWebp) {
+          outBuf = await pipeline.webp({ quality: 80 }).toBuffer();
+          outType = "image/webp";
+        } else if (type === "image/jpeg") {
+          outBuf = await pipeline.jpeg({ quality: 82 }).toBuffer();
+        } else {
+          outBuf = await pipeline.png({ compressionLevel: 9 }).toBuffer();
+          outType = "image/png";
+        }
+      } catch {
+        // اگر پردازش ناموفق بود، بایتِ اصلی برگردد — نه خطا
+        outBuf = buf;
+        outType = type;
+      }
+    }
+    put(key, outBuf, outType);
+    return new NextResponse(new Uint8Array(outBuf), {
       headers: {
-        "Content-Type": type,
+        "Content-Type": outType,
         "Cache-Control": "public, max-age=86400, immutable",
         "X-Cache": "MISS",
       },

@@ -46,7 +46,7 @@ export default function TopInRail({
             <span className="w-16 h-16 block transition-transform group-hover:scale-105">
               {app.iconUrl ? (
                 <PxImg
-                  src={px(app.iconUrl) || app.iconUrl}
+                  src={px(app.iconUrl, "icon") || app.iconUrl}
                   alt={`${d.alt_icon} ${app.nameFa}`}
                   width={64}
                   height={64}
