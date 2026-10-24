@@ -3,6 +3,7 @@
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getDownloadOptions, type DownloadAppInfo } from "./DownloadActions";
+import { sparkBurst } from "@/lib/fx/spark";
 
 // ─── آیکون‌های پلتفرم (اینلاین، بدون وابستگی) ───
 const AndroidIcon = ({ className }: { className?: string }) => (
@@ -67,6 +68,7 @@ function NeonPill({ href, external, downloadable, tint, icon, label, text }: Pil
         target={external ? "_blank" : undefined}
         rel={external ? "noopener noreferrer" : undefined}
         download={downloadable ? "" : undefined}
+        onClick={(e) => sparkBurst(e.currentTarget)}
         title={label}
         aria-label={label}
       >

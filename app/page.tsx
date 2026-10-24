@@ -43,9 +43,6 @@ async function HomeSlide({ platform }: { platform?: Platform }) {
 
   return (
     <>
-      {/* جست‌وجوی اصلی — وسط صفحه */}
-      <HeroSearch />
-
       {/* پیشنهادهای هفته — ۶ اپ منتخب سردبیر با آیکون کوچک */}
       <WeeklyPicks apps={weeklyPicks} platform={platform} />
 
@@ -183,6 +180,8 @@ export default async function Home({ searchParams }: Props) {
 
   return (
     <div>
+      {/* ترتیب فروشگاهی: جستجو ← چیپ‌های دسته ← اپ‌ها */}
+      {!cat && <HeroSearch />}
       {!cat && (
         <Suspense>
           <CategoryBrowser cats={cats} platform={plat} />

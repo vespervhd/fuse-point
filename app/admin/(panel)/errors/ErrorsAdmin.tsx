@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { formatDate, toFaDigits } from "@/lib/fa";
+import { Button } from "@/components/ui/button";
 
 type Err = {
   id: string; fingerprint: string; kind: string; message: string;
@@ -38,9 +39,9 @@ export default function ErrorsAdmin() {
   return (
     <div className="animate-fade-up max-w-4xl">
       <h1 className="text-2xl font-extrabold mb-2">خطاهای سایت</h1>
-      <p className="text-sm text-muted mb-6">
+      <p className="text-sm text-muted-foreground mb-6">
         {openCount > 0 ? (
-          <><span className="font-bold text-danger">{toFaDigits(openCount)}</span> خطای باز — مثل باگ ۳۷۴ صفحه، این‌جا زودتر دیده می‌شد.</>
+          <><span className="font-bold text-destructive">{toFaDigits(openCount)}</span> خطای باز — مثل باگ ۳۷۴ صفحه، این‌جا زودتر دیده می‌شد.</>
         ) : (
           "همه‌چیز تمیز است. خطای جدید این‌جا ثبت می‌شود."
         )}
@@ -48,66 +49,65 @@ export default function ErrorsAdmin() {
 
       <div className="flex gap-2 mb-6">
         {[["open", "باز"], ["resolved", "حل‌شده"], ["all", "همه"]].map(([k, l]) => (
-          <button key={k} onClick={() => setFilter(k)}
-            className={`btn btn-sm ${filter === k ? "btn-primary btn-active" : "btn-ghost"}`}>{l}</button>
+          <Button key={k} size="sm" variant={filter === k ? "default" : "ghost"} onClick={() => setFilter(k)}>{l}</Button>
         ))}
       </div>
 
       <div className="space-y-3">
         {list.map((e) => (
-          <div key={e.id} className="bg-surface border border-border rounded-3xl p-5">
+          <div key={e.id} className="bg-card border border-border rounded-3xl p-5">
             <div className="flex flex-wrap justify-between gap-2 mb-2">
               <p className="font-bold text-sm">
-                <span className="text-xs font-normal text-muted ms-2">
+                <span className="text-xs font-normal text-muted-foreground ms-2">
                   [{KIND_FA[e.kind] || e.kind}] ×{toFaDigits(e.count)}
                 </span>
               </p>
-              <span className="text-xs text-muted">{formatDate(e.lastSeenAt)}</span>
+              <span className="text-xs text-muted-foreground">{formatDate(e.lastSeenAt)}</span>
             </div>
             <p className="text-sm leading-7 mb-1 break-words" dir="auto">{e.message}</p>
             {e.url && (
-              <p className="text-xs text-muted mb-3 break-all" dir="ltr">{e.url}</p>
+              <p className="text-xs text-muted-foreground mb-3 break-all" dir="ltr">{e.url}</p>
             )}
             {expanded === e.id && e.stack && (
-              <pre className="text-[11px] leading-5 bg-surface-2 rounded-xl p-3 mb-3 overflow-x-auto whitespace-pre-wrap break-words" dir="ltr">
+              <pre className="text-[11px] leading-5 bg-muted rounded-xl p-3 mb-3 overflow-x-auto whitespace-pre-wrap break-words" dir="ltr">
                 {e.stack}
               </pre>
             )}
             <div className="flex gap-2 text-xs">
               {e.stack && (
-                <button
+                <Button
+                  variant="ghost" size="sm"
                   onClick={() => setExpanded(expanded === e.id ? null : e.id)}
-                  className="btn btn-ghost btn-sm"
                 >
                   {expanded === e.id ? "بستن stack" : "نمایش stack"}
-                </button>
+                </Button>
               )}
               {e.status === "open" ? (
-                <button
+                <Button
+                  size="sm"
                   onClick={() => act(e.id, "PATCH", { status: "resolved" })}
-                  className="btn btn-primary btn-sm"
                 >
                   حل شد
-                </button>
+                </Button>
               ) : (
-                <button
+                <Button
+                  variant="ghost" size="sm"
                   onClick={() => act(e.id, "PATCH", { status: "open" })}
-                  className="btn btn-ghost btn-sm"
                 >
                   بازگشایی
-                </button>
+                </Button>
               )}
-              <button
+              <Button
+                variant="destructive" size="sm"
                 onClick={() => { if (confirm("حذف شود؟")) act(e.id, "DELETE"); }}
-                className="btn btn-error btn-sm"
               >
                 حذف
-              </button>
+              </Button>
             </div>
           </div>
         ))}
         {!list.length && (
-          <p className="text-center text-muted text-sm bg-surface border border-border rounded-3xl p-10">
+          <p className="text-center text-muted-foreground text-sm bg-card border border-border rounded-3xl p-10">
             خطایی وجود ندارد.
           </p>
         )}

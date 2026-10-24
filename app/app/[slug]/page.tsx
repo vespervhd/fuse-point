@@ -8,7 +8,7 @@ import { db } from "@/lib/db";
 import * as s from "@/db/schema";
 import { eq, and, desc, sql } from "drizzle-orm";
 import { toFaDigits, formatBytes, formatDate, timeAgo, androidVersion } from "@/lib/fa";
-import AppTile from "@/components/AppTile";
+import AppCard from "@/components/AppCard";
 import FavoriteButton from "@/components/FavoriteButton";
 import FollowButton from "@/components/FollowButton";
 import ShareButton from "@/components/ShareButton";
@@ -22,12 +22,11 @@ import ReportButton from "@/components/ReportButton";
 import Alternatives from "@/components/Alternatives";
 import { findAlternatives } from "@/data/alternatives";
 import {
-  RefreshCw, Download, Star,
+  RefreshCw, Download,
   BadgeCheck, TriangleAlert, ChevronDown,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { siteUrl } from "@/lib/site-url";
 
 
@@ -123,27 +122,21 @@ export default async function AppPage({ params }: Props) {
 
   return (
     <div className="animate-fade-up max-w-3xl mx-auto">
-      {/* دانلودسنتر به سبک iOS */}
+      {/* هدر اپ — آیکون بزرگ + مشخصات اصلی؛ دکمه‌ی دانلود سوار بر لبه‌ی پایین کارت */}
+      <div className="relative mb-9">
       <Card className="shadow-sm py-0 gap-0">
-        <CardContent className="p-5 sm:p-6">
+        <CardContent className="p-5 sm:p-6 pb-10">
           <div className="flex gap-4 items-start">
             {app.iconUrl ? (
               <PxImg src={px(app.iconUrl) || "/icons/icon-192.png"} alt={`آیکون ${app.nameFa}`} width={88} height={88}
-                className="w-[76px] h-[76px] rounded-[24%] object-cover shadow-md shrink-0" />
+                className="w-[88px] h-[88px] rounded-[24%] object-cover shadow-md shrink-0" />
             ) : (
-              <span className="w-[76px] h-[76px] rounded-[24%] bg-primary/10 text-primary flex items-center justify-center text-3xl font-bold shrink-0">
+              <span className="w-[88px] h-[88px] rounded-[24%] bg-primary/10 text-primary flex items-center justify-center text-3xl font-bold shrink-0">
                 {app.nameFa.charAt(0)}
               </span>
             )}
             <div className="flex-1 min-w-0 pt-1">
               <h1 title={app.nameFa} className="text-[19px] font-extrabold leading-7 break-words line-clamp-2">{app.nameFa}</h1>
-              {app.developerName && (
-                <p className="text-[13px] text-muted-foreground mt-0.5">{app.developerName}</p>
-              )}
-              <p className="text-[12px] mt-1.5 flex items-center gap-1.5 text-muted-foreground">
-                <PlatformIcon platform={app.platform} className="w-4 h-4" />
-                {v?.versionName && <span dir="ltr">{v.versionName}</span>}
-              </p>
             </div>
             <div className="flex flex-row gap-2 shrink-0 pt-1">
               <FavoriteButton appId={app.id} appName={app.slug} />
@@ -152,23 +145,22 @@ export default async function AppPage({ params }: Props) {
             </div>
           </div>
 
-          {/* قرص‌های اطلاعات — متقارن */}
-          <div className="flex flex-wrap justify-center gap-2 mt-4">
+          {/* مشخصات اصلی — فقط پلتفرم، نسخه، حجم */}
+          <div className="flex flex-wrap justify-center gap-2 mt-5">
+            <Badge variant="outline" className="h-7 px-3.5 text-sm rounded-full gap-1.5 border-border bg-muted/50">
+              <PlatformIcon platform={app.platform} className="w-4 h-4" />
+              {app.platform === "android" ? "اندروید" : app.platform === "windows" ? "ویندوز" : "لینوکس"}
+            </Badge>
+            {v?.versionName && (
+              <Badge variant="outline" className="h-7 px-3.5 text-sm rounded-full gap-1.5 border-border bg-muted/50">
+                نسخه <span dir="ltr">{v.versionName}</span>
+              </Badge>
+            )}
             {v?.fileSize ? (
               <Badge variant="outline" className="h-7 px-3.5 text-sm rounded-full gap-1.5 border-border bg-muted/50">
                 <Download className="w-4 h-4" aria-hidden="true" /> {formatBytes(v.fileSize)}
               </Badge>
             ) : null}
-            {(app.githubStars ?? 0) > 0 && (
-              <Badge variant="outline" className="h-7 px-3.5 text-sm rounded-full gap-1.5 border-border bg-muted/50">
-                <Star className="w-4 h-4" aria-hidden="true" /> {toFaDigits(app.githubStars ?? 0)}
-              </Badge>
-            )}
-            {v?.verifiedAt && (
-              <Badge variant="success" className="h-7 px-3.5 text-sm rounded-full gap-1.5">
-                <BadgeCheck className="w-4 h-4" aria-hidden="true" /> تأیید شده
-              </Badge>
-            )}
           </div>
 
           {/* بنر آپدیت */}
@@ -188,9 +180,12 @@ export default async function AppPage({ params }: Props) {
             </div>
           )}
 
-          <Separator className="my-4" />
+        </CardContent>
+      </Card>
 
-          {/* دانلود */}
+      {/* دانلود — سوار بر لبه‌ی پایین کارت */}
+      <div className="absolute inset-x-0 -bottom-5 z-10 flex justify-center px-3">
+        <div className="[&_a]:shadow-xl">
           <DownloadButtons
             app={{
               platform: app.platform,
@@ -209,8 +204,9 @@ export default async function AppPage({ params }: Props) {
                 : null,
             }}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+      </div>
 
       {/* تصاویر */}
       {app.screenshots.length > 0 && (
@@ -246,43 +242,23 @@ export default async function AppPage({ params }: Props) {
 
       <div className="h-px bg-border" />
 
-      {/* اطلاعات */}
-      <section className="py-6" aria-label="اطلاعات">
-        <h2 className="font-extrabold text-[15px] px-1 mb-3">اطلاعات</h2>
-
-        {/* اعداد کلیدی */}
-        <div className="flex w-full bg-card text-card-foreground border border-border rounded-xl shadow-sm mb-3 overflow-hidden">
-          {app.platform === "android" ? (
-            <>
-              <div className="flex-1 min-w-0 px-4 py-3">
-                <div className="text-[11px] text-muted-foreground">نسخه</div>
-                <div className="text-lg font-bold" dir="ltr">{v?.versionName ?? "—"}</div>
-              </div>
-              <div className="flex-1 min-w-0 px-4 py-3 border-s border-border">
-                <div className="text-[11px] text-muted-foreground">حجم</div>
-                <div className="text-lg font-bold">{formatBytes(v?.fileSize)}</div>
-              </div>
-            </>
-          ) : (
-            <div className="flex-1 min-w-0 px-4 py-3">
-              <div className="text-[11px] text-muted-foreground">پلتفرم</div>
-              <div className="text-lg font-bold">{app.platform === "windows" ? "ویندوز" : "لینوکس"}</div>
-            </div>
-          )}
-          <div className="flex-1 min-w-0 px-4 py-3 border-s border-border">
-            <div className="text-[11px] text-muted-foreground">مجوز</div>
-            <div className="text-[13px] font-bold break-words" dir="ltr">{app.license || "—"}</div>
-          </div>
-        </div>
-
-        {/* جزئیات */}
-        <Card className="shadow-sm py-0 gap-0">
-          <CardContent className="p-4">
+      {/* مشخصات و جزئیات — یک کشوی جمع‌وجور برای همه‌ی متای فرعی */}
+      <section className="py-6" aria-label="مشخصات و جزئیات">
+        <details className="group bg-card text-card-foreground border border-border rounded-2xl shadow-sm overflow-hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3.5 [&::-webkit-details-marker]:hidden">
+            <span className="text-[14px] font-extrabold">مشخصات و جزئیات</span>
+            <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+          </summary>
+          <div className="px-4 pb-4">
             <dl>
+              <InfoRow k="پلتفرم" v={app.platform === "android" ? "اندروید" : app.platform === "windows" ? "ویندوز" : "لینوکس"} />
+              <InfoRow k="نسخه" v={v?.versionName ?? "—"} ltr={!!v?.versionName} />
+              <InfoRow k="حجم" v={formatBytes(v?.fileSize)} />
               {app.platform === "android" && (
                 <InfoRow k="حداقل اندروید" v={androidVersion(v?.minSdk)} />
               )}
               <InfoRow k="توسعه‌دهنده" v={app.developerName || "نامشخص"} />
+              <InfoRow k="مجوز" v={app.license || "—"} ltr={!!app.license} />
               <InfoRow k="به‌روزرسانی" v={v ? timeAgo(v.publishedAt || v.createdAt) : "—"} />
               <InfoRow k="منبع" v={app.sourceUrl ? (
                 <a href={app.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-primary" dir="ltr">
@@ -302,40 +278,26 @@ export default async function AppPage({ params }: Props) {
                 </dd>
               </div>
             </dl>
-          </CardContent>
-        </Card>
 
-        {/* هش و مجوزها */}
-        {(v?.sha256 || app.permissions.length > 0) && (
-          <div className="space-y-2 mt-3">
             {v?.sha256 && (
-              <details className="group bg-card text-card-foreground border border-border rounded-xl shadow-sm overflow-hidden">
-                <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[13px] font-bold [&::-webkit-details-marker]:hidden">
-                  هش SHA-256
-                  <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
-                </summary>
-                <div className="px-4 pb-4">
-                  <code className="block p-3 bg-muted rounded-xl break-all font-mono text-[11px]" dir="ltr">{v.sha256}</code>
-                </div>
-              </details>
+              <div className="mt-3">
+                <p className="text-[12px] font-bold text-muted-foreground mb-1.5">هش SHA-256</p>
+                <code className="block p-3 bg-muted rounded-xl break-all font-mono text-[11px]" dir="ltr">{v.sha256}</code>
+              </div>
             )}
+
             {app.permissions.length > 0 && (
-              <details className="group bg-card text-card-foreground border border-border rounded-xl shadow-sm overflow-hidden">
-                <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[13px] font-bold [&::-webkit-details-marker]:hidden">
-                  مجوزهای درخواستی ({toFaDigits(app.permissions.length)})
-                  <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
-                </summary>
-                <div className="px-4 pb-4">
-                  <div className="flex flex-wrap gap-1.5 max-h-44 overflow-y-auto">
-                    {app.permissions.map((p) => (
-                      <Badge key={p.id} variant="secondary" className="font-mono rounded-full" dir="ltr">{p.permission}</Badge>
-                    ))}
-                  </div>
+              <div className="mt-3">
+                <p className="text-[12px] font-bold text-muted-foreground mb-1.5">مجوزهای درخواستی ({toFaDigits(app.permissions.length)})</p>
+                <div className="flex flex-wrap gap-1.5 max-h-44 overflow-y-auto">
+                  {app.permissions.map((p) => (
+                    <Badge key={p.id} variant="secondary" className="font-mono rounded-full" dir="ltr">{p.permission}</Badge>
+                  ))}
                 </div>
-              </details>
+              </div>
             )}
           </div>
-        )}
+        </details>
       </section>
 
       {/* جایگزین‌ها */}
@@ -379,8 +341,8 @@ export default async function AppPage({ params }: Props) {
       {app.similar.length > 0 && (
         <section className="mt-8" aria-label="شاید بپسندی">
           <h2 className="text-[17px] font-extrabold mb-4 px-1">شاید بپسندی</h2>
-          <div className="grid grid-cols-3 gap-4">
-            {app.similar.slice(0, 6).map((a, i) => <AppTile key={a.id} app={a} index={i} />)}
+          <div className="space-y-2.5">
+            {app.similar.slice(0, 6).map((a, i) => <AppCard key={a.id} app={a} index={i} variant="horizontal" hideStats />)}
           </div>
         </section>
       )}

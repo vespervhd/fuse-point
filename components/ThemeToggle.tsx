@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { CloudMoon, Flame, Sparkles, Orbit } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { sparkBurst } from "@/lib/fx/spark";
 
 const THEMES = ["sky", "embers", "aurora", "constellation"] as const;
 type Theme = (typeof THEMES)[number];
@@ -41,7 +42,7 @@ export default function ThemeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      onClick={cycle}
+      onClick={(e) => { cycle(); sparkBurst(e.currentTarget); }}
       aria-label="تغییر تم"
       title={`تم فعلی: ${LABELS[theme]} — برای تغییر بزن`}
       className="rounded-full"

@@ -82,10 +82,12 @@ export default function AppCard({
   app,
   index = 0,
   variant = "standard",
+  hideStats = false,
 }: {
   app: CardApp;
   index?: number;
   variant?: CardVariant;
+  hideStats?: boolean;
 }) {
   const href =
     app.platform && app.platform !== "android"
@@ -109,7 +111,7 @@ export default function AppCard({
           <div className="flex items-center gap-2 mt-1.5">
             <PlatformBadge platform={app.platform} />
             <LicenseBadge app={app} />
-            <Stats app={app} />
+            {!hideStats && <Stats app={app} />}
           </div>
         </div>
       </Link>

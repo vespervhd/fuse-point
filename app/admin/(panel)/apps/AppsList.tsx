@@ -2,6 +2,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatDate, toFaDigits } from "@/lib/fa";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type App = {
   id: string; slug: string; packageName: string;
@@ -35,44 +39,43 @@ export default function AppsList() {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 className="text-2xl font-extrabold">نرم‌افزارها ({toFaDigits(apps.length)})</h1>
         <div className="flex gap-2">
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="جست‌وجو..."
-            className="h-10 rounded-xl bg-surface border border-border px-4 text-sm w-48 focus:outline-none focus:border-primary" />
-          <Link href="/admin/apps/new"
-            className="h-10 px-5 rounded-xl bg-primary text-primary-fg font-bold text-sm flex items-center hover:opacity-90">
-            ＋ جدید
-          </Link>
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="جست‌وجو..."
+            className="h-10 w-48" />
+          <Button asChild className="h-10 px-5 font-bold">
+            <Link href="/admin/apps/new">＋ جدید</Link>
+          </Button>
         </div>
       </div>
 
       {loading ? (
         <div className="space-y-2">{[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="h-16 bg-surface border border-border rounded-2xl animate-pulse" />))}
+          <Skeleton key={i} className="h-16 rounded-2xl border border-border" />))}
         </div>
       ) : (
-        <div className="bg-surface border border-border rounded-3xl overflow-hidden">
+        <div className="bg-card border border-border rounded-3xl overflow-hidden">
           <ul className="divide-y divide-border">
             {filtered.map((a) => (
-              <li key={a.id} className="flex items-center gap-4 p-4 hover:bg-surface-2/50 transition">
+              <li key={a.id} className="flex items-center gap-4 p-4 hover:bg-muted/50 transition">
                 <div className="flex-1 min-w-0">
                   <p className="font-bold truncate">
                     {a.nameFa}
-                    {!a.isPublished && <span className="text-xs text-accent font-normal ms-2">(پیش‌نویس)</span>}
+                    {!a.isPublished && <Badge variant="warning" className="ms-2 font-normal">(پیش‌نویس)</Badge>}
                     {a.featured && <span className="text-xs text-primary font-normal ms-2">⭐</span>}
                   </p>
-                  <p className="text-xs text-muted truncate" dir="ltr" style={{ textAlign: "right" }}>
+                  <p className="text-xs text-muted-foreground truncate" dir="ltr" style={{ textAlign: "right" }}>
                     {a.packageName} • {toFaDigits(a.versionCount)} نسخه • {formatDate(a.updatedAt)}
                   </p>
                 </div>
                 <Link href={`/admin/apps/${a.id}`}
                   className="text-sm text-primary font-bold hover:underline shrink-0">ویرایش</Link>
                 {a.isPublished && (
-                  <button onClick={() => unpublish(a.id)}
-                    className="btn btn-error btn-sm shrink-0">لغو انتشار</button>
+                  <Button variant="destructive" size="sm" onClick={() => unpublish(a.id)}
+                    className="shrink-0">لغو انتشار</Button>
                 )}
               </li>
             ))}
           </ul>
-          {!filtered.length && <p className="p-10 text-center text-muted text-sm">موردی یافت نشد.</p>}
+          {!filtered.length && <p className="p-10 text-center text-muted-foreground text-sm">موردی یافت نشد.</p>}
         </div>
       )}
     </div>

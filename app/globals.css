@@ -389,6 +389,29 @@ body {
   position: fixed; z-index: 200; width: 9px; height: 2.6px; border-radius: 3px; pointer-events: none;
 }
 
+
+/* ============================================================
+   هیرو — لوگوی کسوف با پرتوهای چرخان آرام (نمونه‌ی تأییدشده)
+   ============================================================ */
+.hero-logo {
+  position: relative; width: 216px; height: 216px;
+  margin: 4px auto 6px; display: grid; place-items: center;
+}
+.corona-rays {
+  position: absolute; inset: 0; opacity: 0.5;
+  animation: spin-slow 120s linear infinite;
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+/* ورود پلکانی با اسکرول (Reveal) — مشخصات نمونه: riseIn ۰٫۵۵s */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+.fx-reveal.in { animation: rise-in 0.55s ease both; }
+
 /* بوردر گرادیانی ظریف — فقط برای تأکید، نه همه‌جا */
 .grad-border { position: relative; }
 .grad-border::before {

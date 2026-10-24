@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import { sparkBurst } from "@/lib/fx/spark";
 import { Bell, BellOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function FollowButton({ appId }: { appId: string }) {
   const [following, setFollowing] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export default function FollowButton({ appId }: { appId: string }) {
         body: following ? undefined : JSON.stringify({ appId }),
       });
       const j = await res.json();
-      if (res.ok) setFollowing(!!j.following);
+      if (res.ok) { setFollowing(!!j.following); if (j.following && btnRef.current) sparkBurst(btnRef.current); }
     } catch {}
     setLoading(false);
   };
@@ -42,6 +44,7 @@ export default function FollowButton({ appId }: { appId: string }) {
     <Button
       variant={following ? "default" : "ghost"}
       size="icon"
+      ref={btnRef}
       onClick={toggle}
       disabled={loading}
       aria-pressed={following}

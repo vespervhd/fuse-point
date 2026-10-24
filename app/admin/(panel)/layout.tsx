@@ -19,15 +19,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="flex gap-6 min-h-[70vh]">
       <aside className="w-56 shrink-0 hidden md:block">
-        <div className="bg-surface border border-border rounded-3xl p-4 sticky top-24">
+        <div className="bg-card border border-border rounded-3xl p-4 sticky top-24">
           <div className="px-2 py-3 border-b border-border mb-3">
             <p className="font-bold text-sm truncate">{user.name || user.email}</p>
-            <p className="text-xs text-muted">{user.role === "admin" ? "مدیر کل" : user.role}</p>
+            <p className="text-xs text-muted-foreground">{user.role === "admin" ? "مدیر کل" : user.role}</p>
           </div>
           <nav className="space-y-1" aria-label="منوی مدیریت">
             {NAV.map(([href, icon, label]) => (
               <Link key={href} href={href}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-surface-2 transition">
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-muted transition">
                 <span className="text-lg" aria-hidden="true">{icon}</span>{label}
               </Link>
             ))}
