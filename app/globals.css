@@ -620,9 +620,14 @@ body {
 .dt-copy svg { width: 17px; height: 17px; }
 .dt-copy-status { min-height: 18px; margin: 7px 2px 0; color: color-mix(in srgb, var(--primary) 78%, #fff); font-size: 0.72rem; }
 .dt-perm {
-  display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; align-items: center;
+  display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: center;
   padding: 13px 0; border-bottom: 1px solid color-mix(in srgb, var(--muted-foreground) 13%, transparent);
 }
+.dt-perm-note { margin: 0 0 4px; color: var(--muted-foreground); font-size: 0.77rem; line-height: 1.8; }
+.dt-risk { font-size: 0.68rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.dt-risk-low { color: var(--muted-foreground); }
+.dt-risk-mid { color: #f0b65a; }
+.dt-risk-high { color: #ef7d64; }
 .dt-perm:last-child { border-bottom: 0; }
 .dt-perm-icon {
   width: 36px; height: 36px; display: grid; place-items: center; border-radius: 11px;
