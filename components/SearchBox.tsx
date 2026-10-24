@@ -27,22 +27,24 @@ function platformQs(sp: URLSearchParams): string {
   return plat ? `&platform=${plat}` : "";
 }
 
-function SearchBoxInner({ compact = false, slim = false, large = false }: { compact?: boolean; slim?: boolean; large?: boolean }) {
+function SearchBoxInner({ compact = false, slim = false, large = false, locale: localeProp }: { compact?: boolean; slim?: boolean; large?: boolean; locale?: Locale }) {
   const [q, setQ] = useState("");
   const [items, setItems] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [hi, setHi] = useState(-1);
-  const [locale, setLocale] = useState<Locale>("fa");
+  // زبان از سرور می‌آید (پروپ) تا از همان رندر اول درست باشد؛ بدون پروپ از lang سند حدس زده می‌شود
+  const [detected, setDetected] = useState<Locale>("fa");
   const router = useRouter();
   const sp = useSearchParams();
   const boxRef = useRef<HTMLDivElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const locale = localeProp ?? detected;
   const d = STR[locale];
 
   useEffect(() => {
-    if (document.documentElement.lang === "en") setLocale("en");
-  }, []);
+    if (!localeProp && document.documentElement.lang === "en") setDetected("en");
+  }, [localeProp]);
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -184,10 +186,10 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
   );
 }
 
-export default function SearchBox({ compact = false, slim = false, large = false }: { compact?: boolean; slim?: boolean; large?: boolean }) {
+export default function SearchBox({ compact = false, slim = false, large = false, locale }: { compact?: boolean; slim?: boolean; large?: boolean; locale?: Locale }) {
   return (
     <Suspense fallback={null}>
-      <SearchBoxInner compact={compact} slim={slim} large={large} />
+      <SearchBoxInner compact={compact} slim={slim} large={large} locale={locale} />
     </Suspense>
   );
 }
