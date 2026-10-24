@@ -1,6 +1,7 @@
 import Link from "next/link";
 import PxImg from "@/components/PxImg";
 import { px } from "@/lib/img";
+import { STR, type Locale } from "@/lib/i18n";
 import type { CardApp } from "./AppCard";
 
 function Initial({ name }: { name: string }) {
@@ -16,7 +17,7 @@ function Initial({ name }: { name: string }) {
 }
 
 // تایل آیکون بزرگ به سبک اپ‌استور — آیکون شناور بدون قاب
-export default function AppTile({ app, index = 0 }: { app: CardApp; index?: number }) {
+export default function AppTile({ app, index = 0, locale = "fa" }: { app: CardApp; index?: number; locale?: Locale }) {
   return (
     <Link
       href={app.platform && app.platform !== "android" ? `/app/${app.slug}?platform=${app.platform}` : `/app/${app.slug}`}
@@ -27,7 +28,7 @@ export default function AppTile({ app, index = 0 }: { app: CardApp; index?: numb
         {app.iconUrl ? (
           <PxImg
             src={px(app.iconUrl) || app.iconUrl}
-            alt={`آیکون ${app.nameFa}`}
+            alt={`${STR[locale].alt_icon} ${app.nameFa}`}
             width={192}
             height={192}
             className="w-full h-full rounded-[24%] object-cover shadow-md"

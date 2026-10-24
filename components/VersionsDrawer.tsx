@@ -27,7 +27,7 @@ const DownloadGlyph = () => (
 );
 
 const stripMd = (s: string) =>
-  s.replace(/\*\*|__|`/g, "").replace(/^#+\s*/gm, "").replace(/\[(.*?)\]\(.*?\)/g, "$1").trim();
+  s.replace(/\*\*|__|`/g, "").replace(/^#+\s*/gm, "").replace(/^\s*[*+-]\s+/gm, "").replace(/\[(.*?)\]\(.*?\)/g, "$1").trim();
 
 // کشوی «نسخه‌های قبلی» — هم‌خانواده‌ی کشوی مشخصات؛ نسخه‌ی فعلی (بر اساس شناسه، نه ترتیب) تکرار نمی‌شود
 export default function VersionsDrawer({
@@ -35,11 +35,13 @@ export default function VersionsDrawer({
   currentId,
   locale = "fa",
   sourceLabel,
+  totalOlder,
 }: {
   versions: Version[];
   currentId?: string | null;
   locale?: Locale;
   sourceLabel?: string | null;
+  totalOlder?: number;
 }) {
   const d = STR[locale];
   const older = currentId ? versions.filter((v) => v.id !== currentId) : versions.slice(1);
@@ -95,6 +97,13 @@ export default function VersionsDrawer({
             );
           })}
         </div>
+        {totalOlder != null && totalOlder > older.length && (
+          <p className="ver-src">
+            {d.versionsShowing
+              .replace("{shown}", num(older.length, locale))
+              .replace("{total}", num(totalOlder, locale))}
+          </p>
+        )}
       </div>
     </details>
   );

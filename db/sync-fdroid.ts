@@ -52,6 +52,26 @@ async function ensureIndex(): Promise<any> {
   return JSON.parse(readFileSync(INDEX_PATH, "utf8"));
 }
 
+// توسعه‌دهنده از authorName ایندکس: find-or-create با نام دقیق + کش درون‌اجرا
+const devCache = new Map<string, string>();
+async function resolveDeveloper(name: string, website: string | null): Promise<string | null> {
+  const key = name.trim();
+  if (!key) return null;
+  if (devCache.has(key)) return devCache.get(key)!;
+  const rows = await db.select({ id: s.developers.id, website: s.developers.website }).from(s.developers)
+    .where(eq(s.developers.name, key)).limit(1);
+  let id = rows[0]?.id;
+  if (!id) {
+    const ins = await db.insert(s.developers).values({ name: key, website: website ?? null })
+      .returning({ id: s.developers.id });
+    id = ins[0].id;
+  } else if (website && !rows[0].website) {
+    await db.update(s.developers).set({ website }).where(eq(s.developers.id, id));
+  }
+  devCache.set(key, id);
+  return id;
+}
+
 async function main() {
   const idx = await ensureIndex();
   const pkgs = idx.packages as Record<string, any>;
@@ -69,23 +89,23 @@ async function main() {
   const apps = await db.select().from(s.apps)
     .where(and(eq(s.apps.sourceType, "fdroid"), eq(s.apps.isPublished, true)));
 
-  let added = 0, updated = 0, skipped = 0;
+  let added = 0, updated = 0, skipped = 0, logsFilled = 0, devsSet = 0;
   const notes: string[] = [];
 
-  // بچ: همه‌ی versionCodeهای موجود را با یک کوئری می‌گیریم (رفع N+1)
+  // بچ: همه‌ی نسخه‌های موجود را با یک کوئری می‌گیریم (رفع N+1) — شناسه و changelog هم برای بک‌فیل
   const appIds = apps.map((a) => a.id);
-  const knownByApp = new Map<string, Set<number>>();
+  const knownByApp = new Map<string, Map<number, { id: string; changelog: string | null }>>();
   if (appIds.length) {
     const BATCH = 500;
     for (let i = 0; i < appIds.length; i += BATCH) {
       const rows = await db
-        .select({ appId: s.appVersions.appId, versionCode: s.appVersions.versionCode })
+        .select({ appId: s.appVersions.appId, versionCode: s.appVersions.versionCode, id: s.appVersions.id, changelog: s.appVersions.changelog })
         .from(s.appVersions)
         .where(inArray(s.appVersions.appId, appIds.slice(i, i + BATCH)));
       for (const r of rows) {
-        let set = knownByApp.get(r.appId);
-        if (!set) { set = new Set(); knownByApp.set(r.appId, set); }
-        set.add(r.versionCode);
+        let map = knownByApp.get(r.appId);
+        if (!map) { map = new Map(); knownByApp.set(r.appId, map); }
+        map.set(r.versionCode, { id: r.id, changelog: r.changelog });
       }
     }
   }
@@ -97,16 +117,28 @@ async function main() {
     if (!p || !md) { skipped++; continue; }
 
     // نسخه‌های موجود در دیتابیس (از مپ بچ‌شده)
-    const known = knownByApp.get(app.id) ?? new Set<number>();
+    const known = knownByApp.get(app.id) ?? new Map<number, { id: string; changelog: string | null }>();
 
     const allVers = (Object.values(p.versions || {}) as any[])
       .filter((v) => v?.manifest?.versionCode && v?.file?.name)
       .sort((a, b) => b.manifest.versionCode - a.manifest.versionCode);
 
+    // بک‌فیل changelog نسخه‌های موجود: whatsNew ایندکس روی نسخه‌ی هم‌کد، فقط وقتی خالی است
+    for (const v of allVers) {
+      const rec = known.get(Number(v.manifest.versionCode));
+      const wn = v.whatsNew ? cleanText(loc(v.whatsNew) || "") : "";
+      if (rec && !rec.changelog && wn) {
+        await db.update(s.appVersions).set({ changelog: wn }).where(eq(s.appVersions.id, rec.id));
+        rec.changelog = wn;
+        logsFilled++;
+      }
+    }
+
     for (const v of allVers.slice(0, 5)) {
       const vc = Number(v.manifest.versionCode);
       if (known.has(vc)) continue;
       const f = v.file, m = v.manifest;
+      const wn = v.whatsNew ? cleanText(loc(v.whatsNew) || "") : "";
       // returning شناسه را مستقیم برمی‌گرداند (بدون کوئری مجدد)
       const [nv] = await db.insert(s.appVersions).values({
         appId: app.id,
@@ -114,6 +146,7 @@ async function main() {
         fileUrl: FDROID + f.name, fileSize: f.size ?? null,
         sha256: f.sha256 || null, minSdk: m.usesSdk?.minSdkVersion ?? null,
         fileType: "apk", status: "pending", isCurrent: false,
+        changelog: wn || null,
         source: "F-Droid auto-sync", publishedAt: v.added ? new Date(v.added) : new Date(),
       }).returning({ id: s.appVersions.id });
       // مجوزها — درج گروهی
@@ -125,7 +158,7 @@ async function main() {
       }
       added++;
       notes.push(`${app.nameFa}: v${m.versionName} (${vc})`);
-      known.add(vc);
+      known.set(vc, { id: nv.id, changelog: wn || null });
     }
 
     // به‌روزرسانی متادیتا اگر تغییر کرده
@@ -133,6 +166,11 @@ async function main() {
     const description = loc(md.description) || summary;
     const iconName = loc(md.icon)?.name;
     const patch: Record<string, unknown> = { updatedAt: new Date() };
+    // توسعه‌دهنده از authorName ایندکس — فقط وقتی اپ هنوز توسعه‌دهنده ندارد
+    if (!app.developerId && md.authorName) {
+      const devId = await resolveDeveloper(String(md.authorName), md.authorWebSite || null);
+      if (devId) { patch.developerId = devId; devsSet++; }
+    }
     const newShort = cleanText(summary, 300);
     if (newShort && newShort !== app.shortDesc) patch.shortDesc = newShort;
     const newDesc = cleanText(description);
@@ -144,7 +182,7 @@ async function main() {
     }
   }
 
-  const message = `نسخه‌های جدید: ${added} | اپ‌های به‌روزشده: ${updated} | ردشده: ${skipped}\n` + notes.slice(0, 30).join("\n");
+  const message = `نسخه‌های جدید: ${added} | اپ‌های به‌روزشده: ${updated} | ردشده: ${skipped} | changelog بک‌فیل: ${logsFilled} | توسعه‌دهنده ست‌شده: ${devsSet}\n` + notes.slice(0, 30).join("\n");
   await db.update(s.repositorySyncLogs).set({
     status: "success", finishedAt: new Date(), message: message.slice(0, 5000),
     appsAdded: added, appsUpdated: updated,
@@ -154,7 +192,7 @@ async function main() {
       .where(eq(s.repositories.id, repo.id));
   }
 
-  console.log(`✓ sync done: +${added} versions, ~${updated} apps updated, ${skipped} skipped`);
+  console.log(`✓ sync done: +${added} versions, ~${updated} apps updated, ${skipped} skipped, ${logsFilled} changelogs backfilled, ${devsSet} developers set`);
   await client.end();
 }
 

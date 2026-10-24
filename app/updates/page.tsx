@@ -1,17 +1,24 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSessionUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import * as s from "@/db/schema";
 import { eq, and, desc, sql, inArray } from "drizzle-orm";
-import { toFaDigits } from "@/lib/fa";
+import { getLocale } from "@/lib/i18n-server";
+import { STR, num } from "@/lib/i18n";
 import { px } from "@/lib/img";
 import { Inbox, RefreshCw, CheckCircle2 } from "lucide-react";
 import PxImg from "@/components/PxImg";
 
-export const metadata = { title: "به‌روزرسانی‌ها" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: STR[locale].ext_updates };
+}
 
 export default async function UpdatesPage() {
+  const locale = await getLocale();
+  const d = STR[locale];
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/updates");
 
@@ -34,10 +41,10 @@ export default async function UpdatesPage() {
     return (
       <div className="max-w-2xl mx-auto text-center py-16">
         <Inbox className="w-14 h-14 mx-auto mb-4 text-muted-foreground" aria-hidden="true" />
-        <h1 className="text-xl font-extrabold mb-2">هنوز چیزی دانلود نکردی</h1>
-        <p className="text-muted-foreground mb-6">برنامه‌هایی که دانلود می‌کنی اینجا دنبال می‌شن و وقتی نسخه‌ی جدید بیاد خبرت می‌کنم</p>
+        <h1 className="text-xl font-extrabold mb-2">{d.ext_updEmptyTitle}</h1>
+        <p className="text-muted-foreground mb-6">{d.ext_updEmptySub}</p>
         <Link href="/" className="inline-block bg-primary text-primary-foreground font-bold px-6 py-3 rounded-2xl">
-          مرور برنامه‌ها
+          {d.ext_browseApps}
         </Link>
       </div>
     );
@@ -69,12 +76,12 @@ export default async function UpdatesPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <h1 className="text-2xl font-extrabold mb-1 flex items-center gap-2">
-        <RefreshCw className="w-6 h-6 text-primary" aria-hidden="true" /> به‌روزرسانی‌ها
+        <RefreshCw className="w-6 h-6 text-primary" aria-hidden="true" /> {d.ext_updates}
       </h1>
       <p className="text-sm text-muted-foreground mb-6">
         {updates.length > 0
-          ? `${toFaDigits(updates.length)} برنامه نسخه‌ی جدید دارن`
-          : "همه‌ی برنامه‌هات به‌روزن"}
+          ? d.ext_updCount.replace("{n}", num(updates.length, locale))
+          : d.ext_updAllCurrent}
       </p>
 
       {updates.length > 0 && (
@@ -94,11 +101,11 @@ export default async function UpdatesPage() {
                 <h3 className="font-bold truncate">{app.nameFa}</h3>
                 <p className="text-xs text-muted-foreground" dir="ltr" style={{ textAlign: "right" }}>{app.nameEn}</p>
                 <p className="text-xs text-primary font-bold mt-1">
-                  نسخه‌ی جدید: {(app as { newVersion?: string }).newVersion || "جدید"} 🆕
+                  {d.ext_updNewVersion} {(app as { newVersion?: string }).newVersion || d.ext_updNewFallback} 🆕
                 </p>
               </div>
               <span className="shrink-0 bg-primary text-primary-foreground text-sm font-bold px-4 py-2 rounded-xl">
-                به‌روزرسانی
+                {d.ext_updateBtn}
               </span>
             </Link>
           ))}
@@ -108,7 +115,7 @@ export default async function UpdatesPage() {
       {upToDate.length > 0 && (
         <>
           <h2 className="text-lg font-extrabold mb-3 flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-primary" aria-hidden="true" /> به‌روز هستن
+            <CheckCircle2 className="w-5 h-5 text-primary" aria-hidden="true" /> {d.ext_upToDate}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {upToDate.map((app) => (

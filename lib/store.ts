@@ -282,9 +282,13 @@ export async function getAppBySlug(slug: string) {
   const app = rows[0];
   if (!app) return null;
 
+  // سقف ۵۰ نسخه‌ی فعال (واقعیت فعلی دیتابیس: حداکثر ۹) + شمار کل تا کشو اگر کوتاه شد، صادقانه اعلام کند
   const versions = await db.select().from(s.appVersions)
     .where(and(eq(s.appVersions.appId, app.id), eq(s.appVersions.status, "active")))
-    .orderBy(desc(s.appVersions.versionCode)).limit(10);
+    .orderBy(desc(s.appVersions.versionCode)).limit(50);
+  const vTotal = await db.select({ c: sql<number>`count(*)` }).from(s.appVersions)
+    .where(and(eq(s.appVersions.appId, app.id), eq(s.appVersions.status, "active")));
+  const versionsTotal = Number(vTotal[0]?.c ?? versions.length);
 
   const cats = await db.select({
     slug: s.categories.slug, nameFa: s.categories.nameFa, icon: s.categories.icon,
@@ -307,7 +311,7 @@ export async function getAppBySlug(slug: string) {
   // شاید بپسندی: هم‌دسته‌ای‌های هم‌پلتفرم با امتیاز تعداد دسته‌ی مشترک
   const related = await getRelatedApps(app.id, 6, app.platform as Platform);
 
-  return { ...app, versions, categories: cats, screenshots: shots, current, permissions: perms, downloadCount, similar: related };
+  return { ...app, versions, versionsTotal, categories: cats, screenshots: shots, current, permissions: perms, downloadCount, similar: related };
 }
 
 export type SearchFilters = {
