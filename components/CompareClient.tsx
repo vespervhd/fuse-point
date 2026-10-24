@@ -4,6 +4,7 @@ import Link from "next/link";
 import PxImg from "@/components/PxImg";
 import { px } from "@/lib/img";
 import { getCompareList } from "@/components/CompareButton";
+import { STR, dateL, type Locale } from "@/lib/i18n";
 import { Scale, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button";
@@ -15,12 +16,12 @@ type CApp = {
   rating: number | null; categories: string; permCount: number; updatedAt: string;
 };
 
-function fa(n: number | null | undefined): string {
-  if (n == null) return "—";
-  return n.toLocaleString("fa-IR");
-}
-
-export default function CompareClient() {
+export default function CompareClient({ locale = "fa" }: { locale?: Locale }) {
+  const d = STR[locale];
+  const fmt = (n: number | null | undefined): string => {
+    if (n == null) return "—";
+    return n.toLocaleString(locale === "fa" ? "fa-IR" : "en-US");
+  };
   const [slugs, setSlugs] = useState<string[]>([]);
   const [apps, setApps] = useState<CApp[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,32 +45,32 @@ export default function CompareClient() {
     setSlugs([]); setApps([]);
   };
 
-  if (loading) return <p className="text-muted-foreground">در حال بارگذاری...</p>;
+  if (loading) return <p className="text-muted-foreground">{d.cmp_loading}</p>;
   if (!apps.length) return (
     <div className="text-center py-16">
       <Scale className="w-12 h-12 mx-auto mb-4 text-muted-foreground" aria-hidden="true" />
-      <p className="font-bold mb-2">لیست مقایسه خالی است</p>
-      <p className="text-sm text-muted-foreground mb-6">از صفحه‌ی هر برنامه، «افزودن به مقایسه» را بزنید</p>
-      <Link href="/" className="text-primary font-bold">← بازگشت به خانه</Link>
+      <p className="font-bold mb-2">{d.cmp_empty}</p>
+      <p className="text-sm text-muted-foreground mb-6">{d.cmp_emptySub}</p>
+      <Link href="/" className="text-primary font-bold">{d.cmp_backHome}</Link>
     </div>
   );
 
   const rows: [string, (a: CApp) => React.ReactNode][] = [
-    ["توضیح", (a) => <span className="text-xs text-muted-foreground line-clamp-3">{a.shortDescFa || "—"}</span>],
-    ["آخرین نسخه", (a) => fa(a.versionName as any) === "—" ? (a.versionName || "—") : a.versionName],
-    ["حجم فایل", (a) => a.fileSize ? `${(a.fileSize / 1048576).toLocaleString("fa-IR", { maximumFractionDigits: 1 })} مگابایت` : "—"],
-    ["دانلودها", (a) => fa(a.downloadCount)],
-    ["امتیاز", (a) => a.rating ? <span className="inline-flex items-center gap-1"><Star className="w-3.5 h-3.5" aria-hidden="true" /> {a.rating.toLocaleString("fa-IR")}</span> : "—"],
-    ["دسته‌ها", (a) => <span className="text-xs">{a.categories || "—"}</span>],
-    ["تعداد دسترسی‌ها", (a) => fa(a.permCount)],
-    ["آخرین به‌روزرسانی", (a) => a.updatedAt ? new Date(a.updatedAt).toLocaleDateString("fa-IR") : "—"],
+    [d.cmp_desc, (a) => <span className="text-xs text-muted-foreground line-clamp-3">{a.shortDescFa || "—"}</span>],
+    [d.cmp_version, (a) => a.versionName || "—"],
+    [d.cmp_size, (a) => a.fileSize ? `${(a.fileSize / 1048576).toLocaleString(locale === "fa" ? "fa-IR" : "en-US", { maximumFractionDigits: 1 })} ${d.cmp_megabyte}` : "—"],
+    [d.cmp_downloads, (a) => fmt(a.downloadCount)],
+    [d.cmp_rating, (a) => a.rating ? <span className="inline-flex items-center gap-1"><Star className="w-3.5 h-3.5" aria-hidden="true" /> {a.rating.toLocaleString(locale === "fa" ? "fa-IR" : "en-US")}</span> : "—"],
+    [d.cmp_cats, (a) => <span className="text-xs">{a.categories || "—"}</span>],
+    [d.cmp_perms, (a) => fmt(a.permCount)],
+    [d.cmp_updated, (a) => a.updatedAt ? (locale === "fa" ? new Date(a.updatedAt).toLocaleDateString("fa-IR") : dateL(a.updatedAt, locale)) : "—"],
   ];
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-muted-foreground">{fa(apps.length)} برنامه در حال مقایسه</p>
-        <Button onClick={clear} variant="destructive" size="sm">پاک کردن همه</Button>
+        <p className="text-sm text-muted-foreground">{d.cmp_inList.replace("{n}", fmt(apps.length))}</p>
+        <Button onClick={clear} variant="destructive" size="sm">{d.cmp_clearAll}</Button>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[560px] border-collapse">
@@ -81,7 +82,7 @@ export default function CompareClient() {
                   <div className="bg-card border border-border rounded-3xl p-4">
                     {a.iconUrl && <PxImg src={px(a.iconUrl) || ""} alt={a.nameFa} width={64} height={64} className="w-16 h-16 rounded-2xl mx-auto mb-2 object-cover" />}
                     <Link href={`/app/${a.slug}`} className="font-extrabold text-sm hover:text-primary block mb-2">{a.nameFa}</Link>
-                    <Button onClick={() => remove(a.slug)} variant="ghost" size="sm" className="h-6 px-2 text-xs">حذف ✕</Button>
+                    <Button onClick={() => remove(a.slug)} variant="ghost" size="sm" className="h-6 px-2 text-xs">{d.cmp_remove} ✕</Button>
                   </div>
                 </th>
               ))}
@@ -98,7 +99,7 @@ export default function CompareClient() {
               <td></td>
               {apps.map((a) => (
                 <td key={a.slug} className="py-4 px-3 text-center">
-                  <Link href={`/app/${a.slug}`} className={cn(buttonVariants({ size: "lg" }), "rounded-2xl font-bold")}>مشاهده و دانلود</Link>
+                  <Link href={`/app/${a.slug}`} className={cn(buttonVariants({ size: "lg" }), "rounded-2xl font-bold")}>{d.cmp_view}</Link>
                 </td>
               ))}
             </tr>

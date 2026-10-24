@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { STR, type Locale } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,7 +11,8 @@ type Cat = {
   icon: string | null; parentId: string | null; sortOrder: number; isActive: boolean;
 };
 
-export default function CategoriesAdmin() {
+export default function CategoriesAdmin({ locale }: { locale: Locale }) {
+  const d = STR[locale];
   const [cats, setCats] = useState<Cat[]>([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
@@ -32,7 +34,7 @@ export default function CategoriesAdmin() {
     });
     const j = await r.json();
     if (r.ok) { setNameFa(""); setIcon(""); setParentId(""); load(); }
-    else setMsg(`❌ ${j.error || "خطا"}`);
+    else setMsg(`❌ ${j.error || d.adm_errGeneric}`);
   };
 
   const toggle = async (c: Cat) => {
@@ -44,7 +46,7 @@ export default function CategoriesAdmin() {
   };
 
   const remove = async (c: Cat) => {
-    if (!confirm(`«${c.nameFa}» حذف شود؟`)) return;
+    if (!confirm(d.adm_catDeleteConfirm.replace("{name}", c.nameFa))) return;
     const r = await fetch("/api/admin/categories", {
       method: "DELETE", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: c.id }),
@@ -57,24 +59,24 @@ export default function CategoriesAdmin() {
 
   return (
     <div className="animate-fade-up max-w-4xl">
-      <h1 className="text-2xl font-extrabold mb-6">دسته‌بندی‌ها</h1>
+      <h1 className="text-2xl font-extrabold mb-6">{d.cats}</h1>
       {msg && <p role={msg.startsWith("❌") ? "alert" : "status"} className={`mb-4 text-sm border rounded-xl p-3 ${msg.startsWith("❌") ? "text-destructive bg-destructive/10 border-destructive/30" : "text-info bg-info/10 border-info/30"}`}>{msg}</p>}
 
       <div className="bg-card border border-border rounded-3xl p-6 mb-6">
-        <h2 className="font-bold mb-3">＋ دسته جدید</h2>
+        <h2 className="font-bold mb-3">{d.adm_newCat}</h2>
         <div className="flex flex-wrap gap-3">
-          <Input className="h-11 flex-1 min-w-40" placeholder="نام فارسی" value={nameFa} onChange={(e) => setNameFa(e.target.value)} />
-          <Input className="h-11 w-24" placeholder="آیکون 🎁" value={icon} onChange={(e) => setIcon(e.target.value)} />
+          <Input className="h-11 flex-1 min-w-40" placeholder={d.adm_nameFa} value={nameFa} onChange={(e) => setNameFa(e.target.value)} />
+          <Input className="h-11 w-24" placeholder={d.adm_phIcon} value={icon} onChange={(e) => setIcon(e.target.value)} />
           <Select value={parentId || "__root__"} onValueChange={(v) => setParentId(v === "__root__" ? "" : v)}>
             <SelectTrigger className="h-11 min-w-44">
-              <SelectValue placeholder="بدون والد (ریشه)" />
+              <SelectValue placeholder={d.adm_noParent} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__root__">بدون والد (ریشه)</SelectItem>
+              <SelectItem value="__root__">{d.adm_noParent}</SelectItem>
               {cats.filter((c) => !c.parentId).map((c) => <SelectItem key={c.id} value={c.id}>{c.nameFa}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Button onClick={create}>ثبت</Button>
+          <Button onClick={create}>{d.adm_submit}</Button>
         </div>
       </div>
 
@@ -89,9 +91,9 @@ export default function CategoriesAdmin() {
                   <p className="text-xs text-muted-foreground" dir="ltr" style={{ textAlign: "right" }}>{c.slug}</p>
                 </div>
                 <Button variant="ghost" size="sm" onClick={() => toggle(c)} className="h-7 px-2 text-xs">
-                  {c.isActive ? "غیرفعال" : "فعال"}
+                  {c.isActive ? d.adm_deactivate : d.adm_activate}
                 </Button>
-                <Button variant="destructive" size="sm" onClick={() => remove(c)} className="h-7 px-2 text-xs">حذف</Button>
+                <Button variant="destructive" size="sm" onClick={() => remove(c)} className="h-7 px-2 text-xs">{d.adm_delete}</Button>
               </li>
             ))}
           </ul>

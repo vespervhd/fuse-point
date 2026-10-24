@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { formatDate, toFaDigits } from "@/lib/fa";
+import { STR, num, dateL, type Locale, type Dict } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 
 type Err = {
@@ -9,11 +9,15 @@ type Err = {
   firstSeenAt: string; lastSeenAt: string;
 };
 
-const KIND_FA: Record<string, string> = {
-  client: "کلاینت", server: "سرور", api: "API",
+const kindLabel = (d: Dict, kind: string): string => {
+  if (kind === "client") return d.adm_kindClient;
+  if (kind === "server") return d.adm_kindServer;
+  if (kind === "api") return "API";
+  return kind;
 };
 
-export default function ErrorsAdmin() {
+export default function ErrorsAdmin({ locale }: { locale: Locale }) {
+  const d = STR[locale];
   const [errors, setErrors] = useState<Err[]>([]);
   const [filter, setFilter] = useState("open");
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -38,17 +42,17 @@ export default function ErrorsAdmin() {
 
   return (
     <div className="animate-fade-up max-w-4xl">
-      <h1 className="text-2xl font-extrabold mb-2">خطاهای سایت</h1>
+      <h1 className="text-2xl font-extrabold mb-2">{d.adm_navErrors}</h1>
       <p className="text-sm text-muted-foreground mb-6">
         {openCount > 0 ? (
-          <><span className="font-bold text-destructive">{toFaDigits(openCount)}</span> خطای باز — مثل باگ ۳۷۴ صفحه، این‌جا زودتر دیده می‌شد.</>
+          <><span className="font-bold text-destructive">{num(openCount, locale)}</span> {d.adm_errOpenNote}</>
         ) : (
-          "همه‌چیز تمیز است. خطای جدید این‌جا ثبت می‌شود."
+          d.adm_errAllClean
         )}
       </p>
 
       <div className="flex gap-2 mb-6">
-        {[["open", "باز"], ["resolved", "حل‌شده"], ["all", "همه"]].map(([k, l]) => (
+        {[["open", d.adm_filterOpen], ["resolved", d.adm_filterResolved], ["all", d.allCats]].map(([k, l]) => (
           <Button key={k} size="sm" variant={filter === k ? "default" : "ghost"} onClick={() => setFilter(k)}>{l}</Button>
         ))}
       </div>
@@ -59,10 +63,10 @@ export default function ErrorsAdmin() {
             <div className="flex flex-wrap justify-between gap-2 mb-2">
               <p className="font-bold text-sm">
                 <span className="text-xs font-normal text-muted-foreground ms-2">
-                  [{KIND_FA[e.kind] || e.kind}] ×{toFaDigits(e.count)}
+                  [{kindLabel(d, e.kind)}] ×{num(e.count, locale)}
                 </span>
               </p>
-              <span className="text-xs text-muted-foreground">{formatDate(e.lastSeenAt)}</span>
+              <span className="text-xs text-muted-foreground">{dateL(e.lastSeenAt, locale)}</span>
             </div>
             <p className="text-sm leading-7 mb-1 break-words" dir="auto">{e.message}</p>
             {e.url && (
@@ -79,7 +83,7 @@ export default function ErrorsAdmin() {
                   variant="ghost" size="sm"
                   onClick={() => setExpanded(expanded === e.id ? null : e.id)}
                 >
-                  {expanded === e.id ? "بستن stack" : "نمایش stack"}
+                  {expanded === e.id ? d.adm_hideStack : d.adm_showStack}
                 </Button>
               )}
               {e.status === "open" ? (
@@ -87,28 +91,28 @@ export default function ErrorsAdmin() {
                   size="sm"
                   onClick={() => act(e.id, "PATCH", { status: "resolved" })}
                 >
-                  حل شد
+                  {d.adm_resolvedBtn}
                 </Button>
               ) : (
                 <Button
                   variant="ghost" size="sm"
                   onClick={() => act(e.id, "PATCH", { status: "open" })}
                 >
-                  بازگشایی
+                  {d.adm_reopen}
                 </Button>
               )}
               <Button
                 variant="destructive" size="sm"
-                onClick={() => { if (confirm("حذف شود؟")) act(e.id, "DELETE"); }}
+                onClick={() => { if (confirm(d.adm_confirmDelete)) act(e.id, "DELETE"); }}
               >
-                حذف
+                {d.adm_delete}
               </Button>
             </div>
           </div>
         ))}
         {!list.length && (
           <p className="text-center text-muted-foreground text-sm bg-card border border-border rounded-3xl p-10">
-            خطایی وجود ندارد.
+            {d.adm_noErrors}
           </p>
         )}
       </div>

@@ -1,10 +1,11 @@
 import AppCard, { type CardApp } from "@/components/AppCard";
-import { toFaDigits } from "@/lib/fa";
+import { STR, num, type Locale } from "@/lib/i18n";
 import { Inbox } from "lucide-react";
 
-export default function AppGrid({ title, subtitle, apps }: {
-  title: string; subtitle?: string; apps: CardApp[];
+export default function AppGrid({ title, subtitle, apps, locale = "fa" }: {
+  title: string; subtitle?: string; apps: CardApp[]; locale?: Locale;
 }) {
+  const d = STR[locale];
   return (
     <div className="animate-fade-up">
       <h1 className="text-2xl font-extrabold mb-1">{title}</h1>
@@ -17,11 +18,11 @@ export default function AppGrid({ title, subtitle, apps }: {
       ) : (
         <div className="bg-card border border-border rounded-3xl p-10 text-center">
           <Inbox className="w-10 h-10 mx-auto mb-3 text-muted-foreground" aria-hidden="true" />
-          <p className="font-bold mb-1">موردی برای نمایش وجود ندارد</p>
-          <p className="text-sm text-muted-foreground">هنوز داده‌ی کافی ثبت نشده است.</p>
+          <p className="font-bold mb-1">{d.grd_empty}</p>
+          <p className="text-sm text-muted-foreground">{d.grd_emptySub}</p>
         </div>
       )}
-      <p className="text-xs text-muted-foreground mt-6">{toFaDigits(apps.length)} برنامه</p>
+      <p className="text-xs text-muted-foreground mt-6">{d.grd_count.replace("{n}", num(apps.length, locale))}</p>
     </div>
   );
 }

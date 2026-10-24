@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { formatDate } from "@/lib/fa";
+import { STR, dateL, type Locale, type Dict } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 
 type Review = {
@@ -9,9 +9,15 @@ type Review = {
   createdAt: string; userName: string | null; appName: string; appSlug: string;
 };
 
-const STATUS_FA: Record<string, string> = { pending: "در انتظار", approved: "تأییدشده", rejected: "ردشده" };
+const statusLabel = (d: Dict, status: string): string | undefined => {
+  if (status === "pending") return d.adm_statusPending;
+  if (status === "approved") return d.adm_statusApproved;
+  if (status === "rejected") return d.adm_statusRejected;
+  return undefined;
+};
 
-export default function ReviewsAdmin() {
+export default function ReviewsAdmin({ locale }: { locale: Locale }) {
+  const d = STR[locale];
   const [reviews, setReviews] = useState<Review[]>([]);
   const [filter, setFilter] = useState("pending");
 
@@ -30,9 +36,9 @@ export default function ReviewsAdmin() {
 
   return (
     <div className="animate-fade-up max-w-4xl">
-      <h1 className="text-2xl font-extrabold mb-6">نظرات کاربران</h1>
+      <h1 className="text-2xl font-extrabold mb-6">{d.adm_reviewsTitle}</h1>
       <div className="flex gap-2 mb-6">
-        {[["pending", "در انتظار"], ["approved", "تأییدشده"], ["rejected", "ردشده"], ["all", "همه"]].map(([k, l]) => (
+        {[["pending", d.adm_statusPending], ["approved", d.adm_statusApproved], ["rejected", d.adm_statusRejected], ["all", d.allCats]].map(([k, l]) => (
           <Button key={k} size="sm" variant={filter === k ? "default" : "ghost"} onClick={() => setFilter(k)}>{l}</Button>
         ))}
       </div>
@@ -42,23 +48,23 @@ export default function ReviewsAdmin() {
             <div className="flex flex-wrap justify-between gap-2 mb-2">
               <p className="font-bold text-sm">
                 <Link href={`/app/${r.appSlug}`} className="text-primary hover:underline">{r.appName}</Link>
-                <span className="text-muted-foreground font-normal ms-2">{"⭐".repeat(r.rating)} — {r.userName} [{STATUS_FA[r.status]}]</span>
+                <span className="text-muted-foreground font-normal ms-2">{"⭐".repeat(r.rating)} — {r.userName} [{statusLabel(d, r.status)}]</span>
               </p>
-              <span className="text-xs text-muted-foreground">{formatDate(r.createdAt)}</span>
+              <span className="text-xs text-muted-foreground">{dateL(r.createdAt, locale)}</span>
             </div>
             {r.text && <p className="text-sm leading-7 mb-3">{r.text}</p>}
             <div className="flex gap-2 text-xs">
               {r.status !== "approved" && (
-                <Button size="sm" onClick={() => act(r.id, "PATCH", { status: "approved" })}>تأیید</Button>
+                <Button size="sm" onClick={() => act(r.id, "PATCH", { status: "approved" })}>{d.adm_approve}</Button>
               )}
               {r.status !== "rejected" && (
-                <Button variant="ghost" size="sm" onClick={() => act(r.id, "PATCH", { status: "rejected" })}>رد</Button>
+                <Button variant="ghost" size="sm" onClick={() => act(r.id, "PATCH", { status: "rejected" })}>{d.adm_reject}</Button>
               )}
-              <Button variant="destructive" size="sm" onClick={() => { if (confirm("حذف شود؟")) act(r.id, "DELETE"); }}>حذف</Button>
+              <Button variant="destructive" size="sm" onClick={() => { if (confirm(d.adm_confirmDelete)) act(r.id, "DELETE"); }}>{d.adm_delete}</Button>
             </div>
           </div>
         ))}
-        {!list.length && <p className="text-center text-muted-foreground text-sm bg-card border border-border rounded-3xl p-10">نظری وجود ندارد.</p>}
+        {!list.length && <p className="text-center text-muted-foreground text-sm bg-card border border-border rounded-3xl p-10">{d.adm_noReviews}</p>}
       </div>
     </div>
   );

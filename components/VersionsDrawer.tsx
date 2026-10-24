@@ -27,7 +27,7 @@ const DownloadGlyph = () => (
 );
 
 const stripMd = (s: string) =>
-  s.replace(/\*\*|__|`/g, "").replace(/^#+\s*/gm, "").replace(/\[(.*?)\]\(.*?\)/g, "$1").trim();
+  s.replace(/\*\*|__|`/g, "").replace(/^#+\s*/gm, "").replace(/^\s*[*+-]\s+/gm, "").replace(/\[(.*?)\]\(.*?\)/g, "$1").trim();
 
 // کشوی «نسخه‌های قبلی» — هم‌خانواده‌ی کشوی مشخصات؛ نسخه‌ی فعلی (بر اساس شناسه، نه ترتیب) تکرار نمی‌شود
 export default function VersionsDrawer({
