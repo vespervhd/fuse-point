@@ -84,6 +84,7 @@ export async function AppTop({ slug, locale }: { slug: string; locale: Locale })
       title={appName(app, locale)}
       subtitle={appShort(app, locale) || (app.categories[0] ? catName(app.categories[0], locale) : null)}
       iconUrl={app.iconUrl}
+      hasOlderVersions={app.versions.length > 1}
       locale={locale}
     />
   );
@@ -170,9 +171,9 @@ export async function AppRest({ slug, locale }: { slug: string; locale: Locale }
         />
       </section>
 
-      {/* ۶) نسخه‌های قبلی */}
+      {/* ۶) نسخه‌های قبلی — لنگر #versions برای دکمه‌ی «نسخه‌های دیگر» کارت دانلود */}
       {app.versions.length > 1 && (
-        <section className="mt-4" aria-label={d.versions}>
+        <section className="mt-4" id="versions" aria-label={d.versions}>
           <VersionsDrawer versions={app.versions} currentId={v?.id ?? null} locale={locale} sourceLabel={versionsSource} totalOlder={app.versionsTotal - (v ? 1 : 0)} />
         </section>
       )}

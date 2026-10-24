@@ -9,8 +9,33 @@ type Platform = "android" | "windows" | "linux";
 
 const PLATFORMS: Platform[] = ["android", "windows", "linux"];
 
+// آیکون‌های پلتفرم — اینلاین SVG، بدون ایموجی و بدون حرف
+const AndroidMark = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="block w-full h-full">
+    <path d="M17.6 9.5a5.6 5.6 0 0 0-11.2 0Zm-8-3.9-1.3-2.2a.3.3 0 0 1 .5-.3l1.3 2.2a6.5 6.5 0 0 1 5.8 0l1.3-2.2a.3.3 0 0 1 .5.3l-1.3 2.2A5.6 5.6 0 0 1 17.6 9.5H6.4a5.6 5.6 0 0 1 3.2-3.9ZM9.2 8a.6.6 0 1 0 0-1.1.6.6 0 0 0 0 1.1Zm5.6 0a.6.6 0 1 0 0-1.1.6.6 0 0 0 0 1.1ZM6 10.3h12v8a1.7 1.7 0 0 1-1.7 1.7h-.9v2.4a1.3 1.3 0 0 1-2.6 0V20h-1.6v2.4a1.3 1.3 0 0 1-2.6 0V20h-.9A1.7 1.7 0 0 1 6 18.3Z" />
+  </svg>
+);
+const WindowsMark = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="block w-full h-full">
+    <path d="M3.5 3.5h8v8h-8zM12.5 3.5h8v8h-8zM3.5 12.5h8v8h-8zM12.5 12.5h8v8h-8z" />
+  </svg>
+);
+const LinuxMark = () => (
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="block w-full h-full">
+    <rect x="2.8" y="4" width="18.4" height="16" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
+    <path d="m6.5 9 3 3-3 3M12.5 15.5H17" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+function PlatformMark({ platform }: { platform: Platform }) {
+  if (platform === "windows") return <WindowsMark />;
+  if (platform === "linux") return <LinuxMark />;
+  return <AndroidMark />;
+}
+
 // نوار ثابت پایین — سوییچ فضای پلتفرم (دقیقاً ۳ گزینه، بدون «همه»)، عین نمونه
 // در صفحه‌ی اپ مخفی است: آن‌جا رکورد خود برنامه پلتفرمش را مشخص می‌کند
+// دکمه‌ها بدون بوردر و فقط آیکون‌اند؛ پلتفرم فعال با رنگ اکسنت (پررنگ + پس‌زمینه‌ی
+// ملایم اکسنت) مشخص می‌شود، نه با بوردر
 function PlatformNavInner({ locale }: { locale: Locale }) {
   const sp = useSearchParams();
   const pathname = usePathname();
@@ -73,9 +98,10 @@ function PlatformNavInner({ locale }: { locale: Locale }) {
         className="fixed bottom-0 inset-x-0 z-40 flex justify-center px-4 pt-2.5 pb-[calc(10px+env(safe-area-inset-bottom))] bg-background/[0.84] backdrop-blur-xl border-t border-border"
         aria-label={d.platform}
       >
-        <div className="inline-flex bg-card border border-border rounded-full p-1 gap-0.5" role="tablist" aria-label={d.platform}>
+        <div className="inline-flex bg-card rounded-full p-1 gap-0.5" role="tablist" aria-label={d.platform}>
           {PLATFORMS.map((p) => {
             const active = current === p;
+            const label = p === "android" ? d.plat_android : p === "windows" ? d.plat_windows : d.plat_linux;
             return (
               <Link
                 key={p}
@@ -83,13 +109,17 @@ function PlatformNavInner({ locale }: { locale: Locale }) {
                 onClick={() => savePlatform(p)}
                 role="tab"
                 aria-selected={active}
-                className={`px-5 py-2 rounded-full text-sm transition-colors ${
+                aria-label={label}
+                title={label}
+                className={`p-2.5 rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-primary ${
                   active
-                    ? "bg-primary text-primary-foreground font-extrabold"
-                    : "text-muted-foreground font-medium hover:text-foreground"
+                    ? "bg-primary/15 text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {p === "android" ? d.plat_android : p === "windows" ? d.plat_windows : d.plat_linux}
+                <span className="block w-[30px] h-[30px]">
+                  <PlatformMark platform={p} />
+                </span>
               </Link>
             );
           })}
