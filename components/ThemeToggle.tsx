@@ -4,19 +4,19 @@ import { useEffect, useState } from "react";
 import { CloudMoon, Flame, Sparkles, Orbit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const THEMES = ["sky", "embers", "aurora", "constellations"] as const;
+const THEMES = ["sky", "embers", "aurora", "constellation"] as const;
 type Theme = (typeof THEMES)[number];
 const LABELS: Record<Theme, string> = {
   sky: "آسمان زنده",
   embers: "اخگر زنده",
   aurora: "شفق زنده",
-  constellations: "صور فلکی زنده",
+  constellation: "صور فلکی زنده",
 };
 
 function ThemeIcon({ theme }: { theme: Theme }) {
   if (theme === "embers") return <Flame className="h-5 w-5" aria-hidden="true" />;
   if (theme === "aurora") return <Sparkles className="h-5 w-5" aria-hidden="true" />;
-  if (theme === "constellations") return <Orbit className="h-5 w-5" aria-hidden="true" />;
+  if (theme === "constellation") return <Orbit className="h-5 w-5" aria-hidden="true" />;
   return <CloudMoon className="h-5 w-5" aria-hidden="true" />;
 }
 

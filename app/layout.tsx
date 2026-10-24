@@ -49,7 +49,7 @@ export const viewport: Viewport = {
 export const instant = false;
 
 // تم پیش‌فرض (آسمان زنده) + خواندن انتخاب کاربر
-const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('vesper-theme');if(t!=='sky'&&t!=='embers'&&t!=='aurora'&&t!=='constellations'){t='sky';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','sky');}})();`;
+const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('vesper-theme');if(t!=='sky'&&t!=='embers'&&t!=='aurora'&&t!=='constellation'){t='sky';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','sky');}})();`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -66,10 +66,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <div className="amb-layer amb-stars-a" />
           <div className="amb-layer amb-stars-b" />
           <div className="amb-layer amb-meteor" />
-          <div className="amb-layer amb-aurora" />
+          <div className="amb-layer amb-aurora">
+            <span className="band band-1" />
+            <span className="band band-2" />
+            <span className="band band-3" />
+          </div>
           <div className="amb-layer amb-embers-a" />
           <div className="amb-layer amb-embers-b" />
           <div className="amb-layer amb-constellation" />
+          <div className="amb-layer amb-const-dots" />
         </div>
         <Header />
         <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 relative z-[1]">{children}</main>

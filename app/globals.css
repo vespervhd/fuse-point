@@ -79,7 +79,7 @@
   --ring: #5ee8b5;
 }
 
-[data-theme="constellations"] {
+[data-theme="constellation"] {
   --background: #0b0a1e;
   --foreground: #efeafd;
   --card: #12102a;
@@ -145,7 +145,7 @@ body {
   font-family: var(--font-inter), var(--font-vazir), system-ui, Tahoma, sans-serif;
   -webkit-font-smoothing: antialiased;
   /* محو نرم هنگام تعویض تم */
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 /* اسکرول‌بار ظریف */
@@ -235,95 +235,105 @@ body {
 
 .amb-layer { position: absolute; inset: 0; display: none; }
 
-/* چشمک ستاره‌ها */
+/* چشمک ستاره‌ها — دو لایه با ریتم متفاوت (نمونه‌ی تأییدشده) */
 @keyframes twinkle {
   from { opacity: 0.15; }
   to { opacity: 0.85; }
 }
 .amb-stars-a {
   background-image:
-    radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.9) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 130px 80px, rgba(255, 255, 255, 0.7) 50%, transparent 51%),
-    radial-gradient(1px 1px at 70px 140px, rgba(180, 200, 255, 0.8) 50%, transparent 51%),
-    radial-gradient(1px 1px at 170px 20px, rgba(255, 255, 255, 0.55) 50%, transparent 51%);
-  background-size: 200px 200px;
-  animation: twinkle 3.4s ease-in-out infinite alternate;
+    radial-gradient(1.5px 1.5px at 22px 34px, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 130px 90px, #fff 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 200px 160px, #dfe6ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 70px 210px, #fff 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 250px 40px, #fff 50%, transparent 51%);
+  background-size: 280px 280px;
+  animation: twinkle 2.6s ease-in-out infinite alternate;
 }
 .amb-stars-b {
   background-image:
-    radial-gradient(1.5px 1.5px at 60px 60px, rgba(255, 255, 255, 0.8) 50%, transparent 51%),
-    radial-gradient(1px 1px at 210px 150px, rgba(207, 214, 255, 0.75) 50%, transparent 51%),
-    radial-gradient(1px 1px at 150px 240px, rgba(255, 255, 255, 0.6) 50%, transparent 51%),
-    radial-gradient(2px 2px at 280px 40px, rgba(255, 255, 255, 0.5) 50%, transparent 51%);
-  background-size: 300px 300px;
-  animation: twinkle 5.2s ease-in-out infinite alternate-reverse;
+    radial-gradient(1px 1px at 40px 120px, #cdd8ff 50%, transparent 51%),
+    radial-gradient(1.6px 1.6px at 160px 30px, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 300px 190px, #fff 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 90px 260px, #e6ecff 50%, transparent 51%),
+    radial-gradient(1px 1px at 230px 300px, #fff 50%, transparent 51%);
+  background-size: 340px 340px;
+  animation: twinkle 3.9s ease-in-out infinite alternate-reverse;
 }
 
 /* شهاب — آسمان زنده */
 @keyframes meteor {
-  0% { transform: translate(0, 0) rotate(-24deg); opacity: 0; }
-  5% { opacity: 1; }
-  16% { transform: translate(-52vw, 24vh) rotate(-24deg); opacity: 0; }
-  100% { transform: translate(-52vw, 24vh) rotate(-24deg); opacity: 0; }
+  0% { opacity: 0; transform: rotate(-24deg) translateX(0); }
+  4% { opacity: 1; }
+  16% { opacity: 0; transform: rotate(-24deg) translateX(min(-62vw, -640px)); }
+  100% { opacity: 0; transform: rotate(-24deg) translateX(min(-62vw, -640px)); }
 }
 .amb-meteor {
-  inset: auto; top: 14%; inset-inline-end: 6%;
-  width: 130px; height: 2px; border-radius: 999px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), transparent);
+  inset: auto; top: 9%; inset-inline-start: -180px;
+  width: 130px; height: 2px; border-radius: 2px;
+  background: linear-gradient(to left, #fff, rgba(255, 255, 255, 0));
   opacity: 0;
   animation: meteor 7s linear infinite;
 }
 
-/* شفق — نوارهای لغزان */
-@keyframes aurora-drift {
-  from { transform: translateX(-3.5%) skewX(-4deg); }
-  to { transform: translateX(3.5%) skewX(3deg); }
+/* شفق — سه نوار محو با تاب آرام */
+@keyframes sway {
+  from { transform: translateX(-46px); }
+  to { transform: translateX(46px); }
 }
-.amb-aurora {
-  inset: -10% -6% auto -6%; height: 62%;
-  background:
-    radial-gradient(60% 42% at 20% 0%, rgba(94, 232, 181, 0.20), transparent 70%),
-    radial-gradient(50% 36% at 55% 0%, rgba(45, 212, 191, 0.15), transparent 70%),
-    radial-gradient(55% 40% at 85% 2%, rgba(150, 120, 255, 0.17), transparent 70%);
-  animation: aurora-drift 24s ease-in-out infinite alternate;
-}
+.amb-aurora { overflow: visible; }
+.amb-aurora .band { position: absolute; border-radius: 50%; filter: blur(46px); }
+.amb-aurora .band-1 { top: -90px; inset-inline-start: -6%; width: 62%; height: 190px; background: rgba(94, 232, 181, 0.20); animation: sway 24s ease-in-out infinite alternate; }
+.amb-aurora .band-2 { top: -60px; inset-inline-start: 26%; width: 55%; height: 170px; background: rgba(45, 212, 191, 0.15); animation: sway 24s ease-in-out infinite alternate-reverse; }
+.amb-aurora .band-3 { top: -110px; inset-inline-start: 52%; width: 58%; height: 200px; background: rgba(150, 120, 255, 0.17); animation: sway 24s ease-in-out infinite alternate; animation-delay: -8s; }
 
-/* اخگر — ذره‌های بالارونده */
-@keyframes ember-rise-a {
-  from { background-position: 0 0; }
-  to { background-position: 0 -220px; }
+/* اخگر — ذره‌های بالارونده با هاله */
+@keyframes ember-rise {
+  from { background-position: 0 260px; }
+  to { background-position: 24px -260px; }
 }
-@keyframes ember-rise-b {
-  from { background-position: 0 0; }
-  to { background-position: 0 -340px; }
+@keyframes ember-rise2 {
+  from { background-position: 0 340px; }
+  to { background-position: 30px -340px; }
 }
 .amb-embers-a {
   background-image:
-    radial-gradient(2px 2px at 30px 40px, rgba(255, 150, 60, 0.85) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 110px 120px, rgba(255, 110, 40, 0.7) 50%, transparent 51%),
-    radial-gradient(1px 1px at 180px 70px, rgba(255, 190, 90, 0.8) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 70px 190px, rgba(255, 130, 50, 0.55) 50%, transparent 51%);
-  background-size: 220px 220px;
-  animation: ember-rise-a 10s linear infinite;
+    radial-gradient(2px 2px at 30px 40px, rgba(255, 122, 51, 0.9) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 120px 150px, rgba(255, 179, 71, 0.8) 50%, transparent 51%),
+    radial-gradient(2.2px 2.2px at 190px 80px, rgba(255, 94, 32, 0.75) 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 80px 230px, rgba(255, 160, 80, 0.85) 50%, transparent 51%);
+  background-size: 220px 260px;
+  filter: drop-shadow(0 0 5px rgba(255, 122, 51, 0.8));
+  animation: ember-rise 10s linear infinite;
 }
 .amb-embers-b {
   background-image:
-    radial-gradient(1.5px 1.5px at 90px 90px, rgba(255, 170, 80, 0.7) 50%, transparent 51%),
-    radial-gradient(2px 2px at 250px 210px, rgba(255, 120, 45, 0.6) 50%, transparent 51%),
-    radial-gradient(1px 1px at 180px 300px, rgba(255, 200, 120, 0.65) 50%, transparent 51%);
-  background-size: 340px 340px;
-  animation: ember-rise-b 16s linear infinite;
+    radial-gradient(1.4px 1.4px at 60px 90px, rgba(255, 179, 71, 0.8) 50%, transparent 51%),
+    radial-gradient(2px 2px at 210px 200px, rgba(255, 122, 51, 0.85) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 150px 300px, rgba(255, 140, 60, 0.7) 50%, transparent 51%),
+    radial-gradient(1.8px 1.8px at 260px 60px, rgba(255, 110, 40, 0.8) 50%, transparent 51%);
+  background-size: 320px 340px;
+  filter: drop-shadow(0 0 6px rgba(255, 150, 60, 0.7));
+  animation: ember-rise2 16s linear infinite;
 }
 
-/* صور فلکی — کاشی خطوط و ستاره‌ها با تپش آرام */
-@keyframes constellation-pulse {
-  from { opacity: 0.6; }
-  to { opacity: 1; }
+/* صور فلکی — کاشی خطوط طلایی با تپش + نقطه‌های چشمک‌زن */
+@keyframes constpulse {
+  from { opacity: 0.45; }
+  to { opacity: 0.8; }
 }
 .amb-constellation {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cpath d='M28 190 L78 140 L120 158 L168 96 L206 108' fill='none' stroke='%23d4af37' stroke-opacity='0.45'/%3E%3Cpath d='M40 52 L92 74 L138 44' fill='none' stroke='%239990c4' stroke-opacity='0.4'/%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='28' cy='190' r='2'/%3E%3Ccircle cx='78' cy='140' r='1.6'/%3E%3Ccircle cx='120' cy='158' r='2.2'/%3E%3Ccircle cx='168' cy='96' r='1.6'/%3E%3Ccircle cx='206' cy='108' r='2'/%3E%3Ccircle cx='40' cy='52' r='1.5'/%3E%3Ccircle cx='92' cy='74' r='1.8'/%3E%3Ccircle cx='138' cy='44' r='1.4'/%3E%3C/g%3E%3Cpath d='M208 24a13 13 0 1 0 7 23 16 16 0 1 1-7-23z' fill='%23d4af37' fill-opacity='0.85'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='none' stroke='%23d4af37' stroke-opacity='0.34' stroke-width='1'%3E%3Cpolyline points='18,182 66,124 118,142 168,78'/%3E%3Cpolyline points='150,206 192,164 226,178'/%3E%3Cpolyline points='36,52 84,30 128,58'/%3E%3C/g%3E%3Cg fill='%23d4af37' fill-opacity='0.5'%3E%3Ccircle cx='18' cy='182' r='2'/%3E%3Ccircle cx='66' cy='124' r='1.6'/%3E%3Ccircle cx='118' cy='142' r='2.2'/%3E%3Ccircle cx='168' cy='78' r='1.8'/%3E%3Ccircle cx='150' cy='206' r='1.5'/%3E%3Ccircle cx='192' cy='164' r='2'/%3E%3Ccircle cx='226' cy='178' r='1.4'/%3E%3Ccircle cx='36' cy='52' r='1.7'/%3E%3Ccircle cx='84' cy='30' r='1.4'/%3E%3Ccircle cx='128' cy='58' r='1.9'/%3E%3C/g%3E%3Cpath d='M206 34a13 13 0 1 0 8 24 10.5 10.5 0 1 1-8-24z' fill='%23d4af37' fill-opacity='0.4'/%3E%3C/svg%3E");
   background-size: 240px 240px;
-  animation: constellation-pulse 7s ease-in-out infinite alternate;
+  animation: constpulse 6s ease-in-out infinite alternate;
+}
+.amb-const-dots {
+  background-image:
+    radial-gradient(1.3px 1.3px at 50px 60px, #efe6c8 50%, transparent 51%),
+    radial-gradient(1px 1px at 180px 130px, #fff 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 110px 220px, #e9dcb0 50%, transparent 51%);
+  background-size: 260px 260px;
+  animation: twinkle 3.4s ease-in-out infinite alternate;
 }
 
 /* نمایش لایه‌ها بر اساس تم */
@@ -334,8 +344,50 @@ body {
 [data-theme="embers"] .amb-embers-b { display: block; }
 [data-theme="aurora"] .amb-aurora,
 [data-theme="aurora"] .amb-stars-a { display: block; }
-[data-theme="constellations"] .amb-constellation,
-[data-theme="constellations"] .amb-stars-b { display: block; }
+[data-theme="constellation"] .amb-constellation,
+[data-theme="constellation"] .amb-const-dots { display: block; }
+
+/* ============================================================
+   «جریان» — پالس نورِ در حرکت روی بوردر (نمونه‌ی تأییدشده)
+   ============================================================ */
+@property --a {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes current {
+  to { --a: 360deg; }
+}
+.fx-current {
+  position: relative;
+}
+.fx-current::before {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px;
+  background: conic-gradient(from var(--a), transparent 0deg, transparent 265deg, var(--primary) 325deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: current 4.5s linear infinite; pointer-events: none;
+}
+
+/* موج جریان روی جداکننده‌ی بخش‌ها — با ورود به دید روشن می‌شود (.lit) */
+.divider-current { position: relative; overflow: hidden; }
+.divider-current::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 34%;
+  background: linear-gradient(to left, transparent, var(--primary), transparent);
+  opacity: 0; transform: translateX(-140%);
+}
+.divider-current.lit::after { animation: sweep 6.5s ease-in-out infinite; }
+@keyframes sweep {
+  0% { opacity: 0; transform: translateX(-140%); }
+  10% { opacity: 1; }
+  34% { opacity: 1; transform: translateX(320%); }
+  44%, 100% { opacity: 0; transform: translateX(320%); }
+}
+
+/* «جرقه» — ذره‌های انفجار کلیک (با JS ساخته می‌شن) */
+.spark {
+  position: fixed; z-index: 200; width: 9px; height: 2.6px; border-radius: 3px; pointer-events: none;
+}
 
 /* بوردر گرادیانی ظریف — فقط برای تأکید، نه همه‌جا */
 .grad-border { position: relative; }
