@@ -124,6 +124,78 @@ const PERM_EN: Record<string, { title: string; desc: string }> = {
   "android.permission.ACCESS_MEDIA_LOCATION": { title: "Photo locations", desc: "Read locations stored in photos" },
 };
 
+// ─── سطح ریسک مجوزها (نگاشت دستی و محافظه‌کارانه؛ خودِ مجوز از دیتابیس می‌آید) ───
+// low: دسترسی‌های سطح normal اندروید و کم‌اثر. mid: دسترسی‌های runtime ولی محدود به
+// یک داده‌ی مشخص (دوربین، میکروفون، مکان، مخاطبین، حافظه). high: دسترسی گسترده یا سیستمی.
+// قانون پیش‌فرض برای مجوزهای ناشناخته: فقط نام‌های شناخته‌شده‌ی سطح normal اندروید
+// (NORMAL_LEVEL_EXTRA) low می‌گیرند؛ بقیه‌ی ناشناخته‌ها mid — چون ممکن است runtime
+// باشند و حدس «کم‌ریسک» برای یک نام ناشناخته گمراه‌کننده است.
+type RiskLevel = "low" | "mid" | "high";
+
+const PERM_RISK: Record<string, RiskLevel> = {
+  // low — normal و کم‌اثر
+  "android.permission.INTERNET": "low",
+  "android.permission.ACCESS_NETWORK_STATE": "low",
+  "android.permission.ACCESS_WIFI_STATE": "low",
+  "android.permission.CHANGE_WIFI_STATE": "low",
+  "android.permission.VIBRATE": "low",
+  "android.permission.WAKE_LOCK": "low",
+  "android.permission.FOREGROUND_SERVICE": "low",
+  "android.permission.POST_NOTIFICATIONS": "low",
+  "android.permission.RECEIVE_BOOT_COMPLETED": "low",
+  "android.permission.SET_ALARM": "low",
+  "android.permission.SCHEDULE_EXACT_ALARM": "low",
+  "android.permission.FLASHLIGHT": "low",
+  "android.permission.NFC": "low",
+  "android.permission.BLUETOOTH": "low",
+  "android.permission.USE_BIOMETRIC": "low",
+  "android.permission.USE_FINGERPRINT": "low",
+  "android.permission.SET_WALLPAPER": "low",
+  "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION": "low",
+  // mid — runtime ولی محدود به یک داده‌ی مشخص
+  "android.permission.READ_EXTERNAL_STORAGE": "mid",
+  "android.permission.WRITE_EXTERNAL_STORAGE": "mid",
+  "android.permission.READ_MEDIA_IMAGES": "mid",
+  "android.permission.READ_MEDIA_VIDEO": "mid",
+  "android.permission.READ_MEDIA_AUDIO": "mid",
+  "android.permission.REQUEST_INSTALL_PACKAGES": "mid",
+  "android.permission.CAMERA": "mid",
+  "android.permission.RECORD_AUDIO": "mid",
+  "android.permission.ACCESS_FINE_LOCATION": "mid",
+  "android.permission.ACCESS_COARSE_LOCATION": "mid",
+  "android.permission.ACCESS_MEDIA_LOCATION": "mid",
+  "android.permission.READ_CONTACTS": "mid",
+  "android.permission.WRITE_CONTACTS": "mid",
+  "android.permission.CALL_PHONE": "mid",
+  "android.permission.READ_PHONE_STATE": "mid",
+  "android.permission.BODY_SENSORS": "mid",
+  "android.permission.READ_CALENDAR": "mid",
+  "android.permission.WRITE_CALENDAR": "mid",
+  "android.permission.BLUETOOTH_CONNECT": "mid",
+  "android.permission.BLUETOOTH_SCAN": "mid",
+  // high — گسترده یا سیستمی
+  "android.permission.MANAGE_EXTERNAL_STORAGE": "high",
+  "android.permission.SYSTEM_ALERT_WINDOW": "high",
+  "android.permission.WRITE_SECURE_SETTINGS": "high",
+  "android.permission.WRITE_SETTINGS": "high",
+  "android.permission.READ_LOGS": "high",
+  "android.permission.DUMP": "high",
+  "android.permission.PACKAGE_USAGE_STATS": "high",
+};
+
+// مجوزهای سطح normal اندروید که در PERM_META نیستند ولی کم‌ریسک‌اند
+const NORMAL_LEVEL_EXTRA = new Set([
+  "android.permission.TRANSMIT_IR",
+  "android.permission.SET_WALLPAPER_HINTS",
+  "android.permission.KILL_BACKGROUND_PROCESSES",
+]);
+
+function permRisk(permission: string): RiskLevel {
+  return PERM_RISK[permission] ?? (NORMAL_LEVEL_EXTRA.has(permission) ? "low" : "mid");
+}
+
+const RISK_KEY = { low: "riskLow", mid: "riskMid", high: "riskHigh" } as const;
+
 function permMeta(permission: string, locale: Locale): PermMeta & { raw: boolean } {
   const hit = PERM_META[permission];
   if (hit) {
@@ -264,9 +336,11 @@ export default function AppDetailsDrawer({
         {permissions.length > 0 && (
           <>
             <p className="dt-section-label">{d.perms}</p>
+            <p className="dt-perm-note">{d.permRiskNote}</p>
             <div>
               {permissions.map((p) => {
                 const m = permMeta(p, locale);
+                const risk = permRisk(p);
                 return (
                   <div key={p} className="dt-perm">
                     <span className="dt-perm-icon" aria-hidden="true">
@@ -278,6 +352,7 @@ export default function AppDetailsDrawer({
                         ? <p className="dt-perm-desc dt-perm-raw">{m.desc}</p>
                         : <p className="dt-perm-desc">{m.desc}</p>}
                     </div>
+                    <span className={`dt-risk dt-risk-${risk}`}>{d[RISK_KEY[risk]]}</span>
                   </div>
                 );
               })}
