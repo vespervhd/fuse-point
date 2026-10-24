@@ -2,11 +2,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Bell } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { STR, num, type Locale } from "@/lib/i18n";
 
-export default function NotifBell() {
+// زنگ اعلان هدر — به صفحه‌ی اعلان‌ها می‌رود؛ نشان خوانده‌نشده از API واقعی
+export default function NotifBell({ locale = "fa" }: { locale?: Locale }) {
   const [unread, setUnread] = useState(0);
+  const d = STR[locale];
 
   useEffect(() => {
     let stop = false;
@@ -23,21 +24,14 @@ export default function NotifBell() {
     return () => { stop = true; clearInterval(t); };
   }, []);
 
-  if (!unread) {
-    return (
-      <Link href="/notifications" aria-label="اعلان‌ها"
-        className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "rounded-full")}>
-        <Bell className="w-5 h-5" aria-hidden="true" />
-      </Link>
-    );
-  }
   return (
-    <Link href="/notifications" aria-label={`${unread} اعلان خوانده‌نشده`}
-      className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "relative rounded-full")}>
-      <Bell className="w-5 h-5" aria-hidden="true" />
-      <span className="absolute top-1 end-1 min-w-5 h-5 px-1 rounded-full bg-destructive text-destructive-foreground text-[11px] font-bold flex items-center justify-center">
-        {unread > 9 ? "۹+" : unread}
-      </span>
+    <Link href="/notifications" aria-label={d.notifications} className="hdr-icon-btn">
+      <Bell className="w-5 h-5" strokeWidth={1.8} aria-hidden="true" />
+      {unread > 0 && (
+        <span className="absolute top-0.5 end-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+          {unread > 9 ? `${num(9, locale)}+` : num(unread, locale)}
+        </span>
+      )}
     </Link>
   );
 }

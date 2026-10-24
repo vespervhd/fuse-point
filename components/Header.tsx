@@ -1,28 +1,37 @@
-"use client";
-
 import Link from "next/link";
+import { Search } from "lucide-react";
 import NotifBell from "./NotifBell";
 import ThemeToggle from "./ThemeToggle";
+import LangToggle from "./LangToggle";
+import FavHeaderButton from "./FavHeaderButton";
 import PlatformNav from "./PlatformNav";
+import { LogoMark, Wordmark } from "./Logo";
+import { STR, type Locale } from "@/lib/i18n";
 
-export default function Header() {
+// هدر — عین نمونه: لوگوی جرقه + وردمارک مینیمال، و سمت دیگر: زبان، تم، علاقه‌مندی، اعلان، جستجو
+export default function Header({ locale = "fa" }: { locale?: Locale }) {
+  const d = STR[locale];
   return (
     <>
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur border-b border-border">
-        <div className="flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 min-h-14 h-14">
-          <Link href="/" aria-label="Fuse Point - صفحه‌ی اصلی" className="shrink-0">
-            <img src="/icons/icon-192.png" alt="Fuse Point" width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
+      <header className="sticky top-0 z-50 bg-background/[0.84] backdrop-blur-xl border-b border-border">
+        <div className="flex items-center gap-2.5 h-[58px] w-full max-w-[1120px] mx-auto px-4">
+          <Link href="/" aria-label="Fuse Point" className="flex items-center gap-[9px] shrink-0 text-foreground">
+            <LogoMark size={34} />
+            <Wordmark size={13.5} />
           </Link>
-          <div className="flex items-center shrink-0 rounded-full bg-card/60 p-1">
-            <NotifBell />
-            <span className="w-px h-6 bg-border shrink-0" aria-hidden="true" />
-            <ThemeToggle />
+          <div className="ms-auto flex items-center gap-1.5">
+            <LangToggle locale={locale} />
+            <ThemeToggle locale={locale} />
+            <FavHeaderButton locale={locale} />
+            <NotifBell locale={locale} />
+            <Link href="/search" aria-label={d.headerSearch} className="hdr-icon-btn">
+              <Search className="w-5 h-5" strokeWidth={1.8} aria-hidden="true" />
+            </Link>
           </div>
         </div>
       </header>
 
-      <PlatformNav />
-      <div className="h-10" aria-hidden="true" />
+      <PlatformNav locale={locale} />
     </>
   );
 }

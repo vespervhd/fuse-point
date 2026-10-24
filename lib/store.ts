@@ -19,6 +19,7 @@ const cardCols = {
   iconUrl: s.apps.iconUrl, shortDesc: s.apps.shortDesc, shortDescFa: s.apps.shortDescFa,
   versionName: curVersion, fileSize: curFileSize, downloadCount: dlCount, githubStars: s.apps.githubStars,
   platform: s.apps.platform, isOpenSource: s.apps.isOpenSource, createdAt: s.apps.createdAt,
+  updatedAt: s.apps.updatedAt,
 };
 
 // آمار نوار صفحه‌ی اصلی (فیلتر پلتفرم‌محور)
@@ -118,7 +119,7 @@ export async function getCollectionBySlug(slug: string, platform?: Platform) {
 export async function getRootCategories(platform?: Platform) {
   await dyn();
   const rows = await db.select({
-    id: s.categories.id, slug: s.categories.slug, nameFa: s.categories.nameFa, icon: s.categories.icon,
+    id: s.categories.id, slug: s.categories.slug, nameFa: s.categories.nameFa, nameEn: s.categories.nameEn, icon: s.categories.icon,
   }).from(s.categories)
     .where(and(eq(s.categories.isActive, true), sql`${s.categories.parentId} is null`))
     .orderBy(s.categories.sortOrder, s.categories.nameFa);
@@ -170,6 +171,61 @@ export async function getLatestApps(limit = 8, platform?: Platform) {
     .orderBy(desc(s.apps.updatedAt)).limit(limit);
 }
 
+// جدیدترین‌ها بر اساس تاریخ اضافه‌شدن به فروشگاه (برای نمای «تازه‌ها»)
+export async function getNewestApps(limit = 8, platform?: Platform) {
+  await dyn();
+  return db.select(cardCols).from(s.apps)
+    .where(and(pub, plat(platform)))
+    .orderBy(desc(s.apps.createdAt)).limit(limit);
+}
+
+// اپ برگزیده‌ی یک پلتفرم: اول پرچم featured، بعد انتخاب سردبیر، بعد پرطرفدارترین
+export async function getFeaturedApp(platform?: Platform) {
+  await dyn();
+  const feat = await db.select(cardCols).from(s.apps)
+    .where(and(pub, eq(s.apps.featured, true), plat(platform)))
+    .orderBy(desc(s.apps.updatedAt)).limit(1);
+  if (feat[0]) return feat[0];
+  const ed = await db.select(cardCols).from(s.apps)
+    .where(and(pub, eq(s.apps.editorChoice, true), plat(platform)))
+    .orderBy(desc(s.apps.updatedAt)).limit(1);
+  if (ed[0]) return ed[0];
+  const pop = await getPopularApps(1, platform);
+  return pop[0] ?? null;
+}
+
+// دسته‌ی اصلی هر اپ (اولین دسته بر اساس ترتیب دسته‌ها) برای خط دسته در ردیف‌ها
+export async function attachPrimaryCategory<T extends { id: string }>(
+  apps: T[],
+): Promise<Map<string, { slug: string; nameFa: string; nameEn: string | null }>> {
+  const out = new Map<string, { slug: string; nameFa: string; nameEn: string | null }>();
+  if (!apps.length) return out;
+  const rows = await db.select({
+    appId: s.appCategories.appId, slug: s.categories.slug,
+    nameFa: s.categories.nameFa, nameEn: s.categories.nameEn, sortOrder: s.categories.sortOrder,
+  }).from(s.appCategories)
+    .innerJoin(s.categories, eq(s.appCategories.categoryId, s.categories.id))
+    .where(and(inArray(s.appCategories.appId, apps.map((a) => a.id)), eq(s.categories.isActive, true)))
+    .orderBy(s.categories.sortOrder, s.categories.nameFa);
+  for (const r of rows) {
+    if (!out.has(r.appId)) out.set(r.appId, { slug: r.slug, nameFa: r.nameFa, nameEn: r.nameEn });
+  }
+  return out;
+}
+
+// صفحه‌ی توسعه‌دهنده: توسعه‌دهنده با نام دقیق + همه‌ی اپ‌های منتشرشده‌اش
+export async function getDeveloperPage(name: string) {
+  await dyn();
+  const devs = await db.select().from(s.developers)
+    .where(eq(s.developers.name, name)).limit(1);
+  const dev = devs[0];
+  if (!dev) return null;
+  const apps = await db.select(cardCols).from(s.apps)
+    .where(and(pub, eq(s.apps.developerId, dev.id)))
+    .orderBy(desc(s.apps.updatedAt));
+  return { developer: dev, apps };
+}
+
 export async function getOpenSourceApps(limit = 8, platform?: Platform) {
   await dyn();
   return db.select(cardCols).from(s.apps)
@@ -218,6 +274,7 @@ export async function getAppBySlug(slug: string) {
     sourceType: s.apps.sourceType, sourceUrl: s.apps.sourceUrl,
     githubRepo: s.apps.githubRepo, githubStars: s.apps.githubStars,
     minSdk: s.apps.minSdk, createdAt: s.apps.createdAt, updatedAt: s.apps.updatedAt,
+    developerId: s.apps.developerId,
     developerName: s.developers.name, developerWebsite: s.developers.website,
   }).from(s.apps)
     .leftJoin(s.developers, eq(s.apps.developerId, s.developers.id))
@@ -256,7 +313,7 @@ export async function getAppBySlug(slug: string) {
 export type SearchFilters = {
   category?: string;
   openSource?: boolean;
-  sort?: "popular" | "newest" | "updated" | "name";
+  sort?: "popular" | "newest" | "updated" | "name" | "lightest";
   minSdk?: number;
   platform?: Platform;
 };
@@ -317,6 +374,7 @@ export async function searchApps(query: string, filters: SearchFilters = {}, lim
 
   const orderBys = filters.sort === "newest" ? [desc(s.apps.createdAt)]
     : filters.sort === "name" ? [s.apps.nameFa]
+    : filters.sort === "lightest" ? [sql`${curFileSize} asc nulls last`, desc(s.apps.updatedAt)]
     : filters.sort === "popular" ? [desc(sql`COALESCE(${s.apps.githubStars}, 0) + ${dlCount} * 10`)]
     : [desc(rank), desc(s.apps.updatedAt)]; // «مرتبط‌ترین»: اول ارتباط، بعد تازگی
 

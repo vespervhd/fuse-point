@@ -1,55 +1,42 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CloudMoon, Flame, Sparkles, Orbit } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { sparkBurst } from "@/lib/fx/spark";
+import { STR, THEME_NAMES, type Locale } from "@/lib/i18n";
 
 const THEMES = ["sky", "embers", "aurora", "constellation"] as const;
 type Theme = (typeof THEMES)[number];
-const LABELS: Record<Theme, string> = {
-  sky: "آسمان زنده",
-  embers: "اخگر زنده",
-  aurora: "شفق زنده",
-  constellation: "صور فلکی زنده",
-};
 
-function ThemeIcon({ theme }: { theme: Theme }) {
-  if (theme === "embers") return <Flame className="h-5 w-5" aria-hidden="true" />;
-  if (theme === "aurora") return <Sparkles className="h-5 w-5" aria-hidden="true" />;
-  if (theme === "constellation") return <Orbit className="h-5 w-5" aria-hidden="true" />;
-  return <CloudMoon className="h-5 w-5" aria-hidden="true" />;
-}
-
-export default function ThemeToggle() {
+// دکمه‌ی دایره‌ای تم هدر — دایره با نقطه‌ی نورانی به رنگ تم (عین نمونه)؛ چرخه‌ی چهار تم زنده
+export default function ThemeToggle({ locale = "fa" }: { locale?: Locale }) {
   const [theme, setTheme] = useState<Theme>("sky");
+  const d = STR[locale];
 
   useEffect(() => {
     const t = localStorage.getItem("vesper-theme");
     if (t && (THEMES as readonly string[]).includes(t)) setTheme(t as Theme);
   }, []);
 
-  const cycle = () => {
+  const cycle = (e: React.MouseEvent<HTMLButtonElement>) => {
     const next = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
     setTheme(next);
     try {
       localStorage.setItem("vesper-theme", next);
     } catch {}
     document.documentElement.setAttribute("data-theme", next);
+    sparkBurst(e.currentTarget);
   };
 
+  const label = `${d.themeChange} — ${d.themeIs}: ${THEME_NAMES[locale][theme]}`;
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={(e) => { cycle(); sparkBurst(e.currentTarget); }}
-      aria-label="تغییر تم"
-      title={`تم فعلی: ${LABELS[theme]} — برای تغییر بزن`}
-      className="rounded-full"
+    <button
+      type="button"
+      onClick={cycle}
+      aria-label={label}
+      title={label}
+      className="theme-dot-btn"
     >
-      <span key={theme} className="inline-flex animate-[spin_0.35s_ease]">
-        <ThemeIcon theme={theme} />
-      </span>
-    </Button>
+      <span className="dot" aria-hidden="true" />
+    </button>
   );
 }

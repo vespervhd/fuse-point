@@ -6,6 +6,7 @@ import { Search, Loader2 } from "lucide-react";
 import PxImg from "./PxImg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { STR, type Locale } from "@/lib/i18n";
 
 type Suggestion = {
   slug: string;
@@ -32,10 +33,16 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [hi, setHi] = useState(-1);
+  const [locale, setLocale] = useState<Locale>("fa");
   const router = useRouter();
   const sp = useSearchParams();
   const boxRef = useRef<HTMLDivElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const d = STR[locale];
+
+  useEffect(() => {
+    if (document.documentElement.lang === "en") setLocale("en");
+  }, []);
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -114,14 +121,14 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
           onChange={(e) => setQ(e.target.value)}
           onFocus={() => { if (items.length > 0) setOpen(true); }}
           onKeyDown={onKey}
-          placeholder="جست‌وجوی برنامه‌ها..."
-          aria-label="جست‌وجوی برنامه‌ها"
+          placeholder={d.searchPh}
+          aria-label={d.searchPh}
           autoComplete="off"
           className={`w-full ${h} ${radius} bg-muted border-border ${large ? "pe-13" : "pe-11"} ps-4 text-foreground placeholder:text-muted-foreground transition text-sm`}
         />
         <Button
           type="submit"
-          aria-label="جست‌وجو"
+          aria-label={d.advSearch}
           size={large ? "icon-lg" : "icon-sm"}
           className={`absolute end-1 top-1/2 -translate-y-1/2 ${large ? "rounded-xl" : "rounded-lg"} shrink-0`}
         >
@@ -135,7 +142,7 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
         <div
           className="absolute top-full mt-2 inset-x-0 z-50 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-fade-up"
           role="listbox"
-          aria-label="پیشنهادهای جست‌وجو"
+          aria-label={locale === "fa" ? "پیشنهادهای جست‌وجو" : "Search suggestions"}
         >
           <ul className="max-h-80 overflow-y-auto py-1">
             {items.map((s, i) => (
@@ -154,8 +161,8 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
                     </span>
                   )}
                   <span className="flex-1 min-w-0">
-                    <span className="block text-sm font-bold truncate">{s.nameFa}</span>
-                    {s.nameEn && s.nameEn !== s.nameFa && (
+                    <span className="block text-sm font-bold truncate">{locale === "en" ? (s.nameEn || s.nameFa) : s.nameFa}</span>
+                    {s.nameEn && s.nameEn !== s.nameFa && locale === "fa" && (
                       <span className="block text-xs text-muted-foreground truncate" dir="ltr" style={{ textAlign: "right" }}>{s.nameEn}</span>
                     )}
                   </span>

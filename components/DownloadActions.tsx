@@ -53,35 +53,31 @@ const hostOf = (url: string) => {
 };
 
 // ─── منطق هوشمند ساخت گزینه‌ها ───
+// قانون مالک (تأیید مجدد ۲۰۲۶-۱۰-۲۴): مقصد هر پلتفرم جدا حساب می‌شود —
+// اول فایل مستقیم رسمی (از مسیر ترکینگ داخلی)، بعد وب‌سایت رسمی پروژه
+// (اپی که فقط وب‌سایت دارد به همان وب‌سایت می‌رود)، و در نبودش گیت‌هاب
+// (اگر وب‌سایت جدا هست: خود ریپو؛ وگرنه صفحه‌ی ریلیزها).
 export function getDownloadOptions(app: DownloadAppInfo): Option[] {
   const out: Option[] = [];
   const v = app.version;
+  const sHost = app.sourceUrl ? hostOf(app.sourceUrl) : "";
+  const isGithubUrl = sHost === "github.com";
+  const hasSeparateWebsite = !!app.sourceUrl && !isGithubUrl && app.sourceType !== "fdroid";
 
-  // ۱) اندروید: دانلود مستقیم APK (با ترکینگ داخلی)
-  if (
-    app.platform === "android" &&
-    v &&
-    v.fileType !== "external" &&
-    v.fileUrl
-  ) {
+  // ۱) فایل مستقیم این پلتفرم — از /api/download (ثبت رویداد + ریدایرکت به فایل واقعی)
+  if (v && v.fileType !== "external" && v.fileUrl) {
     out.push({
       key: "apk",
       label: `دانلود نسخه ${v.versionName}`,
-      sub: v.fileSize ? formatBytes(v.fileSize) : "فایل APK",
+      sub: v.fileSize ? formatBytes(v.fileSize) : "دانلود مستقیم",
       href: `/api/download/${v.id}`,
       icon: <AndroidIcon className="w-5 h-5" />,
       primary: true,
     });
   }
 
-  // ۱-ب) اندروید: نسخه‌ی external (مثلاً صفحه‌ی F-Droid) — لینک به همان صفحه‌ی رسمی دانلود
-  if (
-    app.platform === "android" &&
-    v &&
-    v.fileType === "external" &&
-    v.fileUrl &&
-    out.length === 0
-  ) {
+  // ۲) نسخه‌ی external — لینک به همان صفحه‌ی رسمی دانلود
+  if (v && v.fileType === "external" && v.fileUrl && out.length === 0) {
     out.push({
       key: "fdroid",
       label: "دانلود",
@@ -93,9 +89,20 @@ export function getDownloadOptions(app: DownloadAppInfo): Option[] {
     });
   }
 
-  // ۲) گیت‌هاب: اگر وب‌سایت رسمی جدا داریم (یعنی ریلیز خالی بوده)، لینک به خود ریپو نه ریلیزها
-  const sHostEarly = app.sourceUrl ? hostOf(app.sourceUrl) : "";
-  const hasSeparateWebsite = !!app.sourceUrl && sHostEarly !== "github.com" && app.sourceType !== "fdroid";
+  // ۳) وب‌سایت رسمی پروژه (بیرون گیت‌هاب) — قبل از گیت‌هاب می‌آید
+  if (hasSeparateWebsite && app.sourceUrl) {
+    out.push({
+      key: "web",
+      label: "صفحه رسمی پروژه",
+      sub: sHost || "وب‌سایت رسمی",
+      href: app.sourceUrl,
+      icon: <Globe className="w-5 h-5" aria-hidden="true" />,
+      primary: out.length === 0,
+      external: true,
+    });
+  }
+
+  // ۴) گیت‌هاب — با وب‌سایت جدا: خود ریپو؛ بدون آن: ریلیزها
   if (app.githubRepo) {
     out.push({
       key: "github",
@@ -108,38 +115,23 @@ export function getDownloadOptions(app: DownloadAppInfo): Option[] {
         ? `https://github.com/${app.githubRepo}`
         : `https://github.com/${app.githubRepo}/releases`,
       icon: <GithubIcon className="w-5 h-5" />,
-      primary: out.length === 0 && !hasSeparateWebsite,
-      external: true,
-    });
-  }
-
-  // ۳) سایت رسمی: اگر گیت‌هاب است ولی githubRepo ست نشده، همان را نشان بده (تکراری نشود)
-  // sHostEarly از بالا
-  const isGithubUrl = sHostEarly === "github.com";
-  if (
-    app.sourceUrl &&
-    app.sourceType !== "fdroid" &&
-    (!isGithubUrl || !app.githubRepo)
-  ) {
-    // اگر URL گیت‌هاب است، سعی کن repo را استخراج کنی
-    let href = app.sourceUrl;
-    let label = "صفحه رسمی پروژه";
-    if (isGithubUrl && !app.githubRepo) {
-      const m = app.sourceUrl.match(/github\.com\/([^\/]+\/[^\/\#\?]+)/);
-      if (m) {
-        href = `https://github.com/${m[1]}/releases`;
-        label = "مشاهده در گیت‌هاب";
-      }
-    }
-    out.push({
-      key: "web",
-      label,
-      sub: sHostEarly || "وب‌سایت رسمی",
-      href,
-      icon: <Globe className="w-5 h-5" aria-hidden="true" />,
       primary: out.length === 0,
       external: true,
     });
+  } else if (isGithubUrl && app.sourceUrl) {
+    // منبع، خود گیت‌هاب است ولی githubRepo جدا ثبت نشده
+    const m = app.sourceUrl.match(/github\.com\/([^\/]+\/[^\/\#\?]+)/);
+    if (m) {
+      out.push({
+        key: "github",
+        label: "مشاهده در گیت‌هاب",
+        sub: m[1],
+        href: `https://github.com/${m[1]}/releases`,
+        icon: <GithubIcon className="w-5 h-5" />,
+        primary: out.length === 0,
+        external: true,
+      });
+    }
   }
 
   // حذف تکراری‌ها

@@ -1,13 +1,15 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import {
-  Activity, AlarmClock, Bell, Bluetooth, Calendar, Camera, Download, Eye, Fingerprint,
+  Activity, AlarmClock, Bell, Bluetooth, Calendar, Camera, ChevronLeft, Download, Eye, Fingerprint,
   Flashlight, Globe, HardDrive, Image, KeyRound, Layers, MapPin, Mic, Nfc, Phone,
   Power, Settings, ShieldCheck, TriangleAlert, Users, Vibrate, Wifi, Zap,
   type LucideIcon,
 } from "lucide-react";
 import ReportButton from "@/components/ReportButton";
+import { STR, type Locale } from "@/lib/i18n";
 
 // ─── آیکون‌های خطی عین طرح مرجع ───
 const ShieldGlyph = () => (
@@ -77,9 +79,59 @@ const PERM_META: Record<string, PermMeta> = {
   "android.permission.ACCESS_MEDIA_LOCATION": { title: "مکان عکس‌ها", desc: "خواندن مکان ثبت‌شده در عکس‌ها", Icon: Eye },
 };
 
-function permMeta(permission: string): PermMeta & { raw: boolean } {
+// عنوان/توضیح انگلیسی مجوزهای شناخته‌شده (همان کلیدهای PERM_META)
+const PERM_EN: Record<string, { title: string; desc: string }> = {
+  "android.permission.INTERNET": { title: "Network", desc: "Full internet access" },
+  "android.permission.ACCESS_NETWORK_STATE": { title: "Network state", desc: "View network connection status" },
+  "android.permission.ACCESS_WIFI_STATE": { title: "Wi-Fi", desc: "View Wi-Fi status" },
+  "android.permission.CHANGE_WIFI_STATE": { title: "Wi-Fi", desc: "Change Wi-Fi state" },
+  "android.permission.READ_EXTERNAL_STORAGE": { title: "Storage", desc: "Read shared files on the device" },
+  "android.permission.WRITE_EXTERNAL_STORAGE": { title: "Storage", desc: "Read and write shared files on the device" },
+  "android.permission.MANAGE_EXTERNAL_STORAGE": { title: "Storage", desc: "Manage all files on the device" },
+  "android.permission.READ_MEDIA_IMAGES": { title: "Photos", desc: "Access photos on the device" },
+  "android.permission.READ_MEDIA_VIDEO": { title: "Videos", desc: "Access videos on the device" },
+  "android.permission.READ_MEDIA_AUDIO": { title: "Audio files", desc: "Access audio files on the device" },
+  "android.permission.WAKE_LOCK": { title: "Stay awake", desc: "Keeps the device awake during long tasks" },
+  "android.permission.FOREGROUND_SERVICE": { title: "Background run", desc: "Runs a foreground service with a persistent notification" },
+  "android.permission.POST_NOTIFICATIONS": { title: "Notifications", desc: "Show notifications on the device" },
+  "android.permission.CAMERA": { title: "Camera", desc: "Access the device camera" },
+  "android.permission.RECORD_AUDIO": { title: "Microphone", desc: "Record audio with the microphone" },
+  "android.permission.ACCESS_FINE_LOCATION": { title: "Precise location", desc: "Access precise device location" },
+  "android.permission.ACCESS_COARSE_LOCATION": { title: "Approximate location", desc: "Access approximate device location" },
+  "android.permission.READ_CONTACTS": { title: "Contacts", desc: "Read the contacts list" },
+  "android.permission.WRITE_CONTACTS": { title: "Contacts", desc: "Modify the contacts list" },
+  "android.permission.CALL_PHONE": { title: "Calls", desc: "Place phone calls" },
+  "android.permission.READ_PHONE_STATE": { title: "Phone state", desc: "View phone state and identity" },
+  "android.permission.RECEIVE_BOOT_COMPLETED": { title: "Auto-start", desc: "Runs after the device boots" },
+  "android.permission.VIBRATE": { title: "Vibration", desc: "Control device vibration" },
+  "android.permission.USE_BIOMETRIC": { title: "Biometrics", desc: "Use fingerprint or face to sign in" },
+  "android.permission.USE_FINGERPRINT": { title: "Fingerprint", desc: "Use fingerprint to sign in" },
+  "android.permission.REQUEST_INSTALL_PACKAGES": { title: "Install apps", desc: "Request installing other packages" },
+  "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION": { title: "Background download", desc: "Download files without a notification" },
+  "android.permission.SCHEDULE_EXACT_ALARM": { title: "Exact scheduling", desc: "Set alarms at an exact time" },
+  "android.permission.SET_ALARM": { title: "Alarms", desc: "Set alarm clocks" },
+  "android.permission.BLUETOOTH": { title: "Bluetooth", desc: "Connect to Bluetooth devices" },
+  "android.permission.BLUETOOTH_CONNECT": { title: "Bluetooth", desc: "Connect to Bluetooth devices" },
+  "android.permission.BLUETOOTH_SCAN": { title: "Bluetooth", desc: "Scan for nearby Bluetooth devices" },
+  "android.permission.NFC": { title: "NFC", desc: "Communicate with NFC tags and devices" },
+  "android.permission.BODY_SENSORS": { title: "Sensors", desc: "Access body sensors" },
+  "android.permission.FLASHLIGHT": { title: "Flashlight", desc: "Use the device flashlight" },
+  "android.permission.SYSTEM_ALERT_WINDOW": { title: "Display over apps", desc: "Show windows over other apps" },
+  "android.permission.WRITE_SETTINGS": { title: "Settings", desc: "Change system settings" },
+  "android.permission.SET_WALLPAPER": { title: "Wallpaper", desc: "Change the device wallpaper" },
+  "android.permission.READ_CALENDAR": { title: "Calendar", desc: "Read calendar events" },
+  "android.permission.WRITE_CALENDAR": { title: "Calendar", desc: "Modify calendar events" },
+  "android.permission.ACCESS_MEDIA_LOCATION": { title: "Photo locations", desc: "Read locations stored in photos" },
+};
+
+function permMeta(permission: string, locale: Locale): PermMeta & { raw: boolean } {
   const hit = PERM_META[permission];
-  if (hit) return { ...hit, raw: false };
+  if (hit) {
+    if (locale === "en" && PERM_EN[permission]) {
+      return { title: PERM_EN[permission].title, desc: PERM_EN[permission].desc, Icon: hit.Icon, raw: false };
+    }
+    return { ...hit, raw: false };
+  }
   const last = permission.split(".").pop() ?? permission;
   const pretty = last.replace(/_/g, " ").toLowerCase().replace(/^./, (c) => c.toUpperCase());
   return { title: pretty, desc: permission, Icon: KeyRound, raw: true };
@@ -97,21 +149,25 @@ type Props = {
   permissions: string[];
   appId: string;
   appName: string;
+  developerHref?: string | null;
+  locale?: Locale;
 };
 
 // کشوی «مشخصات کامل» — عین طرح تأییدشده؛ همه‌ی مقادیر واقعی از دیتابیس
 export default function AppDetailsDrawer({
   developer, license, updatedLabel, sourceHref, sourceLabel,
   minAndroidLabel, verifiedLabel, sha256, permissions, appId, appName,
+  developerHref, locale = "fa",
 }: Props) {
   const [copyStatus, setCopyStatus] = useState("");
   const hashRef = useRef<HTMLElement>(null);
+  const d = STR[locale];
 
   const copyHash = async () => {
     if (!sha256) return;
     try {
       await navigator.clipboard.writeText(sha256);
-      setCopyStatus("هش کپی شد.");
+      setCopyStatus(d.copied);
     } catch {
       const node = hashRef.current;
       if (node) {
@@ -121,7 +177,7 @@ export default function AppDetailsDrawer({
         sel?.removeAllRanges();
         sel?.addRange(range);
       }
-      setCopyStatus("هش انتخاب شد؛ آن را کپی کنید.");
+      setCopyStatus(d.copyFallback);
     }
   };
 
@@ -130,31 +186,40 @@ export default function AppDetailsDrawer({
       <summary>
         <span className="dt-summary-icon" aria-hidden="true"><ShieldGlyph /></span>
         <span className="dt-summary-copy">
-          <span className="dt-summary-title">مشخصات کامل</span>
-          <span className="dt-summary-caption">اطلاعات برنامه، هش امنیتی و مجوزهای دسترسی</span>
+          <span className="dt-summary-title">{d.fullDetails}</span>
+          <span className="dt-summary-caption">{d.fullDetailsCap}</span>
         </span>
         <ChevronGlyph />
       </summary>
 
       <div className="dt-content">
-        <p className="dt-section-label">اطلاعات برنامه</p>
+        <p className="dt-section-label">{d.appInfo}</p>
         <dl className="dt-info-list">
           <div className="dt-info-row">
-            <dt>توسعه‌دهنده</dt>
-            <dd>{developer}</dd>
+            <dt>{d.developer}</dt>
+            <dd>
+              {developerHref ? (
+                <Link href={developerHref} className="dev-link">
+                  {developer}
+                  <span className="flip-x inline-grid place-items-center" aria-hidden="true">
+                    <ChevronLeft className="w-4 h-4" strokeWidth={2} />
+                  </span>
+                </Link>
+              ) : developer}
+            </dd>
           </div>
           <div className="dt-info-row">
-            <dt>مجوز</dt>
+            <dt>{d.license}</dt>
             {license
               ? <dd dir="ltr" className="dt-ltr">{license}</dd>
               : <dd>—</dd>}
           </div>
           <div className="dt-info-row">
-            <dt>آخرین به‌روزرسانی</dt>
+            <dt>{d.updated}</dt>
             <dd>{updatedLabel}</dd>
           </div>
           <div className="dt-info-row">
-            <dt>منبع رسمی</dt>
+            <dt>{d.source}</dt>
             <dd>
               {sourceHref ? (
                 <a href={sourceHref} target="_blank" rel="noopener noreferrer" dir="ltr" className="dt-ltr" style={{ display: "inline-block" }}>
@@ -165,19 +230,19 @@ export default function AppDetailsDrawer({
           </div>
           {minAndroidLabel && (
             <div className="dt-info-row">
-              <dt>حداقل اندروید</dt>
+              <dt>{d.minAndroid}</dt>
               <dd>{minAndroidLabel}</dd>
             </div>
           )}
           <div className="dt-info-row">
-            <dt>وضعیت بررسی</dt>
+            <dt>{d.verifyStatus}</dt>
             <dd>
               {verifiedLabel ? (
                 <span className="inline-flex items-center gap-1.5 text-success font-bold">
-                  <ShieldCheck className="w-4 h-4" aria-hidden="true" /> بررسی‌شده · {verifiedLabel}
+                  <ShieldCheck className="w-4 h-4" aria-hidden="true" /> {locale === "fa" ? "بررسی‌شده" : "Verified"} · {verifiedLabel}
                 </span>
               ) : (
-                <span className="text-muted-foreground">در انتظار بررسی</span>
+                <span className="text-muted-foreground">{d.pendingReview}</span>
               )}
             </dd>
           </div>
@@ -185,10 +250,10 @@ export default function AppDetailsDrawer({
 
         {sha256 && (
           <>
-            <p className="dt-section-label">هش امنیتی · SHA-256</p>
+            <p className="dt-section-label">{d.hashLabel}</p>
             <div className="dt-hash-box">
               <code className="dt-hash-value" ref={hashRef}>{sha256}</code>
-              <button type="button" className="dt-copy" onClick={copyHash} aria-label="کپی هش SHA-256" title="کپی هش">
+              <button type="button" className="dt-copy" onClick={copyHash} aria-label={d.copyHash} title={d.copyHash}>
                 <CopyGlyph />
               </button>
             </div>
@@ -198,10 +263,10 @@ export default function AppDetailsDrawer({
 
         {permissions.length > 0 && (
           <>
-            <p className="dt-section-label">مجوزهای دسترسی</p>
+            <p className="dt-section-label">{d.perms}</p>
             <div>
               {permissions.map((p) => {
-                const m = permMeta(p);
+                const m = permMeta(p, locale);
                 return (
                   <div key={p} className="dt-perm">
                     <span className="dt-perm-icon" aria-hidden="true">
@@ -225,6 +290,7 @@ export default function AppDetailsDrawer({
           appName={appName}
           triggerClassName="dt-report"
           triggerIcon={<TriangleAlert aria-hidden="true" />}
+          locale={locale}
         />
       </div>
     </details>

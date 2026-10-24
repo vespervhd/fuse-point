@@ -3,9 +3,12 @@ import { Vazirmatn, Cinzel, Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { BottomSpacer } from "@/components/PlatformNav";
 import { SWRegister, InstallButton } from "@/components/PWA";
 import ErrorReporter from "@/components/ErrorReporter";
 import { siteUrl } from "@/lib/site-url";
+import { getLocale } from "@/lib/i18n-server";
+import { dirOf } from "@/lib/i18n";
 
 const vazir = Vazirmatn({
   variable: "--font-vazir",
@@ -51,9 +54,10 @@ export const instant = false;
 // تم پیش‌فرض (آسمان زنده) + خواندن انتخاب کاربر
 const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('vesper-theme');if(t!=='sky'&&t!=='embers'&&t!=='aurora'&&t!=='constellation'){t='sky';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','sky');}})();`;
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const locale = await getLocale();
   return (
-    <html lang="fa" dir="rtl" suppressHydrationWarning>
+    <html lang={locale} dir={dirOf(locale)} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
@@ -76,9 +80,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <div className="amb-layer amb-constellation" />
           <div className="amb-layer amb-const-dots" />
         </div>
-        <Header />
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 relative z-[1]">{children}</main>
-        <Footer />
+        <Header locale={locale} />
+        <main className="flex-1 w-full max-w-[1120px] mx-auto px-4 py-6 relative z-[1]">{children}</main>
+        <Footer locale={locale} />
+        <BottomSpacer />
         <InstallButton />
       </body>
     </html>

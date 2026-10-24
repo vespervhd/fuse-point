@@ -19,18 +19,48 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { Locale } from "@/lib/i18n";
+
+const COPY = {
+  fa: {
+    done: "گزارش شما ثبت شد، بررسی می‌کنیم",
+    trigger: "گزارش مشکل",
+    title: (n: string) => `مشکل «${n}» چیه؟`,
+    desc: (n: string) => `فرم گزارش مشکل ${n}`,
+    reasonLabel: "دلیل گزارش",
+    pick: "انتخاب کن…",
+    reasons: { "broken-link": "لینک دانلود خرابه", "wrong-info": "اطلاعات اشتباهه", malware: "مشکوک به بدافزار", other: "مورد دیگه" } as Record<string, string>,
+    detailPh: "توضیح بیشتر (اختیاری)",
+    sending: "در حال ارسال…",
+    submit: "ثبت گزارش",
+  },
+  en: {
+    done: "Report received — we'll look into it",
+    trigger: "Report an issue",
+    title: (n: string) => `What's wrong with “${n}”?`,
+    desc: (n: string) => `Report form for ${n}`,
+    reasonLabel: "Reason",
+    pick: "Pick one…",
+    reasons: { "broken-link": "Download link is broken", "wrong-info": "Wrong information", malware: "Suspected malware", other: "Something else" } as Record<string, string>,
+    detailPh: "More detail (optional)",
+    sending: "Sending…",
+    submit: "Submit report",
+  },
+} as const;
 
 export default function ReportButton({
-  appId, appName, triggerClassName, triggerIcon,
+  appId, appName, triggerClassName, triggerIcon, locale = "fa",
 }: {
   appId: string; appName: string;
   triggerClassName?: string; triggerIcon?: React.ReactNode;
+  locale?: Locale;
 }) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [detail, setDetail] = useState("");
   const [done, setDone] = useState(false);
   const [sending, setSending] = useState(false);
+  const c = COPY[locale];
 
   const submit = async () => {
     if (!reason) return;
@@ -52,7 +82,7 @@ export default function ReportButton({
   if (done) {
     return (
       <p className="text-sm text-muted-foreground flex items-center gap-2">
-        <Flag className="w-4 h-4" /> گزارش شما ثبت شد، بررسی می‌کنیم
+        <Flag className="w-4 h-4" /> {c.done}
       </p>
     );
   }
@@ -61,29 +91,28 @@ export default function ReportButton({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className={triggerClassName}>
-          {triggerIcon ?? <Flag className="w-4 h-4" />} گزارش مشکل
+          {triggerIcon ?? <Flag className="w-4 h-4" />} {c.trigger}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-sm font-bold">مشکل «{appName}» چیه؟</DialogTitle>
-          <DialogDescription className="sr-only">فرم گزارش مشکل {appName}</DialogDescription>
+          <DialogTitle className="text-sm font-bold">{c.title(appName)}</DialogTitle>
+          <DialogDescription className="sr-only">{c.desc(appName)}</DialogDescription>
         </DialogHeader>
         <Select value={reason || undefined} onValueChange={setReason}>
-          <SelectTrigger size="sm" className="w-full" aria-label="دلیل گزارش">
-            <SelectValue placeholder="انتخاب کن…" />
+          <SelectTrigger size="sm" className="w-full" aria-label={c.reasonLabel}>
+            <SelectValue placeholder={c.pick} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="broken-link">لینک دانلود خرابه</SelectItem>
-            <SelectItem value="wrong-info">اطلاعات اشتباهه</SelectItem>
-            <SelectItem value="malware">مشکوک به بدافزار</SelectItem>
-            <SelectItem value="other">مورد دیگه</SelectItem>
+            {Object.entries(c.reasons).map(([value, label]) => (
+              <SelectItem key={value} value={value}>{label}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Textarea
           value={detail}
           onChange={(e) => setDetail(e.target.value)}
-          placeholder="توضیح بیشتر (اختیاری)"
+          placeholder={c.detailPh}
           className="text-sm"
           rows={2}
         />
@@ -93,7 +122,7 @@ export default function ReportButton({
           size="sm"
           className="justify-self-start"
         >
-          {sending ? "در حال ارسال…" : "ثبت گزارش"}
+          {sending ? c.sending : c.submit}
         </Button>
       </DialogContent>
     </Dialog>

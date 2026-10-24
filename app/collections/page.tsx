@@ -1,39 +1,53 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getCollections } from "@/lib/store";
-import type { Platform } from "@/lib/store";
-import { toFaDigits } from "@/lib/fa";
+import { getCollections, type Platform } from "@/lib/store";
 import DbIcon from "@/components/DbIcon";
+import { BackLink, ViewHead, EmptyState } from "@/components/Bits";
+import { ChevronLeft, Layers } from "lucide-react";
+import { getLocale } from "@/lib/i18n-server";
+import { STR, appsCount } from "@/lib/i18n";
 
-export const metadata: Metadata = { title: "کالکشن‌ها", description: "لیست‌های دست‌چین برنامه‌ها در Fuse Point" };
+export const metadata: Metadata = { title: "مجموعه‌ها", description: "لیست‌های دست‌چین برنامه‌ها در Fuse Point" };
 
 type Props = { searchParams: Promise<{ platform?: string }> };
 
+// نمای مجموعه‌ها — ردیف‌های تمام‌عرض با شمار واقعی همین پلتفرم (عین نمونه)
 export default async function CollectionsPage({ searchParams }: Props) {
   const { platform } = await searchParams;
-  const plat: Platform = (platform === "windows" || platform === "linux") ? platform : "android";
+  const plat: Platform = platform === "windows" || platform === "linux" ? platform : "android";
+  const locale = await getLocale();
+  const d = STR[locale];
   const collections = await getCollections(plat);
+  const qs = plat === "android" ? "" : `?platform=${plat}`;
 
   return (
     <div className="animate-fade-up">
-      <h1 className="text-2xl font-extrabold mb-2">کالکشن‌ها</h1>
-      <p className="text-sm text-muted-foreground mb-8">مجموعه‌های کاربردی از برنامه‌ها برای نیازهای مختلف</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {collections.map((c, i) => (
-          <Link key={c.id} href={`/collection/${c.slug}`}
-            style={{ animationDelay: `${i * 60}ms` }}
-            className="animate-card-in card-hover bg-card border border-border rounded-3xl p-6 flex items-center gap-5">
-            <span className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <DbIcon icon={c.icon} className="w-8 h-8" />
-            </span>
-            <div className="flex-1">
-              <h2 className="font-extrabold text-lg">{c.nameFa}</h2>
-              <p className="text-sm text-muted-foreground mt-1 leading-6 line-clamp-2">{c.description}</p>
-              <p className="text-xs text-primary font-bold mt-2">{toFaDigits(c.appCount)} برنامه ←</p>
-            </div>
-          </Link>
-        ))}
-      </div>
+      <BackLink href={`/${qs}`} label={d.backStore} />
+      <ViewHead title={d.colsTitle} sub={d.colsSub} />
+      {collections.length ? (
+        <div className="flex flex-col gap-2.5">
+          {collections.map((c) => (
+            <Link
+              key={c.id}
+              href={`/collection/${c.slug}${qs}`}
+              className="flex items-center gap-3.5 bg-card border border-border rounded-[18px] p-4 shadow-sm hover:border-primary/60 transition-colors"
+            >
+              <span className="w-[46px] h-[46px] rounded-[13px] grid place-items-center text-primary bg-primary/10 border border-primary/[0.22] shrink-0">
+                <DbIcon icon={c.icon} className="w-[23px] h-[23px]" />
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block text-[15.5px] font-extrabold truncate">{c.nameFa}</span>
+                <span className="block text-muted-foreground text-xs mt-[3px]">{appsCount(c.appCount, locale)}</span>
+              </span>
+              <span className="flip-x text-muted-foreground grid place-items-center shrink-0" aria-hidden="true">
+                <ChevronLeft className="w-[18px] h-[18px]" strokeWidth={2} />
+              </span>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <EmptyState icon={<Layers className="w-6 h-6" aria-hidden="true" />} text={d.emptyHome} sub={d.tryAnotherPlatform} />
+      )}
     </div>
   );
 }

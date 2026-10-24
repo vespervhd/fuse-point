@@ -1,183 +1,135 @@
 import Link from "next/link";
-import PxImg from "@/components/PxImg";
-import { Suspense } from "react";
-import PopularRow from "@/components/PopularRow";
-import NewBadge from "@/components/NewBadge";
-import AppCard from "@/components/AppCard";
-import Section from "@/components/Section";
-import DbIcon from "@/components/DbIcon";
-import WeeklyPicks from "@/components/WeeklyPicks";
-import TopInRail from "@/components/TopInRail";
+import { ChevronLeft, SearchX } from "lucide-react";
 import HeroSearch from "@/components/HeroSearch";
-import { ChevronLeft, LayoutGrid, Download, Tags } from "lucide-react";
-import {
-  getRootCategories, getPopularApps,
-  getLatestApps, getCategoryBySlug, getChildPreviews, getHomeStats,
-  getEditorChoice, getCategoryApps,
-} from "@/lib/store";
-import { toFaDigits } from "@/lib/fa";
+import AppRow, { PlatformChip } from "@/components/AppRow";
+import PxImg from "@/components/PxImg";
 import { px } from "@/lib/img";
-import type { Platform } from "@/lib/store";
+import {
+  getLatestApps, getHomeStats, getFeaturedApp, attachPrimaryCategory,
+  type Platform,
+} from "@/lib/store";
+import { getLocale } from "@/lib/i18n-server";
+import { STR, appName, appShort, catName, num, type Locale } from "@/lib/i18n";
 
-type Props = { searchParams: Promise<{ cat?: string; platform?: string }> };
+type Props = { searchParams: Promise<{ platform?: string }> };
 
-function appHref(slug: string, platform?: Platform) {
-  return platform && platform !== "android" ? `/app/${slug}?platform=${platform}` : `/app/${slug}`;
-}
+const platQs = (p: Platform) => (p === "android" ? "" : `?platform=${p}`);
 
-async function HomeSlide({ platform }: { platform?: Platform }) {
-  const cats = await getRootCategories(platform);
-  const topCats = cats
-    .filter((c) => (c.appCount ?? 0) >= 5)
-    .sort((a, b) => (b.appCount ?? 0) - (a.appCount ?? 0))
-    .slice(0, 4);
-
-  const [popular, latest, stats, weeklyPicks, ...topRails] = await Promise.all([
-    getPopularApps(8, platform),
-    getLatestApps(8, platform), getHomeStats(platform),
-    getEditorChoice(6, platform),
-    ...topCats.map((c) => getCategoryApps(c.slug, 8, 0, "popular", platform).then((r) => ({ cat: c, items: r?.items ?? [] }))),
-  ]);
-
+function EntryRow({ href, title, locale }: { href: string; title: string; locale: Locale }) {
+  const d = STR[locale];
   return (
-    <>
-      {/* پیشنهادهای هفته — ۶ اپ منتخب سردبیر با آیکون کوچک */}
-      <WeeklyPicks apps={weeklyPicks} platform={platform} />
-
-      {/* برترین‌های دسته‌ها — ۴ دسته‌ی بزرگ + لینک به همه */}
-      {topRails.map(({ cat, items }) =>
-        items.length >= 3 ? (
-          <TopInRail key={cat.slug} title={`برترین ${cat.nameFa}`} categorySlug={cat.slug} apps={items} platform={platform} />
-        ) : null
-      )}
-      <div className="text-center mb-10">
-        <Link
-          href={`/top${platform && platform !== "android" ? `?platform=${platform}` : ""}`}
-          className="inline-flex items-center gap-1 text-sm text-primary font-bold hover:underline"
-        >
-          مشاهده‌ی برترین‌های همه‌ی دسته‌ها <ChevronLeft className="w-4 h-4" aria-hidden="true" />
-        </Link>
-      </div>
-
-      {/* نوار آمار */}
-      <div className="grid grid-cols-3 w-full bg-card border border-border rounded-xl shadow-sm mb-10 overflow-hidden" role="status" aria-label="آمار فروشگاه">
-        <div className="px-4 py-3">
-          <div className="text-primary">
-            <LayoutGrid className="w-6 h-6" aria-hidden="true" />
-          </div>
-          <div className="text-[11px] text-muted-foreground">برنامه</div>
-          <div className="text-xl font-bold">{toFaDigits(stats.apps)}</div>
-        </div>
-        <div className="px-4 py-3 border-s border-border">
-          <div className="text-secondary">
-            <Download className="w-6 h-6" aria-hidden="true" />
-          </div>
-          <div className="text-[11px] text-muted-foreground">دانلود</div>
-          <div className="text-xl font-bold">{toFaDigits(stats.downloads)}</div>
-        </div>
-        <div className="px-4 py-3 border-s border-border">
-          <div className="text-warning">
-            <Tags className="w-6 h-6" aria-hidden="true" />
-          </div>
-          <div className="text-[11px] text-muted-foreground">دسته‌بندی</div>
-          <div className="text-xl font-bold">{toFaDigits(stats.categories)}</div>
-        </div>
-      </div>
-
-      {/* تازه‌ها — اسکرولر افقی */}
-      <Section title="تازه‌ها" href={platform ? `/latest?platform=${platform}` : "/latest"}>
-        <div className="flex gap-3.5 overflow-x-auto pb-3 snap-x scrollbar-none">
-          {latest.map((a) => (
-            <Link key={a.id} href={appHref(a.slug, platform)}
-              className="flex-none w-32 sm:w-[150px] snap-start flex flex-col gap-2 group">
-              {a.iconUrl ? (
-                <PxImg src={px(a.iconUrl) || "/icons/icon-192.png"} alt={`آیکون ${a.nameFa}`} width={130} height={130}
-                  className="w-28 h-28 sm:w-[130px] sm:h-[130px] rounded-[28px] object-cover bg-muted" />
-              ) : (
-                <span className="w-28 h-28 sm:w-[130px] sm:h-[130px] rounded-[28px] bg-muted grid place-items-center text-5xl font-bold text-muted-foreground" dir="ltr">
-                  {a.nameEn.charAt(0)}
-                </span>
-              )}
-              <b className="font-bold leading-6 group-hover:text-primary transition truncate flex items-center gap-1.5">
-                <span className="truncate">{a.nameFa}</span>
-                <NewBadge createdAt={a.createdAt} className="shrink-0" />
-              </b>
-            </Link>
-          ))}
-        </div>
-      </Section>
-
-      {/* پرطرفدارها — گرید فشرده بدون اسکرول */}
-      <Section title="پرطرفدارها" href={platform ? `/popular?platform=${platform}` : "/popular"} empty="هنوز آماری ثبت نشده است.">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          {popular.map((a, i) => <PopularRow key={a.id} app={a} platform={platform} index={i} />)}
-        </div>
-      </Section>
-
-    </>
-  );
-}
-
-async function CategorySlide({ slug, platform }: { slug: string; platform: Platform }) {
-  const cat = await getCategoryBySlug(slug);
-  if (!cat) return <p className="text-muted-foreground text-center py-10">دسته‌بندی یافت نشد.</p>;
-  const previews = await getChildPreviews(cat.id, 10, platform);
-  const total = previews.reduce((s, p) => s + p.total, 0);
-
-  return (
-    <div className="animate-fade-up" key={slug}>
-      <div className="flex items-center gap-4 mb-8">
-        <span className="w-16 h-16 rounded-3xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-          <DbIcon icon={cat.icon} className="w-9 h-9" />
+    <div className="flex items-center justify-between gap-2.5 px-0.5 min-h-12 py-0.5">
+      <span className="text-[15.5px] font-extrabold">{title}</span>
+      <Link href={href} className="inline-flex items-center gap-1 text-primary text-[13px] font-bold min-h-[44px] px-1.5 py-1.5 rounded-[10px] hover:bg-primary/[0.08]">
+        {d.seeAll}
+        <span className="flip-x grid place-items-center" aria-hidden="true">
+          <ChevronLeft className="w-4 h-4" strokeWidth={2} />
         </span>
-        <div>
-          <h1 className="text-2xl font-extrabold">{cat.nameFa}</h1>
-          <p className="text-sm text-muted-foreground">{toFaDigits(total)} برنامه</p>
-        </div>
-      </div>
-      {previews.length ? (
-        <div className="space-y-10">
-          {previews.map(({ category: ch, apps, total: t }) => (
-            <section key={ch.id} aria-label={ch.nameFa}>
-              <div className="flex items-center justify-between mb-4">
-                <Link href={`/category/${ch.slug}${platform === "android" ? "" : `?platform=${platform}`}`} className="flex items-center gap-2 group">
-                  <DbIcon icon={ch.icon} className="w-6 h-6 text-primary" />
-                  <h2 className="text-lg font-extrabold group-hover:text-primary transition">{ch.nameFa}</h2>
-                  <span className="text-xs text-muted-foreground">({toFaDigits(t)})</span>
-                </Link>
-                {t > apps.length && (
-                  <Link href={`/category/${ch.slug}${platform === "android" ? "" : `?platform=${platform}`}`} className="text-sm text-primary font-bold hover:underline shrink-0">
-                    مشاهده همه ←
-                  </Link>
-                )}
-              </div>
-              <div className="flex gap-4 overflow-x-auto pb-3 -mx-1 px-1 snap-x scrollbar-none">
-                {apps.map((a: any, i: number) => (
-                  <div key={a.id} className="w-64 sm:w-72 shrink-0 snap-start">
-                    <AppCard app={a} index={i} />
-                  </div>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      ) : (
-        <p className="text-muted-foreground text-center py-10">به‌زودی برنامه‌های جدید اضافه می‌شود.</p>
-      )}
+      </Link>
     </div>
   );
 }
 
 export default async function Home({ searchParams }: Props) {
-  const { cat, platform } = await searchParams;
-  const plat: Platform = (platform === "windows" || platform === "linux") ? platform : "android";
+  const { platform } = await searchParams;
+  const plat: Platform = platform === "windows" || platform === "linux" ? platform : "android";
+  const locale = await getLocale();
+  const d = STR[locale];
+  const qs = platQs(plat);
+
+  const [featured, latest, stats] = await Promise.all([
+    getFeaturedApp(plat),
+    getLatestApps(48, plat),
+    getHomeStats(plat),
+  ]);
+  const catMap = await attachPrimaryCategory(latest);
 
   return (
     <div>
-      {/* ترتیب فروشگاهی: لوگوی کسوف و جستجو ← اپ‌ها (ردیف دسته‌ها و نوار مجموعه‌ها فعلاً حذف شده‌اند) */}
-      {!cat && <HeroSearch />}
-      {cat ? <CategorySlide slug={cat} platform={plat} /> : <HomeSlide platform={plat} />}
+      {/* لوگوی کرونای چرخان + کارت جستجو — بدون هیچ تیتر/متن (عین نمونه) */}
+      <HeroSearch />
+
+      <section className="mt-[42px]" aria-label={d.allApps}>
+        {/* ورودی نماها: دسته‌بندی‌ها / مجموعه‌ها / تازه‌ها */}
+        <div className="flex flex-col gap-0.5 mb-[22px]">
+          <EntryRow href={`/categories${qs}`} title={d.cats} locale={locale} />
+          <EntryRow href={`/collections${qs}`} title={d.colsTitle} locale={locale} />
+          <EntryRow href={`/fresh${qs}`} title={d.fresh} locale={locale} />
+        </div>
+
+        {/* بلوک برگزیده‌ی همین پلتفرم */}
+        {featured && (
+          <>
+            <p className="flex items-baseline justify-between gap-2.5 text-muted-foreground text-[13px] font-bold mx-0.5 mb-2">
+              <span>{d.featured}</span>
+            </p>
+            <Link
+              href={`/app/${featured.slug}`}
+              className="flex items-center gap-[15px] bg-card border border-border rounded-[18px] p-4 mb-7 shadow-sm hover:bg-card/80 transition-colors"
+            >
+              <span className="w-16 h-16 rounded-[17px] grid place-items-center overflow-hidden shrink-0 bg-primary/[0.13] border border-primary/25 text-primary">
+                {featured.iconUrl ? (
+                  <PxImg src={px(featured.iconUrl) || featured.iconUrl} alt="" width={64} height={64} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-2xl font-bold" dir="ltr">{(featured.nameEn || "?").charAt(0)}</span>
+                )}
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block text-lg font-extrabold truncate" dir="auto">{appName(featured, locale)}</span>
+                {appShort(featured, locale) && (
+                  <span className="block text-muted-foreground text-[13px] mt-1 leading-[1.8] line-clamp-2">{appShort(featured, locale)}</span>
+                )}
+                <span className="flex flex-wrap gap-1.5 mt-[9px]">
+                  <PlatformChip platform={plat} locale={locale} />
+                </span>
+              </span>
+              <span className="flip-x text-muted-foreground grid place-items-center shrink-0" aria-hidden="true">
+                <ChevronLeft className="w-[18px] h-[18px]" strokeWidth={2} />
+              </span>
+            </Link>
+          </>
+        )}
+
+        {/* فهرست ادیتوریال همه‌ی برنامه‌های این پلتفرم */}
+        <p className="flex items-baseline justify-between gap-2.5 text-muted-foreground text-[13px] font-bold mx-0.5 mb-2">
+          <span>{d.allApps}</span>
+          <span className="text-xs font-medium whitespace-nowrap">{num(stats.apps, locale)} {locale === "fa" ? "اپ" : "apps"}</span>
+        </p>
+        {latest.length ? (
+          <>
+            <div className="border-t border-border">
+              {latest.map((a, i) => {
+                const c = catMap.get(a.id);
+                return (
+                  <AppRow
+                    key={a.id}
+                    app={a}
+                    locale={locale}
+                    platform={plat}
+                    index={i}
+                    categoryName={c ? catName(c, locale) : null}
+                  />
+                );
+              })}
+            </div>
+            <div className="text-center mt-8">
+              <Link href={`/search${qs}`} className="inline-flex items-center gap-1 text-sm text-primary font-bold hover:underline">
+                {d.moreApps}
+                <span className="flip-x grid place-items-center" aria-hidden="true">
+                  <ChevronLeft className="w-4 h-4" strokeWidth={2} />
+                </span>
+              </Link>
+            </div>
+          </>
+        ) : (
+          <div className="text-center text-muted-foreground py-[34px] px-2.5 border border-dashed border-border rounded-[14px] text-[14.5px] leading-[1.9]">
+            <SearchX className="w-8 h-8 mx-auto mb-2 text-primary" aria-hidden="true" />
+            {d.emptyHome}
+            <br />
+            {d.tryAnotherPlatform}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
-// rebuild 1792223364

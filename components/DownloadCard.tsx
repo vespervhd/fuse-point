@@ -2,18 +2,35 @@
 
 import PxImg from "@/components/PxImg";
 import { px } from "@/lib/img";
-import { formatBytes } from "@/lib/fa";
 import { getDownloadOptions, type DownloadAppInfo } from "./DownloadActions";
 import { BTN_TINT, CLEAN_LABEL, NeonPill } from "./DownloadButtons";
 import { sparkBurst } from "@/lib/fx/spark";
+import { STR, bytesL, platName, type Locale } from "@/lib/i18n";
 
-// ─── آیکون‌های خطی عین طرح مرجع ───
+// ─── آیکون‌های خطی پلتفرم — عین نمونه (اندروید: گوشی، ویندوز: مانیتور، لینوکس: ترمینال) ───
 const PhoneIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
     <rect x="6.5" y="2.5" width="11" height="19" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
     <path d="M10 18.2h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
   </svg>
 );
+const MonitorIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <rect x="2.8" y="4" width="18.4" height="12.5" rx="2" stroke="currentColor" strokeWidth="1.7" />
+    <path d="M9.5 20.5h5M12 16.5v4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+  </svg>
+);
+const TerminalIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <rect x="2.8" y="4" width="18.4" height="16" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
+    <path d="m6.5 9 3 3-3 3M12.5 15.5H17" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+function PlatformGlyph({ platform }: { platform: string }) {
+  if (platform === "windows") return <MonitorIcon />;
+  if (platform === "linux") return <TerminalIcon />;
+  return <PhoneIcon />;
+}
 
 const BoxIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -40,26 +57,28 @@ type CardProps = {
   subtitle: string | null;
   iconUrl: string | null;
   versionName: string | null;
-  platformLabel: string;
+  platform: string;
   fileSize: number | null;
   downloadHref: string | null;
   downloadExternal?: boolean;
+  locale: Locale;
 };
 
-// کارت دانلود — بازتولید عین طرح تأییدشده‌ی مالک، با داده‌ی واقعی و رنگ‌های توکنی تم
+// کارت دانلود — عین طرح تأییدشده‌ی مالک، با داده‌ی واقعی و رنگ‌های توکنی تم
 export function DownloadCard({
-  title, subtitle, iconUrl, versionName, platformLabel, fileSize,
-  downloadHref, downloadExternal,
+  title, subtitle, iconUrl, versionName, platform, fileSize,
+  downloadHref, downloadExternal, locale,
 }: CardProps) {
+  const d = STR[locale];
   const versionChip = versionName
     ? /^v/i.test(versionName) ? versionName : `v${versionName}`
     : null;
 
   return (
-    <article className="dl-card" aria-label={`دانلود ${title}`}>
+    <article className="dl-card" aria-label={`${d.download} ${title}`}>
       <div className="dl-topline">
         <div className="dl-brand"><span className="dl-brand-mark" /> FUSE POINT</div>
-        <div className="dl-status"><span className="dl-status-dot" /> آماده دانلود</div>
+        <div className="dl-status"><span className="dl-status-dot" /> {d.ready}</div>
       </div>
 
       <header className="dl-header">
@@ -78,21 +97,21 @@ export function DownloadCard({
       </header>
 
       <div className="dl-rule" />
-      <p className="dl-section-label">اطلاعات فایل</p>
+      <p className="dl-section-label">{d.fileInfo}</p>
 
       <div className="dl-meta">
         <div className="dl-meta-item">
-          <span className="dl-meta-icon"><PhoneIcon /></span>
+          <span className="dl-meta-icon"><PlatformGlyph platform={platform} /></span>
           <span className="dl-meta-copy">
-            <span className="dl-meta-label">پلتفرم</span>
-            <span className="dl-meta-value">{platformLabel}</span>
+            <span className="dl-meta-label">{d.platform}</span>
+            <span className="dl-meta-value">{platName(locale, platform)}</span>
           </span>
         </div>
         <div className="dl-meta-item">
           <span className="dl-meta-icon"><BoxIcon /></span>
           <span className="dl-meta-copy">
-            <span className="dl-meta-label">حجم فایل</span>
-            <span className="dl-meta-value">{formatBytes(fileSize)}</span>
+            <span className="dl-meta-label">{d.fileSize}</span>
+            <span className="dl-meta-value">{bytesL(fileSize, locale)}</span>
           </span>
         </div>
       </div>
@@ -107,21 +126,22 @@ export function DownloadCard({
           onClick={(e) => sparkBurst(e.currentTarget)}
         >
           <DownloadGlyph />
-          <span>دانلود برنامه</span>
+          <span>{d.download}</span>
         </a>
       )}
       <p className="dl-footnote">
         <ShieldGlyph />
-        فایل را فقط از منبع معتبر دریافت کنید
+        {d.footnote}
       </p>
     </article>
   );
 }
 
-const PLATFORM_EN: Record<string, string> = {
-  android: "Android",
-  windows: "Windows",
-  linux: "Linux",
+const PILL_LABEL_EN: Record<string, string> = {
+  github: "GitHub",
+  web: "Official site",
+  apk: "APK",
+  fdroid: "Download",
 };
 
 type SectionProps = {
@@ -129,26 +149,30 @@ type SectionProps = {
   title: string;
   subtitle: string | null;
   iconUrl: string | null;
+  locale: Locale;
 };
 
 // بخش دانلود اصلی صفحه‌ی اپ — کارت همیشه بالای صفحه است و دکمه‌اش مستقیم دانلود می‌کند؛
-// گزینه‌های فرعی (گیت‌هاب/سایت رسمی) قرص‌های لینک مستقیم زیر کارت می‌مانند
-export default function DownloadCardSection({ app, title, subtitle, iconUrl }: SectionProps) {
+// گزینه‌های فرعی (وب‌سایت رسمی/گیت‌هاب طبق قانون منبع هوشمند) قرص‌های لینک زیر کارت می‌مانند
+export default function DownloadCardSection({ app, title, subtitle, iconUrl, locale }: SectionProps) {
   const opts = getDownloadOptions(app);
   const primary = opts.find((o) => o.primary) ?? opts[0] ?? null;
   const rest = opts.filter((o) => o !== primary);
+  const pillLabel = (key: string) =>
+    locale === "en" ? PILL_LABEL_EN[key] ?? "Download" : CLEAN_LABEL[key] ?? "دانلود";
 
   return (
-    <section aria-label="دانلود">
+    <section aria-label={STR[locale].download}>
       <DownloadCard
         title={title}
         subtitle={subtitle}
         iconUrl={iconUrl}
         versionName={app.version?.versionName ?? null}
-        platformLabel={PLATFORM_EN[app.platform] ?? app.platform}
+        platform={app.platform}
         fileSize={app.version?.fileSize ?? null}
         downloadHref={primary?.href ?? null}
         downloadExternal={primary?.external}
+        locale={locale}
       />
       {rest.length > 0 && (
         <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
@@ -159,8 +183,8 @@ export default function DownloadCardSection({ app, title, subtitle, iconUrl }: S
               external={o.external}
               tint={BTN_TINT[o.key] ?? BTN_TINT.web}
               icon={o.icon}
-              label={CLEAN_LABEL[o.key] ?? "دانلود"}
-              text={CLEAN_LABEL[o.key] ?? "دانلود"}
+              label={pillLabel(o.key)}
+              text={pillLabel(o.key)}
             />
           ))}
         </div>

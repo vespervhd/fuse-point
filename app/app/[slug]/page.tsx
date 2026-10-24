@@ -5,25 +5,23 @@ import { getAppBySlug } from "@/lib/store";
 import { getSessionUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import * as s from "@/db/schema";
-import { eq, and, desc, sql } from "drizzle-orm";
-import { formatDate, androidVersion } from "@/lib/fa";
-import AppCard from "@/components/AppCard";
-import FavoriteButton from "@/components/FavoriteButton";
-import FollowButton from "@/components/FollowButton";
-import ShareButton from "@/components/ShareButton";
+import { eq, and, desc } from "drizzle-orm";
+import { sql } from "drizzle-orm";
+import { androidVersion } from "@/lib/fa";
 import VersionsDrawer from "@/components/VersionsDrawer";
 import DownloadCardSection from "@/components/DownloadCard";
 import AppDetailsDrawer from "@/components/AppDetailsDrawer";
 import Gallery from "@/components/Gallery";
-import { computeTags } from "@/lib/tags";
-import { px } from "@/lib/img";
-import DbIcon from "@/components/DbIcon";
-import ReportButton from "@/components/ReportButton";
+import Capsules from "@/components/Capsules";
+import SimilarCard from "@/components/SimilarCard";
+import { SectionHead } from "@/components/Bits";
 import Alternatives from "@/components/Alternatives";
 import { findAlternatives } from "@/data/alternatives";
-import { RefreshCw, TriangleAlert } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { siteUrl } from "@/lib/site-url";
-
+import { px } from "@/lib/img";
+import { getLocale } from "@/lib/i18n-server";
+import { STR, appName, appShort, appDesc, dateL, type Locale } from "@/lib/i18n";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -54,10 +52,32 @@ function stripMd(t: string | null | undefined): string {
     .replace(/^#{1,6}\s+/gm, "");
 }
 
+// منبع رسمی طبق قانون مالک: وب‌سایت رسمی اول، وگرنه گیت‌هاب؛ F-Droid فقط وقتی هیچ‌کدام نیست
+function officialSource(app: {
+  sourceUrl: string | null; sourceType: string; githubRepo: string | null;
+}, locale: Locale): { href: string | null; label: string } {
+  const isGh = (u: string) => /(^|\.)github\.com$/i.test(new URL(u).hostname);
+  const host = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
+  if (app.sourceUrl && app.sourceType !== "fdroid") {
+    try {
+      if (!isGh(app.sourceUrl)) return { href: app.sourceUrl, label: host(app.sourceUrl) };
+    } catch {}
+  }
+  if (app.githubRepo) return { href: `https://github.com/${app.githubRepo}`, label: "github.com" };
+  if (app.sourceUrl) {
+    return app.sourceType === "fdroid"
+      ? { href: app.sourceUrl, label: "F-Droid" }
+      : { href: app.sourceUrl, label: host(app.sourceUrl) };
+  }
+  return { href: null, label: locale === "fa" ? "—" : "—" };
+}
+
 export default async function AppPage({ params }: Props) {
   const { slug } = await params;
   const app = await getAppBySlug(slug);
   if (!app) notFound();
+  const locale = await getLocale();
+  const d = STR[locale];
   const v = app.current;
 
   // بررسی آپدیت: آیا کاربر لاگین‌کرده این برنامه را دانلود کرده و نسخه جدید آمده؟
@@ -79,14 +99,8 @@ export default async function AppPage({ params }: Props) {
     }
   } catch {}
 
-  const tags = computeTags({
-    permissions: app.permissions.map((p: any) => p.permission),
-    isOpenSource: app.isOpenSource,
-    fileSize: v?.fileSize ?? null,
-  });
-
   // جایگزین‌های آزاد: اگر برای این برنامه نگاشت داریم، اپ‌های جایگزین را از DB پیدا کن
-  let altEntry = findAlternatives(app.nameEn);
+  const altEntry = findAlternatives(app.nameEn);
   let altApps: { nameEn: string; why: string; slug: string; nameFa: string; iconUrl: string | null }[] = [];
   if (altEntry) {
     try {
@@ -106,9 +120,20 @@ export default async function AppPage({ params }: Props) {
     } catch {}
   }
 
+  const src = officialSource(app, locale);
+  const aboutText = appDesc(app, locale);
+  const developerHref = app.developerName
+    ? `/developer/${encodeURIComponent(app.developerName)}`
+    : null;
+  const versionsSource = app.githubRepo
+    ? "github.com"
+    : app.sourceUrl
+      ? (() => { try { return new URL(app.sourceUrl).hostname.replace(/^www\./, ""); } catch { return app.sourceUrl; } })()
+      : null;
+
   return (
-    <div className="animate-fade-up max-w-3xl mx-auto">
-      {/* کارت دانلود — بلوک اصلی بالای صفحه (عین طرح تأییدشده)؛ مشخصات اصلی داخل خود کارت است */}
+    <div className="animate-fade-up">
+      {/* ۱) کارت دانلود — بلوک اصلی بالای صفحه؛ مشخصات اصلی فقط پلتفرم/حجم/نسخه داخل خود کارت */}
       <DownloadCardSection
         app={{
           platform: app.platform,
@@ -126,138 +151,99 @@ export default async function AppPage({ params }: Props) {
               }
             : null,
         }}
-        title={app.nameEn || app.nameFa}
-        subtitle={app.shortDescFa || app.categories[0]?.nameFa || app.shortDesc || null}
+        title={appName(app, locale)}
+        subtitle={appShort(app, locale) || app.categories[0]?.nameFa || null}
         iconUrl={app.iconUrl}
+        locale={locale}
       />
 
-      {/* اکشن‌ها */}
-      <div className="flex flex-row gap-2 mt-4">
-        <FavoriteButton appId={app.id} appName={app.slug} />
-        <FollowButton appId={app.id} />
-        <ShareButton appName={app.nameFa} slug={app.slug} />
-      </div>
+      {/* ۲) کپسول‌های دنبال‌کردن و نشان — زیر هدر کارت، بالای خط اطلاعات فایل */}
+      <Capsules appId={app.id} slug={app.slug} locale={locale} />
 
-      {/* بنر آپدیت */}
+      {/* بنر آپدیت برای کاربری که نسخه‌ی قدیمی‌تر را دانلود کرده */}
       {hasUpdate && v && (
         <div className="mt-4 flex items-center gap-3 rounded-xl bg-success px-4 py-3 text-success-foreground shadow-sm" role="status">
           <RefreshCw className="w-5 h-5 shrink-0" aria-hidden="true" />
           <p className="text-sm">
-            <b>نسخه‌ی جدید موجوده!</b>{" "}
+            <b>{d.updateAvailable}</b>{" "}
             <span className="opacity-80">
               {downloadedVersion ? (
-                <>از <span dir="ltr">{downloadedVersion}</span> به <span dir="ltr">{v.versionName}</span></>
+                <>{d.updateFromTo.replace("{from}", downloadedVersion).replace("{to}", v.versionName ?? "")}</>
               ) : (
-                <>نسخه‌ی <span dir="ltr">{v.versionName}</span> منتشر شده</>
+                <>{d.updateReleased.replace("{v}", v.versionName ?? "")}</>
               )}
             </span>
           </p>
         </div>
       )}
 
-      {/* تصاویر */}
+      {/* ۳) پیش‌نمایش — اسکرین‌شات‌های واقعی + لایت‌باکس */}
       {app.screenshots.length > 0 && (
-        <section className="py-6" aria-label="تصاویر محیط برنامه">
-          <h2 className="font-extrabold text-[17px] px-1 mb-3">پیش‌نمایش</h2>
+        <section className="mt-9" aria-label={d.preview}>
+          <SectionHead title={d.preview} locale={locale} />
           <Gallery
-            appName={app.nameFa}
+            appName={appName(app, locale)}
             shots={app.screenshots.map((sh) => ({ id: sh.id, url: px(sh.url) || sh.url }))}
           />
         </section>
       )}
 
-      {/* معرفی */}
-      {(app.descriptionFa || app.description) && (
-        <>
-          <div className="h-px bg-border" />
-          <section className="py-6" aria-label="معرفی">
-            <h2 className="font-extrabold text-[17px] px-1 mb-3">درباره‌ی این برنامه</h2>
-            <p className="text-[15px] leading-8 px-1 whitespace-pre-line text-foreground/90">{stripMd(app.descriptionFa || app.description)}</p>
-          </section>
-        </>
+      {/* ۴) درباره */}
+      {aboutText && (
+        <section className="mt-9" aria-label={d.about}>
+          <SectionHead title={d.about} locale={locale} />
+          <p className="text-[15px] leading-8 whitespace-pre-line text-foreground/90">{stripMd(aboutText)}</p>
+        </section>
       )}
 
-      {/* نسخه‌های قبلی */}
-      {app.versions.length > 1 && (
-        <>
-          <div className="h-px bg-border" />
-          <div className="py-4">
-            <VersionsDrawer versions={app.versions} />
-          </div>
-        </>
-      )}
-
-      <div className="h-px bg-border" />
-
-      {/* مشخصات کامل — یک کشوی جمع‌وجور برای همه‌ی متای فرعی (عین طرح تأییدشده) */}
-      <section className="py-6" aria-label="مشخصات کامل">
+      {/* ۵) مشخصات کامل — یک کشوی جمع‌وجور برای همه‌ی متای فرعی */}
+      <section className="mt-9" aria-label={d.fullDetails}>
         <AppDetailsDrawer
-          developer={app.developerName || "نامشخص"}
+          developer={app.developerName || (locale === "fa" ? "نامشخص" : "Unknown")}
           license={app.license || null}
-          updatedLabel={v ? formatDate(v.publishedAt || v.createdAt) : "—"}
-          sourceHref={app.sourceUrl || null}
-          sourceLabel={
-            app.sourceUrl
-              ? app.sourceType === "fdroid"
-                ? "F-Droid"
-                : (() => { try { return new URL(app.sourceUrl).hostname.replace(/^www\./, ""); } catch { return app.sourceUrl; } })()
-              : "داخلی"
-          }
+          updatedLabel={v ? dateL(v.publishedAt || v.createdAt, locale) : "—"}
+          sourceHref={src.href}
+          sourceLabel={src.label}
           minAndroidLabel={app.platform === "android" ? androidVersion(v?.minSdk) : null}
-          verifiedLabel={v?.verifiedAt ? formatDate(v.verifiedAt) : null}
+          verifiedLabel={v?.verifiedAt ? dateL(v.verifiedAt, locale) : null}
           sha256={v?.sha256 ?? null}
           permissions={app.permissions.map((p) => p.permission)}
           appId={app.id}
-          appName={app.nameFa}
+          appName={appName(app, locale)}
+          developerHref={developerHref}
+          locale={locale}
         />
       </section>
 
-      {/* جایگزین‌ها */}
-      {altEntry && altApps.length > 0 && (
-        <>
-          <div className="h-px bg-border" />
-          <div className="py-6">
-            <Alternatives entry={altEntry} apps={altApps} />
-          </div>
-        </>
+      {/* ۶) نسخه‌های قبلی */}
+      {app.versions.length > 1 && (
+        <section className="mt-4" aria-label={d.versions}>
+          <VersionsDrawer versions={app.versions} locale={locale} sourceLabel={versionsSource} />
+        </section>
       )}
 
-      {/* دسته‌بندی‌ها */}
-      {app.categories.length > 0 && (
-        <>
-          <div className="h-px bg-border" />
-          <section className="py-6" aria-label="دسته‌بندی‌ها">
-            <h2 className="font-extrabold text-[17px] px-1 mb-3">دسته‌بندی</h2>
-            <div className="flex flex-wrap gap-2 px-1">
-              {app.categories.map((c) => (
-                <Link key={c.slug} href={`/category/${c.slug}`}
-                  className="text-[13px] bg-card border border-border rounded-full px-4 py-2 inline-flex items-center gap-1.5">
-                  <DbIcon icon={c.icon} className="w-4 h-4 text-primary" /> {c.nameFa}
-                </Link>
-              ))}
-            </div>
-          </section>
-        </>
-      )}
-
-      <div className="h-px bg-border" />
-      <div className="py-6 px-1 space-y-3">
-        <ReportButton appId={app.id} appName={app.nameFa} />
-        <Link href={`/report?app=${app.slug}`}
-          className="flex items-center justify-center gap-2 text-[13px] text-muted-foreground py-2">
-          <TriangleAlert className="w-4 h-4" aria-hidden="true" /> گزارش مشکل یا لینک خراب
-        </Link>
-      </div>
-
-      {/* شاید بپسندی */}
+      {/* ۷) برنامه‌های مشابه — کارت‌های فشرده */}
       {app.similar.length > 0 && (
-        <section className="mt-8" aria-label="شاید بپسندی">
-          <h2 className="text-[17px] font-extrabold mb-4 px-1">شاید بپسندی</h2>
-          <div className="space-y-2.5">
-            {app.similar.slice(0, 6).map((a, i) => <AppCard key={a.id} app={a} index={i} variant="horizontal" hideStats />)}
+        <section className="mt-10" aria-label={d.similar}>
+          <SectionHead title={d.similar} locale={locale} />
+          <div className="flex flex-col gap-[9px]">
+            {app.similar.slice(0, 6).map((a) => (
+              <SimilarCard key={a.id} app={a} locale={locale} />
+            ))}
           </div>
         </section>
       )}
+
+      {/* جایگزین‌های آزاد (ویژگی موجود تولید) */}
+      {altEntry && altApps.length > 0 && (
+        <section className="mt-10">
+          <Alternatives entry={altEntry} apps={altApps} />
+        </section>
+      )}
+
+      <div className="mt-8">
+        <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">← {d.backHome}</Link>
+      </div>
     </div>
   );
 }

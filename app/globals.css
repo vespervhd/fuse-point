@@ -649,3 +649,107 @@ body {
   .dt-info-row dt, .dt-info-row dd { font-size: 0.78rem; }
   .dt-hash-value { font-size: 10px; }
 }
+
+/* ============================================================
+   اجزای نمونه‌ی تأییدشده (space-15) — وردمارک، کپسول‌ها، فوتر، ردیف‌ها
+   ============================================================ */
+
+/* وردمارک: سنس سبک، حروف باز — FUSE متوسط (۵۰۰) و POINT سبک (۳۰۰) */
+.wordmark {
+  direction: ltr; text-transform: uppercase; letter-spacing: 0.32em;
+  margin-inline-end: -0.32em; white-space: nowrap; line-height: 1;
+  color: color-mix(in srgb, var(--foreground) 92%, transparent);
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.wordmark .wm-f { font-weight: 500; }
+.wordmark .wm-p { font-weight: 300; }
+
+/* قرص زبان هدر */
+.lang-pill {
+  height: 38px; min-width: 44px; padding: 0 12px; border-radius: 999px; flex: none;
+  border: 1px solid var(--border); background: var(--card); color: var(--foreground);
+  font-size: 13px; font-weight: 800; display: grid; place-items: center; cursor: pointer;
+  font-family: inherit; transition: border-color 0.2s;
+}
+.lang-pill:hover { border-color: var(--muted-foreground); }
+
+/* دکمه‌ی آیکنی هدر */
+.hdr-icon-btn {
+  width: 38px; height: 38px; border-radius: 10px; border: 1px solid transparent;
+  background: transparent; color: var(--muted-foreground); display: grid; place-items: center;
+  transition: color 0.2s, border-color 0.2s, background 0.2s; flex: none; position: relative;
+}
+.hdr-icon-btn:hover { color: var(--foreground); border-color: var(--border); background: var(--card); }
+.hdr-icon-btn.faved { color: var(--primary); }
+.hdr-icon-btn.faved svg { fill: var(--primary); }
+
+/* دکمه‌ی دایره‌ای تم با نقطه‌ی نورانی (عین نمونه) */
+.theme-dot-btn {
+  display: grid; place-items: center; width: 38px; height: 38px; padding: 0;
+  border-radius: 50%; border: 1px solid var(--border); background: var(--card);
+  color: var(--foreground); flex: none; cursor: pointer;
+}
+.theme-dot-btn .dot { width: 13px; height: 13px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 10px var(--primary); }
+
+/* نقطه‌ی رنگی پلتفرم روی چیپ‌ها (رنگ تابعی ثابت در همه‌ی تم‌ها) */
+.pdot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+.p-android { background: #43b581; }
+.p-windows { background: #5b8def; }
+.p-linux { background: #e0a83c; }
+
+/* چورون «جلو» — در LTR آینه می‌شود */
+[dir="ltr"] .flip-x svg, [dir="ltr"] svg.flip-x { transform: scaleX(-1); }
+
+/* کپسول‌های دنبال‌کردن/نشان زیر هدر کارت دانلود (۳۲px، عین نمونه) */
+.fp-capsules { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+.fp-cap {
+  height: 32px; padding: 0 13px; border: 1px solid var(--border); border-radius: 999px;
+  background: color-mix(in srgb, var(--card) 72%, transparent); color: var(--muted-foreground);
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12.5px; font-weight: 700; font-family: inherit; cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.fp-cap svg { width: 15px; height: 15px; flex: none; }
+.fp-cap:hover { color: var(--foreground); }
+.fp-cap:disabled { opacity: 0.6; cursor: default; }
+.fp-cap.on, .fp-cap.faved {
+  color: var(--primary); border-color: color-mix(in srgb, var(--primary) 50%, var(--border));
+  background: color-mix(in srgb, var(--primary) 14%, var(--card));
+}
+.fp-cap.faved svg { fill: var(--primary); }
+.fp-follow-note { color: var(--muted-foreground); font-size: 11.5px; line-height: 1.8; margin: 9px 2px 0; }
+
+/* خط جریان بالای فوتر */
+.foot-line {
+  position: absolute; top: -1px; inset-inline: 0; height: 2px; overflow: hidden;
+  background: linear-gradient(to left, transparent, color-mix(in srgb, var(--primary) 55%, transparent), color-mix(in srgb, var(--secondary) 55%, transparent), transparent);
+}
+.foot-line::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 30%;
+  background: linear-gradient(to left, transparent, var(--primary), transparent);
+  opacity: 0; transform: translateX(-140%);
+  animation: sweep 7s ease-in-out infinite;
+}
+
+/* کرونا — چرخش پرتوها و مدارها (عین نمونه) */
+.corona .rays { transform-box: fill-box; transform-origin: center; animation: corona-spin 90s linear infinite; }
+.corona .orbit-a { transform-box: fill-box; transform-origin: center; animation: corona-spin 55s linear infinite; }
+.corona .orbit-b { transform-box: fill-box; transform-origin: center; animation: corona-spin-rev 40s linear infinite; }
+@keyframes corona-spin { to { transform: rotate(360deg); } }
+@keyframes corona-spin-rev { to { transform: rotate(-360deg); } }
+
+/* ردیف‌های نسخه‌های قبلی داخل کشو */
+.ver-row { padding: 13px 0; border-bottom: 1px solid color-mix(in srgb, var(--muted-foreground) 13%, transparent); }
+.ver-row:last-child { border-bottom: 0; }
+.ver-src { color: var(--muted-foreground); font-size: 12.5px; margin: 14px 0 2px; line-height: 1.9; }
+.ver-src b { color: var(--foreground); font-weight: 700; }
+.ver-log { color: var(--muted-foreground); font-size: 12.5px; line-height: 1.9; margin: 7px 0 0; white-space: pre-line; }
+
+/* لینک توسعه‌دهنده داخل کشوی مشخصات */
+.dev-link {
+  color: var(--primary); font-weight: 700; display: inline-flex; align-items: center; gap: 5px;
+  text-decoration: none; border-radius: 6px;
+}
+.dev-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+.dev-link svg { color: var(--muted-foreground); flex: none; }
+[dir="ltr"] .dev-link svg { transform: scaleX(-1); }
