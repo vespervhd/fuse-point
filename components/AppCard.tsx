@@ -3,6 +3,7 @@ import AppIcon from "@/components/AppIcon";
 import PlatformBadge from "@/components/PlatformBadge";
 import { toFaDigits } from "@/lib/fa";
 import { px } from "@/lib/img";
+import { toPlainText } from "@/lib/text";
 import { Star, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -82,7 +83,7 @@ export default function AppCard({
       ? `/app/${app.slug}?platform=${app.platform}`
       : `/app/${app.slug}`;
   const anim = { animationDelay: `${Math.min(index, 12) * 35}ms` };
-  const desc = app.shortDescFa || app.shortDesc;
+  const desc = toPlainText(app.shortDescFa || app.shortDesc);
 
   if (variant === "horizontal") {
     return (

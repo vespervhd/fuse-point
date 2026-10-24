@@ -2,6 +2,7 @@
 // زبان از کوکی fp-lang خوانده می‌شود (پیش‌فرض: فارسی/راست‌به‌چپ)
 // این فایل خالص است (سمت کاربر هم قابل استفاده)؛ خواندن کوکی در lib/i18n-server.ts است
 import { toFaDigits, formatBytes, formatDate } from "./fa";
+import { toPlainText } from "./text";
 
 export type Locale = "fa" | "en";
 export const LANG_COOKIE = "fp-lang";
@@ -757,10 +758,13 @@ type AppLike = {
   description?: string | null; descriptionFa?: string | null;
 };
 export const appName = (a: AppLike, l: Locale) => (l === "fa" ? a.nameFa : a.nameEn || a.nameFa);
+// توضیحات نمایشی همیشه از صافی متن ساده می‌گذرند: دیتای F-Droid ممکن است
+// HTML داشته باشد (<b>، <a href=...>) و باید به‌صورت متن خوانا دیده شود،
+// نه کدِ تگ. هر دو زبان از همین مسیر می‌گذرند.
 export const appShort = (a: AppLike, l: Locale) =>
-  l === "fa" ? a.shortDescFa || a.shortDesc : a.shortDesc || a.shortDescFa;
+  toPlainText(l === "fa" ? a.shortDescFa || a.shortDesc : a.shortDesc || a.shortDescFa);
 export const appDesc = (a: AppLike, l: Locale) =>
-  l === "fa" ? a.descriptionFa || a.description : a.description || a.descriptionFa;
+  toPlainText(l === "fa" ? a.descriptionFa || a.description : a.description || a.descriptionFa);
 export const catName = (c: { nameFa: string; nameEn?: string | null }, l: Locale) =>
   l === "fa" ? c.nameFa : c.nameEn || c.nameFa;
 

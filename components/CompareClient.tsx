@@ -5,6 +5,7 @@ import AppIcon from "@/components/AppIcon";
 import { px } from "@/lib/img";
 import { getCompareList } from "@/components/CompareButton";
 import { STR, dateL, type Locale } from "@/lib/i18n";
+import { toPlainText } from "@/lib/text";
 import { Scale, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button";
@@ -56,7 +57,7 @@ export default function CompareClient({ locale = "fa" }: { locale?: Locale }) {
   );
 
   const rows: [string, (a: CApp) => React.ReactNode][] = [
-    [d.cmp_desc, (a) => <span className="text-xs text-muted-foreground line-clamp-3">{a.shortDescFa || "—"}</span>],
+    [d.cmp_desc, (a) => <span className="text-xs text-muted-foreground line-clamp-3">{toPlainText(a.shortDescFa) || "—"}</span>],
     [d.cmp_version, (a) => a.versionName || "—"],
     [d.cmp_size, (a) => a.fileSize ? `${(a.fileSize / 1048576).toLocaleString(locale === "fa" ? "fa-IR" : "en-US", { maximumFractionDigits: 1 })} ${d.cmp_megabyte}` : "—"],
     [d.cmp_downloads, (a) => fmt(a.downloadCount)],
