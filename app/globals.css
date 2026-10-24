@@ -1,42 +1,134 @@
 @import "tailwindcss";
-@plugin "daisyui" {
-  themes: dim --default, dracula, halloween, luxury, forest;
-}
+
+/* ============================================================
+   Fuse Point — سیستم توکن shadcn + چهار تم «زنده»
+   تم فعال با data-theme روی <html> مشخص می‌شود (پیش‌فرض: sky)
+   رنگ‌های تابعی (success/info/warning/destructive) در همه‌ی تم‌ها ثابت‌اند
+   ============================================================ */
 
 :root {
-  /* نگاشت به تم فعال daisyUI — با عوض شدن data-theme همه به‌روز می‌شن */
-  --bg: var(--color-base-100);
-  --surface: var(--color-base-200);
-  --surface-2: var(--color-base-300);
-  --fg: var(--color-base-content);
-  --muted: color-mix(in oklab, var(--color-base-content) 62%, transparent);
-  --border: var(--color-base-300);
-  --primary: var(--color-primary);
-  --primary-soft: color-mix(in oklab, var(--color-primary) 13%, transparent);
-  --primary-fg: var(--color-primary-content);
-  --accent: var(--color-secondary);
-  --danger: var(--color-error);
   --radius: 0.75rem;
-  /* کارت هیرو — هماهنگ با تم فعال */
-  --peach-1: var(--color-primary);
-  --peach-2: var(--color-secondary);
-  --peach-ink: var(--color-primary-content);
-  --peach-cta: var(--color-neutral);
-  --peach-cta-fg: var(--color-neutral-content);
+
+  /* رنگ‌های تابعی — ثابت در همه‌ی تم‌ها (از تم dim دِیزی) */
+  --success: oklch(86.171% 0.142 166.534);
+  --success-foreground: oklch(17.234% 0.028 166.534);
+  --info: oklch(86.078% 0.142 206.182);
+  --info-foreground: oklch(17.215% 0.028 206.182);
+  --warning: oklch(86.163% 0.142 94.818);
+  --warning-foreground: oklch(17.232% 0.028 94.818);
+  --destructive: oklch(82.418% 0.099 33.756);
+  --destructive-foreground: oklch(16.483% 0.019 33.756);
+
+  /* آسمان زنده (پیش‌فرض) */
+  --background: #06070f;
+  --foreground: #eef0ff;
+  --card: #0c0f1c;
+  --card-foreground: #eef0ff;
+  --popover: #0c0f1c;
+  --popover-foreground: #eef0ff;
+  --primary: #cfd6ff;
+  --primary-foreground: #141a38;
+  --secondary: #7aa2ff;
+  --secondary-foreground: #0a1030;
+  --muted: #12152a;
+  --muted-foreground: #8f94b8;
+  --accent: #1b2145;
+  --accent-foreground: #eef0ff;
+  --border: #252a45;
+  --input: #252a45;
+  --ring: #cfd6ff;
+}
+
+[data-theme="embers"] {
+  --background: #0b0908;
+  --foreground: #f7ece4;
+  --card: #141010;
+  --card-foreground: #f7ece4;
+  --popover: #141010;
+  --popover-foreground: #f7ece4;
+  --primary: #ff7a33;
+  --primary-foreground: #2e1402;
+  --secondary: #ffb347;
+  --secondary-foreground: #2e1a02;
+  --muted: #1d1414;
+  --muted-foreground: #ad8d80;
+  --accent: #331a0c;
+  --accent-foreground: #f7ece4;
+  --border: #332222;
+  --input: #332222;
+  --ring: #ff7a33;
+}
+
+[data-theme="aurora"] {
+  --background: #090d18;
+  --foreground: #eef2ff;
+  --card: #101828;
+  --card-foreground: #eef2ff;
+  --popover: #101828;
+  --popover-foreground: #eef2ff;
+  --primary: #5ee8b5;
+  --primary-foreground: #04231a;
+  --secondary: #a78bfa;
+  --secondary-foreground: #1d1038;
+  --muted: #182238;
+  --muted-foreground: #93a3c4;
+  --accent: #12332b;
+  --accent-foreground: #eef2ff;
+  --border: #2b3a55;
+  --input: #2b3a55;
+  --ring: #5ee8b5;
+}
+
+[data-theme="constellations"] {
+  --background: #0b0a1e;
+  --foreground: #efeafd;
+  --card: #12102a;
+  --card-foreground: #efeafd;
+  --popover: #12102a;
+  --popover-foreground: #efeafd;
+  --primary: #d4af37;
+  --primary-foreground: #241a02;
+  --secondary: #9990c4;
+  --secondary-foreground: #171233;
+  --muted: #1a1838;
+  --muted-foreground: #9990c4;
+  --accent: #2a2144;
+  --accent-foreground: #efeafd;
+  --border: #2e2a55;
+  --input: #2e2a55;
+  --ring: #d4af37;
 }
 
 @theme inline {
-  --color-bg: var(--bg);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
-  --color-fg: var(--fg);
-  --color-muted: var(--muted);
-  --color-border: var(--border);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
-  --color-primary-soft: var(--primary-soft);
-  --color-primary-fg: var(--primary-fg);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
-  --color-danger: var(--danger);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
   --font-sans: var(--font-inter), var(--font-vazir), system-ui, sans-serif;
   --font-head: var(--font-inter), var(--font-vazir), system-ui, sans-serif;
   --font-wordmark: var(--font-cinzel), "Times New Roman", serif;
@@ -48,50 +140,71 @@ html {
 }
 
 body {
-  background: var(--bg);
-  color: var(--fg);
+  background: var(--background);
+  color: var(--foreground);
   font-family: var(--font-inter), var(--font-vazir), system-ui, Tahoma, sans-serif;
   -webkit-font-smoothing: antialiased;
+  /* محو نرم هنگام تعویض تم */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* اسکرول‌بار ظریف */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
-::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
 
-/* انیمیشن کوتاه ظاهرشدن */
+/* ---------- کی‌فریم‌های پایه ---------- */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
 }
 .animate-fade-up { animation: fade-up 0.35s ease both; }
 
-/* ورود پلکانی کارت‌ها */
 @keyframes card-in {
   from { opacity: 0; transform: translateY(14px) scale(0.98); }
   to { opacity: 1; transform: none; }
 }
 .animate-card-in { animation: card-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
-/* باتم‌شیت دانلود */
 @keyframes sheet-up {
   from { opacity: 0; transform: translateY(100%); }
   to { opacity: 1; transform: translateY(0); }
 }
-.animate-sheet-up { animation: sheet-up 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; }
-@media (min-width: 640px) {
-  @keyframes sheet-center {
-    from { opacity: 0; transform: translate(-50%, -46%) scale(0.97); }
-    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  }
-  .animate-sheet-up { animation-name: sheet-center; }
+@keyframes sheet-in-top {
+  from { opacity: 0; transform: translateY(-100%); }
+  to { opacity: 1; transform: translateY(0); }
 }
+@keyframes sheet-in-right {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes sheet-in-left {
+  from { opacity: 0; transform: translateX(-100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-.animate-fade-in { animation: fade-in 0.25s ease both; }
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes dialog-in {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes dialog-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+}
+@keyframes menu-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
 
 /* اسکلت لودینگ */
 @keyframes shimmer {
@@ -99,7 +212,7 @@ body {
   to { background-position: -200% 0; }
 }
 .skeleton {
-  background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 50%, var(--surface-2) 75%);
+  background: linear-gradient(90deg, var(--muted) 25%, var(--border) 50%, var(--muted) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease infinite;
   border-radius: 0.75rem;
@@ -112,28 +225,138 @@ body {
   animation-timing-function: ease;
 }
 
-/* هاله‌های پس‌زمینه — ظریف، هماهنگ با حس گرم هر تم */
-.bg-glows { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.bg-glows span { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.16; }
-.bg-glows .g1 { width: 480px; height: 480px; background: color-mix(in oklab, var(--color-primary) 55%, transparent); top: -160px; right: -140px; }
-.bg-glows .g2 { width: 380px; height: 380px; background: color-mix(in oklab, var(--color-secondary) 55%, transparent); bottom: 8%; left: -160px; opacity: 0.12; }
-.bg-glows .g3 { display: none; }
+/* ============================================================
+   پس‌زمینه‌ی محیطی «زنده» — لایه‌های ثابت، وابسته به تم فعال
+   ============================================================ */
+.ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.ambient .glow { position: absolute; border-radius: 50%; filter: blur(120px); }
+.ambient .glow-a { width: 480px; height: 480px; background: color-mix(in oklab, var(--primary) 55%, transparent); opacity: 0.16; top: -160px; right: -140px; }
+.ambient .glow-b { width: 380px; height: 380px; background: color-mix(in oklab, var(--secondary) 55%, transparent); opacity: 0.12; bottom: 8%; left: -160px; }
+
+.amb-layer { position: absolute; inset: 0; display: none; }
+
+/* چشمک ستاره‌ها */
+@keyframes twinkle {
+  from { opacity: 0.15; }
+  to { opacity: 0.85; }
+}
+.amb-stars-a {
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.9) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 130px 80px, rgba(255, 255, 255, 0.7) 50%, transparent 51%),
+    radial-gradient(1px 1px at 70px 140px, rgba(180, 200, 255, 0.8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 170px 20px, rgba(255, 255, 255, 0.55) 50%, transparent 51%);
+  background-size: 200px 200px;
+  animation: twinkle 3.4s ease-in-out infinite alternate;
+}
+.amb-stars-b {
+  background-image:
+    radial-gradient(1.5px 1.5px at 60px 60px, rgba(255, 255, 255, 0.8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 210px 150px, rgba(207, 214, 255, 0.75) 50%, transparent 51%),
+    radial-gradient(1px 1px at 150px 240px, rgba(255, 255, 255, 0.6) 50%, transparent 51%),
+    radial-gradient(2px 2px at 280px 40px, rgba(255, 255, 255, 0.5) 50%, transparent 51%);
+  background-size: 300px 300px;
+  animation: twinkle 5.2s ease-in-out infinite alternate-reverse;
+}
+
+/* شهاب — آسمان زنده */
+@keyframes meteor {
+  0% { transform: translate(0, 0) rotate(-24deg); opacity: 0; }
+  5% { opacity: 1; }
+  16% { transform: translate(-52vw, 24vh) rotate(-24deg); opacity: 0; }
+  100% { transform: translate(-52vw, 24vh) rotate(-24deg); opacity: 0; }
+}
+.amb-meteor {
+  inset: auto; top: 14%; inset-inline-end: 6%;
+  width: 130px; height: 2px; border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), transparent);
+  opacity: 0;
+  animation: meteor 7s linear infinite;
+}
+
+/* شفق — نوارهای لغزان */
+@keyframes aurora-drift {
+  from { transform: translateX(-3.5%) skewX(-4deg); }
+  to { transform: translateX(3.5%) skewX(3deg); }
+}
+.amb-aurora {
+  inset: -10% -6% auto -6%; height: 62%;
+  background:
+    radial-gradient(60% 42% at 20% 0%, rgba(94, 232, 181, 0.20), transparent 70%),
+    radial-gradient(50% 36% at 55% 0%, rgba(45, 212, 191, 0.15), transparent 70%),
+    radial-gradient(55% 40% at 85% 2%, rgba(150, 120, 255, 0.17), transparent 70%);
+  animation: aurora-drift 24s ease-in-out infinite alternate;
+}
+
+/* اخگر — ذره‌های بالارونده */
+@keyframes ember-rise-a {
+  from { background-position: 0 0; }
+  to { background-position: 0 -220px; }
+}
+@keyframes ember-rise-b {
+  from { background-position: 0 0; }
+  to { background-position: 0 -340px; }
+}
+.amb-embers-a {
+  background-image:
+    radial-gradient(2px 2px at 30px 40px, rgba(255, 150, 60, 0.85) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 110px 120px, rgba(255, 110, 40, 0.7) 50%, transparent 51%),
+    radial-gradient(1px 1px at 180px 70px, rgba(255, 190, 90, 0.8) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 70px 190px, rgba(255, 130, 50, 0.55) 50%, transparent 51%);
+  background-size: 220px 220px;
+  animation: ember-rise-a 10s linear infinite;
+}
+.amb-embers-b {
+  background-image:
+    radial-gradient(1.5px 1.5px at 90px 90px, rgba(255, 170, 80, 0.7) 50%, transparent 51%),
+    radial-gradient(2px 2px at 250px 210px, rgba(255, 120, 45, 0.6) 50%, transparent 51%),
+    radial-gradient(1px 1px at 180px 300px, rgba(255, 200, 120, 0.65) 50%, transparent 51%);
+  background-size: 340px 340px;
+  animation: ember-rise-b 16s linear infinite;
+}
+
+/* صور فلکی — کاشی خطوط و ستاره‌ها با تپش آرام */
+@keyframes constellation-pulse {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+.amb-constellation {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cpath d='M28 190 L78 140 L120 158 L168 96 L206 108' fill='none' stroke='%23d4af37' stroke-opacity='0.45'/%3E%3Cpath d='M40 52 L92 74 L138 44' fill='none' stroke='%239990c4' stroke-opacity='0.4'/%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='28' cy='190' r='2'/%3E%3Ccircle cx='78' cy='140' r='1.6'/%3E%3Ccircle cx='120' cy='158' r='2.2'/%3E%3Ccircle cx='168' cy='96' r='1.6'/%3E%3Ccircle cx='206' cy='108' r='2'/%3E%3Ccircle cx='40' cy='52' r='1.5'/%3E%3Ccircle cx='92' cy='74' r='1.8'/%3E%3Ccircle cx='138' cy='44' r='1.4'/%3E%3C/g%3E%3Cpath d='M208 24a13 13 0 1 0 7 23 16 16 0 1 1-7-23z' fill='%23d4af37' fill-opacity='0.85'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+  animation: constellation-pulse 7s ease-in-out infinite alternate;
+}
+
+/* نمایش لایه‌ها بر اساس تم */
+[data-theme="sky"] .amb-stars-a,
+[data-theme="sky"] .amb-stars-b,
+[data-theme="sky"] .amb-meteor { display: block; }
+[data-theme="embers"] .amb-embers-a,
+[data-theme="embers"] .amb-embers-b { display: block; }
+[data-theme="aurora"] .amb-aurora,
+[data-theme="aurora"] .amb-stars-a { display: block; }
+[data-theme="constellations"] .amb-constellation,
+[data-theme="constellations"] .amb-stars-b { display: block; }
 
 /* بوردر گرادیانی ظریف — فقط برای تأکید، نه همه‌جا */
 .grad-border { position: relative; }
 .grad-border::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
-  background: linear-gradient(140deg, color-mix(in oklab, var(--color-primary) 40%, transparent), transparent 45%, transparent 55%, color-mix(in oklab, var(--color-secondary) 30%, transparent));
+  background: linear-gradient(140deg, color-mix(in oklab, var(--primary) 40%, transparent), transparent 45%, transparent 55%, color-mix(in oklab, var(--secondary) 30%, transparent));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor; mask-composite: exclude;
   pointer-events: none;
 }
 
 /* درخشش متن هیرو — ملایم */
-.hero-glow { text-shadow: 0 0 28px color-mix(in oklab, var(--color-primary) 35%, transparent); }
+.hero-glow { text-shadow: 0 0 28px color-mix(in oklab, var(--primary) 35%, transparent); }
 
-/* کارت هلویی هیرو — امضای طراحی بنفش-هلویی */
+/* کارت گرادیانی هیرو — هماهنگ با تم فعال */
 .hero-peach {
+  --peach-1: var(--primary);
+  --peach-2: var(--secondary);
+  --peach-ink: var(--primary-foreground);
+  --peach-cta: var(--background);
+  --peach-cta-fg: var(--foreground);
   position: relative; overflow: hidden;
   background: linear-gradient(135deg, var(--peach-1), var(--peach-2));
   color: var(--peach-ink);
@@ -142,7 +365,7 @@ body {
 }
 .hero-peach::after {
   content: ""; position: absolute; width: 220px; height: 220px; border-radius: 50%;
-  background: rgba(255,255,255,.35); top: -100px; left: -70px; pointer-events: none;
+  background: rgba(255, 255, 255, 0.35); top: -100px; left: -70px; pointer-events: none;
 }
 .hero-peach .kicker {
   display: inline-block; font-size: 12px; font-weight: 700;
@@ -180,17 +403,4 @@ body {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   html { scroll-behavior: auto; }
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }

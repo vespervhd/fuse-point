@@ -48,8 +48,8 @@ export const viewport: Viewport = {
 // فروشگاه دیتامحور است: رندر سمت سرور برای هر درخواست (بدون prerender استاتیک)
 export const instant = false;
 
-// تم پیش‌فرض daisyUI + خواندن انتخاب کاربر
-const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('vesper-theme');if(t!=='dim'&&t!=='dracula'&&t!=='halloween'&&t!=='luxury'&&t!=='forest'){t='dim';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
+// تم پیش‌فرض (آسمان زنده) + خواندن انتخاب کاربر
+const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('vesper-theme');if(t!=='sky'&&t!=='embers'&&t!=='aurora'&&t!=='constellations'){t='sky';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','sky');}})();`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -60,7 +60,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className={`${inter.variable} ${vazir.variable} ${cinzel.variable} min-h-full flex flex-col`}>
         <SWRegister />
         <ErrorReporter />
-        <div className="bg-glows" aria-hidden="true"><span className="g1" /><span className="g2" /><span className="g3" /></div>
+        <div className="ambient" aria-hidden="true">
+          <span className="glow glow-a" />
+          <span className="glow glow-b" />
+          <div className="amb-layer amb-stars-a" />
+          <div className="amb-layer amb-stars-b" />
+          <div className="amb-layer amb-meteor" />
+          <div className="amb-layer amb-aurora" />
+          <div className="amb-layer amb-embers-a" />
+          <div className="amb-layer amb-embers-b" />
+          <div className="amb-layer amb-constellation" />
+        </div>
         <Header />
         <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 relative z-[1]">{children}</main>
         <Footer />

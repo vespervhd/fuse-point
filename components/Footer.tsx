@@ -20,7 +20,7 @@ const highlights = ["متن‌باز", "بدون تبلیغ", "بررسی‌شد
 
 export default function Footer() {
   return (
-    <footer className="bg-base-200 text-base-content mt-12">
+    <footer className="bg-card text-card-foreground mt-12">
       <div className="max-w-3xl mx-auto px-6 py-10 flex flex-col items-center text-center">
         <img src="/icons/icon-192.png" alt="لوگوی Fuse Point" width={36} height={36} className="w-9 h-9 rounded-xl object-cover" />
         <p className="font-extrabold text-base mt-2">Fuse Point</p>
@@ -35,11 +35,11 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="divider my-6 w-full" />
+        <div className="border-t border-border my-6 w-full" role="separator" />
 
         <nav aria-label="پیوندها" className="flex flex-wrap justify-center gap-x-6 gap-y-2.5">
           {mainLinks.map((l) => (
-            <Link key={l.href} href={l.href} className="link link-hover text-[13px]">
+            <Link key={l.href} href={l.href} className="text-[13px] hover:underline underline-offset-4">
               {l.label}
             </Link>
           ))}
@@ -49,7 +49,7 @@ export default function Footer() {
           {legalLinks.map((l, i) => (
             <span key={l.href} className="flex items-center gap-3">
               {i > 0 && <span aria-hidden="true">|</span>}
-              <Link href={l.href} className="link link-hover">{l.label}</Link>
+              <Link href={l.href} className="hover:underline underline-offset-4">{l.label}</Link>
             </span>
           ))}
         </nav>
