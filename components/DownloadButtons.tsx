@@ -35,7 +35,7 @@ export function PlatformIcon({ platform, className }: { platform: string; classN
 }
 
 // رنگ توکنی هر پلتفرم/مقصد (روی Button پیش‌فرض سوار می‌شود)
-const BTN_TINT: Record<string, string> = {
+export const BTN_TINT: Record<string, string> = {
   android: "bg-success text-success-foreground hover:bg-success/90",
   windows: "bg-info text-info-foreground hover:bg-info/90",
   linux: "bg-warning text-warning-foreground hover:bg-warning/90",
@@ -60,7 +60,7 @@ type PillProps = {
 };
 
 // دکمه‌ی دانلود: آیکون پلتفرم + نام + آیکون دانلود
-function NeonPill({ href, external, downloadable, tint, icon, label, text }: PillProps) {
+export function NeonPill({ href, external, downloadable, tint, icon, label, text }: PillProps) {
   return (
     <Button asChild className={`rounded-full ${tint}`}>
       <a
@@ -81,7 +81,7 @@ function NeonPill({ href, external, downloadable, tint, icon, label, text }: Pil
 }
 
 // لیبل تمیز بدون نسخه برای گزینه‌های فرعی
-const CLEAN_LABEL: Record<string, string> = {
+export const CLEAN_LABEL: Record<string, string> = {
   github: "گیت‌هاب",
   web: "سایت رسمی",
   apk: "APK",

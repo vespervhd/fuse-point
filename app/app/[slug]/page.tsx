@@ -1,5 +1,4 @@
 import Link from "next/link";
-import PxImg from "@/components/PxImg";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAppBySlug } from "@/lib/store";
@@ -7,13 +6,14 @@ import { getSessionUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import * as s from "@/db/schema";
 import { eq, and, desc, sql } from "drizzle-orm";
-import { toFaDigits, formatBytes, formatDate, timeAgo, androidVersion } from "@/lib/fa";
+import { formatDate, androidVersion } from "@/lib/fa";
 import AppCard from "@/components/AppCard";
 import FavoriteButton from "@/components/FavoriteButton";
 import FollowButton from "@/components/FollowButton";
 import ShareButton from "@/components/ShareButton";
 import VersionsDrawer from "@/components/VersionsDrawer";
-import DownloadButtons, { PlatformIcon } from "@/components/DownloadButtons";
+import DownloadCardSection from "@/components/DownloadCard";
+import AppDetailsDrawer from "@/components/AppDetailsDrawer";
 import Gallery from "@/components/Gallery";
 import { computeTags } from "@/lib/tags";
 import { px } from "@/lib/img";
@@ -21,12 +21,7 @@ import DbIcon from "@/components/DbIcon";
 import ReportButton from "@/components/ReportButton";
 import Alternatives from "@/components/Alternatives";
 import { findAlternatives } from "@/data/alternatives";
-import {
-  RefreshCw, Download,
-  BadgeCheck, TriangleAlert, ChevronDown,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { RefreshCw, TriangleAlert } from "lucide-react";
 import { siteUrl } from "@/lib/site-url";
 
 
@@ -48,15 +43,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: app.iconUrl && px(app.iconUrl) ? [siteUrl() + px(app.iconUrl)!] : undefined,
     },
   };
-}
-
-function InfoRow({ k, v, ltr = false }: { k: string; v: React.ReactNode; ltr?: boolean }) {
-  return (
-    <div className="flex justify-between gap-4 py-2 border-b border-border last:border-0 text-[13px]">
-      <dt className="text-muted-foreground shrink-0">{k}</dt>
-      <dd className="font-medium text-left break-all min-w-0" dir={ltr ? "ltr" : "rtl"}>{v}</dd>
-    </div>
-  );
 }
 
 // پاک‌سازی نشانه‌های مارک‌داون از توضیحات (دیتای دیتابیس دست‌نخورده می‌ماند)
@@ -122,91 +108,52 @@ export default async function AppPage({ params }: Props) {
 
   return (
     <div className="animate-fade-up max-w-3xl mx-auto">
-      {/* هدر اپ — آیکون بزرگ + مشخصات اصلی؛ دکمه‌ی دانلود سوار بر لبه‌ی پایین کارت */}
-      <div className="relative mb-9">
-      <Card className="shadow-sm py-0 gap-0">
-        <CardContent className="p-5 sm:p-6 pb-10">
-          <div className="flex gap-4 items-start">
-            {app.iconUrl ? (
-              <PxImg src={px(app.iconUrl) || "/icons/icon-192.png"} alt={`آیکون ${app.nameFa}`} width={88} height={88}
-                className="w-[88px] h-[88px] rounded-[24%] object-cover shadow-md shrink-0" />
-            ) : (
-              <span className="w-[88px] h-[88px] rounded-[24%] bg-primary/10 text-primary flex items-center justify-center text-3xl font-bold shrink-0">
-                {app.nameFa.charAt(0)}
-              </span>
-            )}
-            <div className="flex-1 min-w-0 pt-1">
-              <h1 title={app.nameFa} className="text-[19px] font-extrabold leading-7 break-words line-clamp-2">{app.nameFa}</h1>
-            </div>
-            <div className="flex flex-row gap-2 shrink-0 pt-1">
-              <FavoriteButton appId={app.id} appName={app.slug} />
-              <FollowButton appId={app.id} />
-              <ShareButton appName={app.nameFa} slug={app.slug} />
-            </div>
-          </div>
+      {/* کارت دانلود — بلوک اصلی بالای صفحه (عین طرح تأییدشده)؛ مشخصات اصلی داخل خود کارت است */}
+      <DownloadCardSection
+        app={{
+          platform: app.platform,
+          githubRepo: app.githubRepo,
+          githubStars: app.githubStars,
+          sourceUrl: app.sourceUrl,
+          sourceType: app.sourceType,
+          version: v
+            ? {
+                id: v.id,
+                versionName: v.versionName,
+                fileSize: v.fileSize,
+                fileType: v.fileType,
+                fileUrl: v.fileUrl,
+              }
+            : null,
+        }}
+        title={app.nameEn || app.nameFa}
+        subtitle={app.shortDescFa || app.categories[0]?.nameFa || app.shortDesc || null}
+        iconUrl={app.iconUrl}
+      />
 
-          {/* مشخصات اصلی — فقط پلتفرم، نسخه، حجم */}
-          <div className="flex flex-wrap justify-center gap-2 mt-5">
-            <Badge variant="outline" className="h-7 px-3.5 text-sm rounded-full gap-1.5 border-border bg-muted/50">
-              <PlatformIcon platform={app.platform} className="w-4 h-4" />
-              {app.platform === "android" ? "اندروید" : app.platform === "windows" ? "ویندوز" : "لینوکس"}
-            </Badge>
-            {v?.versionName && (
-              <Badge variant="outline" className="h-7 px-3.5 text-sm rounded-full gap-1.5 border-border bg-muted/50">
-                نسخه <span dir="ltr">{v.versionName}</span>
-              </Badge>
-            )}
-            {v?.fileSize ? (
-              <Badge variant="outline" className="h-7 px-3.5 text-sm rounded-full gap-1.5 border-border bg-muted/50">
-                <Download className="w-4 h-4" aria-hidden="true" /> {formatBytes(v.fileSize)}
-              </Badge>
-            ) : null}
-          </div>
+      {/* اکشن‌ها */}
+      <div className="flex flex-row gap-2 mt-4">
+        <FavoriteButton appId={app.id} appName={app.slug} />
+        <FollowButton appId={app.id} />
+        <ShareButton appName={app.nameFa} slug={app.slug} />
+      </div>
 
-          {/* بنر آپدیت */}
-          {hasUpdate && v && (
-            <div className="mt-4 flex items-center gap-3 rounded-xl bg-success px-4 py-3 text-success-foreground shadow-sm" role="status">
-              <RefreshCw className="w-5 h-5 shrink-0" aria-hidden="true" />
-              <p className="text-sm">
-                <b>نسخه‌ی جدید موجوده!</b>{" "}
-                <span className="opacity-80">
-                  {downloadedVersion ? (
-                    <>از <span dir="ltr">{downloadedVersion}</span> به <span dir="ltr">{v.versionName}</span></>
-                  ) : (
-                    <>نسخه‌ی <span dir="ltr">{v.versionName}</span> منتشر شده</>
-                  )}
-                </span>
-              </p>
-            </div>
-          )}
-
-        </CardContent>
-      </Card>
-
-      {/* دانلود — سوار بر لبه‌ی پایین کارت */}
-      <div className="absolute inset-x-0 -bottom-5 z-10 flex justify-center px-3">
-        <div className="[&_a]:shadow-xl">
-          <DownloadButtons
-            app={{
-              platform: app.platform,
-              githubRepo: app.githubRepo,
-              githubStars: app.githubStars,
-              sourceUrl: app.sourceUrl,
-              sourceType: app.sourceType,
-              version: v
-                ? {
-                    id: v.id,
-                    versionName: v.versionName,
-                    fileSize: v.fileSize,
-                    fileType: v.fileType,
-                    fileUrl: v.fileUrl,
-                  }
-                : null,
-            }}
-          />
+      {/* بنر آپدیت */}
+      {hasUpdate && v && (
+        <div className="mt-4 flex items-center gap-3 rounded-xl bg-success px-4 py-3 text-success-foreground shadow-sm" role="status">
+          <RefreshCw className="w-5 h-5 shrink-0" aria-hidden="true" />
+          <p className="text-sm">
+            <b>نسخه‌ی جدید موجوده!</b>{" "}
+            <span className="opacity-80">
+              {downloadedVersion ? (
+                <>از <span dir="ltr">{downloadedVersion}</span> به <span dir="ltr">{v.versionName}</span></>
+              ) : (
+                <>نسخه‌ی <span dir="ltr">{v.versionName}</span> منتشر شده</>
+              )}
+            </span>
+          </p>
         </div>
-      </div>
-      </div>
+      )}
 
       {/* تصاویر */}
       {app.screenshots.length > 0 && (
@@ -242,62 +189,27 @@ export default async function AppPage({ params }: Props) {
 
       <div className="h-px bg-border" />
 
-      {/* مشخصات و جزئیات — یک کشوی جمع‌وجور برای همه‌ی متای فرعی */}
-      <section className="py-6" aria-label="مشخصات و جزئیات">
-        <details className="group bg-card text-card-foreground border border-border rounded-2xl shadow-sm overflow-hidden">
-          <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3.5 [&::-webkit-details-marker]:hidden">
-            <span className="text-[14px] font-extrabold">مشخصات و جزئیات</span>
-            <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
-          </summary>
-          <div className="px-4 pb-4">
-            <dl>
-              <InfoRow k="پلتفرم" v={app.platform === "android" ? "اندروید" : app.platform === "windows" ? "ویندوز" : "لینوکس"} />
-              <InfoRow k="نسخه" v={v?.versionName ?? "—"} ltr={!!v?.versionName} />
-              <InfoRow k="حجم" v={formatBytes(v?.fileSize)} />
-              {app.platform === "android" && (
-                <InfoRow k="حداقل اندروید" v={androidVersion(v?.minSdk)} />
-              )}
-              <InfoRow k="توسعه‌دهنده" v={app.developerName || "نامشخص"} />
-              <InfoRow k="مجوز" v={app.license || "—"} ltr={!!app.license} />
-              <InfoRow k="به‌روزرسانی" v={v ? timeAgo(v.publishedAt || v.createdAt) : "—"} />
-              <InfoRow k="منبع" v={app.sourceUrl ? (
-                <a href={app.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-primary" dir="ltr">
-                  {app.sourceType === "fdroid" ? "F-Droid" : new URL(app.sourceUrl).hostname.replace(/^www\./, "")}
-                </a>
-              ) : "داخلی"} />
-              <div className="flex justify-between items-center gap-4 py-2 text-[13px]">
-                <dt className="text-muted-foreground shrink-0">وضعیت بررسی</dt>
-                <dd>
-                  {v?.verifiedAt ? (
-                    <Badge variant="success" className="gap-1 rounded-full">
-                      <BadgeCheck className="w-3.5 h-3.5" aria-hidden="true" /> {formatDate(v.verifiedAt)}
-                    </Badge>
-                  ) : (
-                    <Badge variant="secondary" className="rounded-full">در انتظار بررسی</Badge>
-                  )}
-                </dd>
-              </div>
-            </dl>
-
-            {v?.sha256 && (
-              <div className="mt-3">
-                <p className="text-[12px] font-bold text-muted-foreground mb-1.5">هش SHA-256</p>
-                <code className="block p-3 bg-muted rounded-xl break-all font-mono text-[11px]" dir="ltr">{v.sha256}</code>
-              </div>
-            )}
-
-            {app.permissions.length > 0 && (
-              <div className="mt-3">
-                <p className="text-[12px] font-bold text-muted-foreground mb-1.5">مجوزهای درخواستی ({toFaDigits(app.permissions.length)})</p>
-                <div className="flex flex-wrap gap-1.5 max-h-44 overflow-y-auto">
-                  {app.permissions.map((p) => (
-                    <Badge key={p.id} variant="secondary" className="font-mono rounded-full" dir="ltr">{p.permission}</Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </details>
+      {/* مشخصات کامل — یک کشوی جمع‌وجور برای همه‌ی متای فرعی (عین طرح تأییدشده) */}
+      <section className="py-6" aria-label="مشخصات کامل">
+        <AppDetailsDrawer
+          developer={app.developerName || "نامشخص"}
+          license={app.license || null}
+          updatedLabel={v ? formatDate(v.publishedAt || v.createdAt) : "—"}
+          sourceHref={app.sourceUrl || null}
+          sourceLabel={
+            app.sourceUrl
+              ? app.sourceType === "fdroid"
+                ? "F-Droid"
+                : (() => { try { return new URL(app.sourceUrl).hostname.replace(/^www\./, ""); } catch { return app.sourceUrl; } })()
+              : "داخلی"
+          }
+          minAndroidLabel={app.platform === "android" ? androidVersion(v?.minSdk) : null}
+          verifiedLabel={v?.verifiedAt ? formatDate(v.verifiedAt) : null}
+          sha256={v?.sha256 ?? null}
+          permissions={app.permissions.map((p) => p.permission)}
+          appId={app.id}
+          appName={app.nameFa}
+        />
       </section>
 
       {/* جایگزین‌ها */}

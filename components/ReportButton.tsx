@@ -20,7 +20,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function ReportButton({ appId, appName }: { appId: string; appName: string }) {
+export default function ReportButton({
+  appId, appName, triggerClassName, triggerIcon,
+}: {
+  appId: string; appName: string;
+  triggerClassName?: string; triggerIcon?: React.ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [detail, setDetail] = useState("");
@@ -55,8 +60,8 @@ export default function ReportButton({ appId, appName }: { appId: string; appNam
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm">
-          <Flag className="w-4 h-4" /> گزارش مشکل
+        <Button variant="ghost" size="sm" className={triggerClassName}>
+          {triggerIcon ?? <Flag className="w-4 h-4" />} گزارش مشکل
         </Button>
       </DialogTrigger>
       <DialogContent>

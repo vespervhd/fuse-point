@@ -479,3 +479,173 @@ body {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   html { scroll-behavior: auto; }
 }
+
+/* ============================================================
+   کارت دانلود — عین طرح تأییدشده‌ی مالک (fuse_point_download_card_v2)
+   همه‌ی رنگ‌ها از توکن‌های تم فعال می‌آیند تا در هر چهار تم منسجم بماند
+   ============================================================ */
+.dl-card {
+  position: relative; isolation: isolate; overflow: hidden;
+  width: 100%; max-width: 640px; margin-inline: auto; padding: clamp(20px, 4vw, 30px);
+  border: 1px solid var(--border); border-radius: 28px;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--muted) 98%, transparent), color-mix(in srgb, var(--background) 60%, var(--card) 40%) 72%);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  color: var(--foreground); text-align: start;
+}
+.dl-card::before {
+  content: ""; position: absolute; z-index: -1; width: 230px; height: 230px; top: -150px; left: -75px;
+  border-radius: 50%; background: color-mix(in srgb, var(--primary) 16%, transparent); filter: blur(12px); pointer-events: none;
+}
+.dl-topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 23px; }
+.dl-brand { display: flex; align-items: center; gap: 9px; color: color-mix(in srgb, var(--foreground) 55%, var(--muted-foreground) 45%); font-size: 0.72rem; letter-spacing: 0.16em; font-weight: 800; direction: ltr; }
+.dl-brand-mark { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 14px color-mix(in srgb, var(--primary) 75%, transparent); }
+.dl-status { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid color-mix(in srgb, var(--muted-foreground) 15%, transparent); border-radius: 999px; color: color-mix(in srgb, var(--foreground) 55%, var(--muted-foreground) 45%); background: rgba(255, 255, 255, 0.025); font-size: 0.72rem; white-space: nowrap; }
+.dl-status-dot { width: 6px; height: 6px; border-radius: 50%; background: color-mix(in srgb, var(--secondary) 55%, #fff); }
+.dl-header { display: flex; align-items: center; gap: 17px; }
+.dl-icon {
+  position: relative; display: grid; place-items: center; flex: 0 0 82px; width: 82px; height: 82px;
+  border: 1px solid color-mix(in srgb, var(--border) 62%, var(--muted-foreground) 38%); border-radius: 25px; color: var(--primary);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--muted) 55%, var(--primary) 16%), color-mix(in srgb, var(--muted) 78%, var(--background) 22%));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 9px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden; font-size: 2rem; font-weight: 800;
+}
+.dl-icon::after { content: ""; position: absolute; inset: 6px; border: 1px solid color-mix(in srgb, var(--primary) 7%, transparent); border-radius: 19px; pointer-events: none; }
+.dl-icon img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.dl-heading { min-width: 0; flex: 1; }
+.dl-title { margin: 0; text-align: right; direction: ltr; font-size: clamp(1.55rem, 4.6vw, 2rem); letter-spacing: -0.045em; line-height: 1.2; font-weight: 800; overflow-wrap: anywhere; }
+.dl-subtitle { margin: 8px 0 0; color: var(--muted-foreground); font-size: 0.9rem; line-height: 1.7; }
+.dl-version { align-self: flex-start; padding: 8px 11px; border: 1px solid color-mix(in srgb, var(--border) 78%, var(--muted-foreground) 22%); border-radius: 12px; background: color-mix(in srgb, var(--background) 72%, var(--muted) 28%); color: color-mix(in srgb, var(--foreground) 90%, var(--primary) 10%); font-size: 0.76rem; direction: ltr; white-space: nowrap; }
+.dl-rule { height: 1px; margin: 24px 0 17px; background: linear-gradient(90deg, transparent, var(--border) 12%, var(--border) 88%, transparent); }
+.dl-section-label { margin: 0 0 11px; color: color-mix(in srgb, var(--muted-foreground) 90%, var(--background) 10%); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; }
+.dl-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.dl-meta-item { display: flex; align-items: center; gap: 11px; min-width: 0; padding: 13px; border: 1px solid color-mix(in srgb, var(--muted-foreground) 15%, transparent); border-radius: 16px; background: linear-gradient(145deg, color-mix(in srgb, var(--muted) 90%, transparent), color-mix(in srgb, var(--card) 88%, transparent)); }
+.dl-meta-icon { display: grid; place-items: center; flex: 0 0 36px; width: 36px; height: 36px; border-radius: 12px; background: color-mix(in srgb, var(--primary) 8%, transparent); color: color-mix(in srgb, var(--primary) 82%, #fff); }
+.dl-meta-icon svg { width: 20px; height: 20px; }
+.dl-meta-copy { min-width: 0; }
+.dl-meta-label { display: block; margin-bottom: 5px; color: var(--muted-foreground); font-size: 0.72rem; }
+.dl-meta-value { display: block; color: var(--foreground); font-size: 0.9rem; font-weight: 700; overflow-wrap: anywhere; }
+.dl-download {
+  display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 57px; margin-top: 17px;
+  padding: 15px 18px; border: 1px solid rgba(255, 255, 255, 0.48); border-radius: 17px;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--primary) 86%, #fff), color-mix(in srgb, var(--primary) 58%, #fff)); color: var(--primary-foreground);
+  text-decoration: none; font-size: 1rem; font-weight: 800;
+  box-shadow: 0 8px 26px color-mix(in srgb, var(--primary) 20%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.dl-download svg { width: 21px; height: 21px; transition: transform 0.2s ease; }
+.dl-download:hover { transform: translateY(-2px); filter: brightness(1.04); box-shadow: 0 13px 32px color-mix(in srgb, var(--primary) 30%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.7); }
+.dl-download:hover svg { transform: translateY(2px); }
+.dl-download:active { transform: translateY(0); }
+.dl-download:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+.dl-footnote { display: flex; justify-content: center; align-items: center; gap: 7px; margin: 13px 0 0; color: color-mix(in srgb, var(--muted-foreground) 82%, transparent); font-size: 0.72rem; text-align: center; line-height: 1.7; }
+.dl-footnote svg { width: 14px; height: 14px; flex: none; color: var(--muted-foreground); }
+@media (max-width: 440px) {
+  .dl-card { border-radius: 23px; }
+  .dl-topline { margin-bottom: 20px; }
+  .dl-header { gap: 12px; flex-wrap: wrap; }
+  .dl-icon { width: 68px; height: 68px; flex-basis: 68px; border-radius: 21px; }
+  .dl-icon::after { border-radius: 16px; }
+  .dl-version { margin-right: auto; }
+  .dl-heading { flex-basis: calc(100% - 84px); }
+  .dl-title { font-size: 1.55rem; }
+  .dl-subtitle { font-size: 0.8rem; }
+  .dl-meta { gap: 8px; }
+  .dl-meta-item { padding: 11px 9px; gap: 8px; }
+  .dl-meta-icon { width: 31px; height: 31px; flex-basis: 31px; }
+  .dl-meta-value { font-size: 0.82rem; }
+}
+
+/* ============================================================
+   کشوی «مشخصات کامل» — عین طرح تأییدشده‌ی مالک (fuse_point_collapsible_details)
+   رنگ‌ها از توکن‌های تم فعال می‌آیند
+   ============================================================ */
+.dt-details {
+  border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
+  background: linear-gradient(150deg, color-mix(in srgb, var(--card) 92%, var(--foreground) 4%), color-mix(in srgb, var(--background) 55%, var(--card) 45%) 78%);
+  box-shadow: 0 22px 65px rgba(0, 0, 0, 0.25);
+}
+.dt-details summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 14px;
+  min-height: 76px; padding: 18px 20px; user-select: none; transition: background 0.18s ease;
+}
+.dt-details summary::-webkit-details-marker { display: none; }
+.dt-details summary:hover { background: rgba(255, 255, 255, 0.018); }
+.dt-details summary:focus-visible { outline: 2px solid var(--primary); outline-offset: -4px; border-radius: 18px; }
+.dt-summary-icon {
+  width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; border-radius: 12px;
+  color: var(--primary); background: color-mix(in srgb, var(--primary) 11%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+}
+.dt-summary-icon svg { width: 20px; height: 20px; }
+.dt-summary-copy { flex: 1; min-width: 0; }
+.dt-summary-title { display: block; margin: 0; font-size: 1rem; font-weight: 800; }
+.dt-summary-caption { display: block; margin: 5px 0 0; color: var(--muted-foreground); font-size: 0.78rem; line-height: 1.6; }
+.dt-chevron { width: 18px; height: 18px; flex: 0 0 18px; color: color-mix(in srgb, var(--muted-foreground) 85%, var(--primary) 15%); transition: transform 0.22s ease; }
+.dt-details[open ] .dt-chevron { transform: rotate(180deg); }
+.dt-content { border-top: 1px solid var(--border); padding: 5px 20px 20px; animation: dt-reveal 0.22s ease both; }
+@keyframes dt-reveal {
+  from { opacity: 0.35; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.dt-section-label { margin: 18px 0 8px; color: color-mix(in srgb, var(--muted-foreground) 88%, var(--background) 12%); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.02em; }
+.dt-info-list { margin: 0; }
+.dt-info-row {
+  display: grid; grid-template-columns: minmax(92px, 0.72fr) minmax(0, 1.28fr);
+  align-items: start; gap: 14px; padding: 12px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--muted-foreground) 13%, transparent);
+}
+.dt-info-row:last-child { border-bottom: 0; }
+.dt-info-row dt { color: var(--muted-foreground); font-size: 0.82rem; line-height: 1.8; }
+.dt-info-row dd { margin: 0; min-width: 0; color: color-mix(in srgb, var(--foreground) 92%, var(--primary) 8%); font-size: 0.84rem; font-weight: 650; line-height: 1.8; overflow-wrap: anywhere; }
+.dt-info-row dd a { color: var(--primary); text-decoration: none; }
+.dt-ltr { direction: ltr; text-align: right; }
+.dt-hash-box {
+  display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 11px 12px;
+  border: 1px solid var(--border); border-radius: 12px;
+  background: color-mix(in srgb, var(--background) 70%, var(--card) 30%);
+}
+.dt-hash-value {
+  flex: 1; min-width: 0; color: color-mix(in srgb, var(--primary) 85%, var(--secondary) 15%);
+  direction: ltr; text-align: left; font: 12px/1.8 ui-monospace, SFMono-Regular, Consolas, monospace;
+  overflow-wrap: anywhere; user-select: text;
+}
+.dt-copy {
+  display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 34px;
+  border: 1px solid var(--border); border-radius: 9px;
+  background: color-mix(in srgb, var(--muted) 75%, var(--card) 25%); color: var(--primary);
+  cursor: pointer; transition: background 0.18s ease;
+}
+.dt-copy:hover { background: color-mix(in srgb, var(--muted) 55%, var(--primary) 12%); }
+.dt-copy svg { width: 17px; height: 17px; }
+.dt-copy-status { min-height: 18px; margin: 7px 2px 0; color: color-mix(in srgb, var(--primary) 78%, #fff); font-size: 0.72rem; }
+.dt-perm {
+  display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; align-items: center;
+  padding: 13px 0; border-bottom: 1px solid color-mix(in srgb, var(--muted-foreground) 13%, transparent);
+}
+.dt-perm:last-child { border-bottom: 0; }
+.dt-perm-icon {
+  width: 36px; height: 36px; display: grid; place-items: center; border-radius: 11px;
+  color: color-mix(in srgb, var(--primary) 78%, #fff); background: color-mix(in srgb, var(--primary) 11%, transparent);
+}
+.dt-perm-icon svg { width: 19px; height: 19px; }
+.dt-perm-title { margin: 0; font-size: 0.84rem; font-weight: 750; line-height: 1.7; }
+.dt-perm-desc { margin: 3px 0 0; color: var(--muted-foreground); font-size: 0.77rem; line-height: 1.8; }
+.dt-perm-raw { direction: ltr; text-align: right; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.72rem; overflow-wrap: anywhere; }
+.dt-report {
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  width: 100%; min-height: 46px; margin-top: 18px; padding: 11px 14px;
+  border: 1px solid color-mix(in srgb, var(--border) 78%, var(--muted-foreground) 22%); border-radius: 12px;
+  background: transparent; color: color-mix(in srgb, var(--foreground) 88%, var(--primary) 12%);
+  font-size: 0.84rem; font-weight: 750; cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.dt-report:hover { background: color-mix(in srgb, var(--primary) 6%, transparent); border-color: color-mix(in srgb, var(--border) 55%, var(--primary) 30%); }
+.dt-report svg { width: 17px; height: 17px; color: color-mix(in srgb, var(--primary) 80%, #fff); }
+@media (max-width: 430px) {
+  .dt-details { border-radius: 17px; }
+  .dt-details summary { padding: 15px; gap: 11px; }
+  .dt-content { padding: 3px 15px 15px; }
+  .dt-info-row { grid-template-columns: 94px minmax(0, 1fr); gap: 10px; }
+  .dt-info-row dt, .dt-info-row dd { font-size: 0.78rem; }
+  .dt-hash-value { font-size: 10px; }
+}
