@@ -1,5 +1,5 @@
 import Link from "next/link";
-import PxImg from "@/components/PxImg";
+import AppIcon from "@/components/AppIcon";
 import { px } from "@/lib/img";
 import { STR, num, type Locale } from "@/lib/i18n";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
@@ -44,19 +44,15 @@ export default function TopInRail({
             className="snap-start shrink-0 flex flex-col items-center gap-2 w-[76px] group text-center"
           >
             <span className="w-16 h-16 block transition-transform group-hover:scale-105">
-              {app.iconUrl ? (
-                <PxImg
-                  src={px(app.iconUrl, "icon") || app.iconUrl}
-                  alt={`${d.alt_icon} ${app.nameFa}`}
-                  width={64}
-                  height={64}
-                  className="w-full h-full rounded-[24%] object-cover shadow"
-                />
-              ) : (
-                <span className="w-full h-full rounded-[24%] bg-primary/10 text-primary grid place-items-center text-xl font-bold" aria-hidden="true">
-                  {(app.nameFa || "?").trim().charAt(0)}
-                </span>
-              )}
+              <AppIcon
+                src={app.iconUrl ? px(app.iconUrl, "icon") || app.iconUrl : null}
+                name={app.nameFa}
+                width={64}
+                height={64}
+                imgClassName="w-full h-full rounded-[24%] object-cover shadow"
+                letterClassName="w-full h-full rounded-[24%] bg-primary/10 text-primary grid place-items-center text-xl font-bold"
+                alt={`${d.alt_icon} ${app.nameFa}`}
+              />
             </span>
             <span className="text-[11px] font-bold leading-4 line-clamp-2 group-hover:text-primary transition-colors">
               {app.nameFa}

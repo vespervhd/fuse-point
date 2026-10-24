@@ -1,5 +1,5 @@
 import Link from "next/link";
-import PxImg from "@/components/PxImg";
+import AppIcon from "@/components/AppIcon";
 import { px } from "@/lib/img";
 import type { CardApp } from "./AppCard";
 import type { Platform } from "@/lib/store";
@@ -32,22 +32,15 @@ export default function WeeklyPicks({
             className="animate-card-in group flex flex-col items-center gap-2 text-center"
           >
             <div className="w-14 h-14 sm:w-16 sm:h-16 transition-transform duration-200 group-hover:scale-105 group-active:scale-95">
-              {app.iconUrl ? (
-                <PxImg
-                  src={px(app.iconUrl, "icon") || app.iconUrl}
-                  alt={`آیکون ${app.nameFa}`}
-                  width={64}
-                  height={64}
-                  className="w-full h-full rounded-[24%] object-cover shadow"
-                />
-              ) : (
-                <span
-                  className="w-full h-full rounded-[24%] bg-primary/10 text-primary flex items-center justify-center text-xl font-bold"
-                  aria-hidden="true"
-                >
-                  {(app.nameFa || "?").trim().charAt(0)}
-                </span>
-              )}
+              <AppIcon
+                src={app.iconUrl ? px(app.iconUrl, "icon") || app.iconUrl : null}
+                name={app.nameFa}
+                width={64}
+                height={64}
+                imgClassName="w-full h-full rounded-[24%] object-cover shadow"
+                letterClassName="w-full h-full rounded-[24%] bg-primary/10 text-primary flex items-center justify-center text-xl font-bold"
+                alt={`آیکون ${app.nameFa}`}
+              />
             </div>
             <span className="text-xs font-semibold leading-4 line-clamp-2 group-hover:text-primary transition-colors">
               {app.nameFa}

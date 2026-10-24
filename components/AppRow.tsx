@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import PxImg from "@/components/PxImg";
+import AppIcon from "@/components/AppIcon";
 import { px } from "@/lib/img";
 import { appName, platName, type Locale } from "@/lib/i18n";
 import type { Platform } from "@/lib/store";
@@ -44,11 +44,7 @@ export default function AppRow({
     >
       <Link href={href} className="absolute inset-0" aria-label={name} />
       <span className="w-[34px] h-[34px] rounded-lg grid place-items-center overflow-hidden shrink-0 bg-primary/[0.13] border border-primary/25 text-primary">
-        {app.iconUrl ? (
-          <PxImg src={px(app.iconUrl, "icon") || app.iconUrl} alt="" width={34} height={34} className="w-full h-full object-cover" />
-        ) : (
-          <span className="text-base font-bold" dir="ltr">{(app.nameEn || name || "?").charAt(0)}</span>
-        )}
+        <AppIcon src={app.iconUrl ? px(app.iconUrl, "icon") || app.iconUrl : null} name={app.nameEn || name} width={34} height={34} imgClassName="w-full h-full object-cover" letterClassName="text-base font-bold" />
       </span>
       <span className="flex-1 min-w-0 pointer-events-none">
         <span className="block text-[14px] font-bold truncate leading-5" dir="auto">{name}</span>

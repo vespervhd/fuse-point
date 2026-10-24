@@ -8,7 +8,7 @@ import Link from "next/link";
 import { ChevronLeft, SearchX, Sparkles, LayoutGrid, Layers, Inbox } from "lucide-react";
 import { cacheLife } from "next/cache";
 import AppRow, { PlatformChip } from "@/components/AppRow";
-import PxImg from "@/components/PxImg";
+import AppIcon from "@/components/AppIcon";
 import DbIcon from "@/components/DbIcon";
 import { BackLink, ViewHead, EmptyState, SectionHead } from "@/components/Bits";
 import { px } from "@/lib/img";
@@ -77,11 +77,7 @@ export async function HomeCatalog({ plat, locale, page }: { plat: Platform; loca
             className="flex items-center gap-[15px] bg-card border border-border rounded-[18px] p-4 mb-7 shadow-sm hover:bg-card/80 transition-colors"
           >
             <span className="w-16 h-16 rounded-[17px] grid place-items-center overflow-hidden shrink-0 bg-primary/[0.13] border border-primary/25 text-primary">
-              {featured.iconUrl ? (
-                <PxImg src={px(featured.iconUrl, "icon") || featured.iconUrl} alt="" width={64} height={64} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-2xl font-bold" dir="ltr">{(featured.nameEn || "?").charAt(0)}</span>
-              )}
+              <AppIcon src={featured.iconUrl ? px(featured.iconUrl, "icon") || featured.iconUrl : null} name={featured.nameEn} width={64} height={64} imgClassName="w-full h-full object-cover" letterClassName="text-2xl font-bold" />
             </span>
             <span className="flex-1 min-w-0">
               <span className="block text-lg font-extrabold truncate" dir="auto">{appName(featured, locale)}</span>

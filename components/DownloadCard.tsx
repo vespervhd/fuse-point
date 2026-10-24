@@ -1,6 +1,6 @@
 "use client";
 
-import PxImg from "@/components/PxImg";
+import AppIcon from "@/components/AppIcon";
 import { px } from "@/lib/img";
 import { getDownloadOptions, type DownloadAppInfo } from "./DownloadActions";
 import { BTN_TINT, CLEAN_LABEL, NeonPill } from "./DownloadButtons";
@@ -83,11 +83,7 @@ export function DownloadCard({
 
       <header className="dl-header">
         <div className="dl-icon" aria-hidden="true">
-          {iconUrl ? (
-            <PxImg src={px(iconUrl, "icon") || iconUrl} alt="" width={82} height={82} />
-          ) : (
-            <span>{(title || "?").trim().charAt(0)}</span>
-          )}
+          <AppIcon src={iconUrl ? px(iconUrl, "icon") || iconUrl : null} name={title} width={82} height={82} />
         </div>
         <div className="dl-heading">
           <h1 className="dl-title">{title}</h1>

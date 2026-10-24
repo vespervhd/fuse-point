@@ -1,5 +1,5 @@
 import Link from "next/link";
-import PxImg from "@/components/PxImg";
+import AppIcon from "@/components/AppIcon";
 import { px } from "@/lib/img";
 import { ArrowLeftRight, ChevronLeft, Leaf } from "lucide-react";
 import type { AlternativeEntry } from "@/data/alternatives";
@@ -57,7 +57,6 @@ export default function Alternatives({
           {/* ردیف جایگزین‌ها */}
           <div className="mt-4 space-y-2.5 relative">
             {apps.map((a) => {
-              const icon = px(a.iconUrl, "icon");
               return (
                 <Link
                   key={a.slug}
@@ -66,11 +65,7 @@ export default function Alternatives({
                 >
                   {/* آیکون */}
                   <span className="w-12 h-12 rounded-xl overflow-hidden bg-muted shrink-0 grid place-items-center">
-                    {icon ? (
-                      <PxImg src={icon} alt={a.nameFa} width={48} height={48} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="font-extrabold text-lg text-muted-foreground">{a.nameFa.slice(0, 1)}</span>
-                    )}
+                    <AppIcon src={a.iconUrl ? px(a.iconUrl, "icon") || a.iconUrl : null} name={a.nameFa} width={48} height={48} imgClassName="w-full h-full object-cover" letterClassName="font-extrabold text-lg text-muted-foreground" alt={a.nameFa} />
                   </span>
 
                   {/* نام و دلیل */}

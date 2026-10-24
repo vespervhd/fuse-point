@@ -33,6 +33,7 @@ function put(key: string, buf: Buffer, type: string) {
 
 const ALLOWED_TYPES = new Set([
   "image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml",
+  "image/x-icon", "image/vnd.microsoft.icon", // فاوآیکن‌های .ico (مثل سرویس DuckDuckGo)
 ]);
 
 const RASTER_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
