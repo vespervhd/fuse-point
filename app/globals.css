@@ -481,79 +481,96 @@ body {
 }
 
 /* ============================================================
-   کارت دانلود — عین طرح تأییدشده‌ی مالک (fuse_point_download_card_v2)
+   کارت دانلود — عین نمونه‌ی دوم کادر دانلود، با رنگ‌های توکنی تم
    همه‌ی رنگ‌ها از توکن‌های تم فعال می‌آیند تا در هر چهار تم منسجم بماند
    ============================================================ */
-.dl-card {
+.dl2-card {
   position: relative; isolation: isolate; overflow: hidden;
-  width: 100%; max-width: 640px; margin-inline: auto; padding: clamp(20px, 4vw, 30px);
-  border: 1px solid var(--border); border-radius: 28px;
-  background: linear-gradient(145deg, color-mix(in srgb, var(--muted) 98%, transparent), color-mix(in srgb, var(--background) 60%, var(--card) 40%) 72%);
-  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.045);
-  color: var(--foreground); text-align: start;
+  width: 100%; max-width: 560px; margin-inline: auto; padding: clamp(19px, 4vw, 25px);
+  border: 1px solid var(--border); border-radius: 27px;
+  background: linear-gradient(155deg, color-mix(in srgb, var(--card) 88%, var(--foreground) 6%), color-mix(in srgb, var(--card) 55%, var(--background) 45%) 60%, color-mix(in srgb, var(--card) 70%, var(--primary) 8%) 100%);
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.4);
+  color: var(--foreground);
 }
-.dl-card::before {
-  content: ""; position: absolute; z-index: -1; width: 230px; height: 230px; top: -150px; left: -75px;
-  border-radius: 50%; background: color-mix(in srgb, var(--primary) 16%, transparent); filter: blur(12px); pointer-events: none;
+.dl2-card::before {
+  content: ""; position: absolute; z-index: -1; width: 270px; height: 270px; top: -140px; right: -70px;
+  border-radius: 50%; background: color-mix(in srgb, var(--secondary) 22%, transparent); filter: blur(80px); pointer-events: none;
 }
-.dl-topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 23px; }
-.dl-brand { display: flex; align-items: center; gap: 9px; color: color-mix(in srgb, var(--foreground) 55%, var(--muted-foreground) 45%); font-size: 0.72rem; letter-spacing: 0.16em; font-weight: 800; direction: ltr; }
-.dl-brand-mark { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 14px color-mix(in srgb, var(--primary) 75%, transparent); }
-.dl-status { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid color-mix(in srgb, var(--muted-foreground) 15%, transparent); border-radius: 999px; color: color-mix(in srgb, var(--foreground) 55%, var(--muted-foreground) 45%); background: rgba(255, 255, 255, 0.025); font-size: 0.72rem; white-space: nowrap; }
-.dl-status-dot { width: 6px; height: 6px; border-radius: 50%; background: color-mix(in srgb, var(--secondary) 55%, #fff); }
-.dl-header { display: flex; align-items: center; gap: 17px; }
-.dl-icon {
-  position: relative; display: grid; place-items: center; flex: 0 0 82px; width: 82px; height: 82px;
-  border: 1px solid color-mix(in srgb, var(--border) 62%, var(--muted-foreground) 38%); border-radius: 25px; color: var(--primary);
-  background: linear-gradient(145deg, color-mix(in srgb, var(--muted) 55%, var(--primary) 16%), color-mix(in srgb, var(--muted) 78%, var(--background) 22%));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 9px 25px rgba(0, 0, 0, 0.2);
-  overflow: hidden; font-size: 2rem; font-weight: 800;
+.dl2-card::after {
+  content: ""; position: absolute; z-index: -1; width: 270px; height: 270px; bottom: -140px; left: -100px;
+  border-radius: 50%; background: color-mix(in srgb, var(--primary) 18%, transparent); filter: blur(80px); pointer-events: none;
 }
-.dl-icon::after { content: ""; position: absolute; inset: 6px; border: 1px solid color-mix(in srgb, var(--primary) 7%, transparent); border-radius: 19px; pointer-events: none; }
-.dl-icon img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.dl-heading { min-width: 0; flex: 1; }
-.dl-title { margin: 0; text-align: right; direction: ltr; font-size: clamp(1.55rem, 4.6vw, 2rem); letter-spacing: -0.045em; line-height: 1.2; font-weight: 800; overflow-wrap: anywhere; }
-.dl-subtitle { margin: 8px 0 0; color: var(--muted-foreground); font-size: 0.9rem; line-height: 1.7; }
-.dl-version { align-self: flex-start; padding: 8px 11px; border: 1px solid color-mix(in srgb, var(--border) 78%, var(--muted-foreground) 22%); border-radius: 12px; background: color-mix(in srgb, var(--background) 72%, var(--muted) 28%); color: color-mix(in srgb, var(--foreground) 90%, var(--primary) 10%); font-size: 0.76rem; direction: ltr; white-space: nowrap; }
-.dl-pending { align-self: flex-start; padding: 8px 11px; border: 1px solid color-mix(in srgb, #f59e0b 55%, transparent); border-radius: 12px; background: color-mix(in srgb, #f59e0b 12%, transparent); color: #fbbf24; font-size: 0.76rem; white-space: nowrap; }
-.dl-rule { height: 1px; margin: 24px 0 17px; background: linear-gradient(90deg, transparent, var(--border) 12%, var(--border) 88%, transparent); }
-.dl-section-label { margin: 0 0 11px; color: color-mix(in srgb, var(--muted-foreground) 90%, var(--background) 10%); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; }
-.dl-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.dl-meta-item { display: flex; align-items: center; gap: 11px; min-width: 0; padding: 13px; border: 1px solid color-mix(in srgb, var(--muted-foreground) 15%, transparent); border-radius: 16px; background: linear-gradient(145deg, color-mix(in srgb, var(--muted) 90%, transparent), color-mix(in srgb, var(--card) 88%, transparent)); }
-.dl-meta-icon { display: grid; place-items: center; flex: 0 0 36px; width: 36px; height: 36px; border-radius: 12px; background: color-mix(in srgb, var(--primary) 8%, transparent); color: color-mix(in srgb, var(--primary) 82%, #fff); }
-.dl-meta-icon svg { width: 20px; height: 20px; }
-.dl-meta-copy { min-width: 0; }
-.dl-meta-label { display: block; margin-bottom: 5px; color: var(--muted-foreground); font-size: 0.72rem; }
-.dl-meta-value { display: block; color: var(--foreground); font-size: 0.9rem; font-weight: 700; overflow-wrap: anywhere; }
-.dl-download {
-  display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 57px; margin-top: 17px;
-  padding: 15px 18px; border: 1px solid rgba(255, 255, 255, 0.48); border-radius: 17px;
-  background: linear-gradient(100deg, color-mix(in srgb, var(--primary) 86%, #fff), color-mix(in srgb, var(--primary) 58%, #fff)); color: var(--primary-foreground);
-  text-decoration: none; font-size: 1rem; font-weight: 800;
-  box-shadow: 0 8px 26px color-mix(in srgb, var(--primary) 20%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+.dl2-identity { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 8px 0 24px; }
+.dl2-icon {
+  position: relative; display: grid; place-items: center; width: 100px; height: 100px; margin-bottom: 20px;
+  border: 1px solid var(--border); border-radius: 28px; color: var(--primary); overflow: hidden;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--muted) 70%, var(--primary) 12%), color-mix(in srgb, var(--muted) 85%, var(--background) 15%));
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  font-size: 2.5rem; font-weight: 800;
+}
+.dl2-icon::after { content: ""; position: absolute; inset: -5px; border: 1px solid color-mix(in srgb, var(--primary) 15%, transparent); border-radius: 32px; pointer-events: none; }
+.dl2-icon img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.dl2-title { margin: 0; direction: ltr; font-size: clamp(1.9rem, 6vw, 2.1rem); line-height: 1.4; font-weight: 800; letter-spacing: -0.05em; overflow-wrap: anywhere; }
+.dl2-subtitle { margin: 7px 0 0; max-width: 340px; color: var(--muted-foreground); font-size: 0.82rem; line-height: 2; }
+.dl2-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 15px; }
+.dl2-version {
+  display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 30px; direction: ltr;
+  background: color-mix(in srgb, var(--primary) 8%, transparent); border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
+  color: var(--primary); font-size: 0.7rem; font-weight: 600;
+}
+.dl2-version i { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
+.dl2-pending { padding: 7px 12px; border-radius: 30px; border: 1px solid color-mix(in srgb, #f59e0b 55%, transparent); background: color-mix(in srgb, #f59e0b 12%, transparent); color: #fbbf24; font-size: 0.7rem; }
+.dl2-section-label { margin: 0 0 12px; color: var(--muted-foreground); font-size: 0.63rem; font-weight: 600; letter-spacing: 0.1em; }
+.dl2-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin-bottom: 23px; }
+.dl2-meta-item { padding: 13px 9px; border-radius: 15px; border: 1px solid var(--border); background: color-mix(in srgb, var(--background) 55%, transparent); text-align: center; min-width: 0; }
+.dl2-meta-label { display: block; margin-bottom: 6px; color: var(--muted-foreground); font-size: 0.63rem; }
+.dl2-meta-value { display: block; color: var(--foreground); font-size: 0.76rem; font-weight: 700; overflow-wrap: anywhere; }
+.dl2-area { padding: 16px; border-radius: 20px; background: color-mix(in srgb, var(--background) 66%, transparent); border: 1px solid var(--border); }
+.dl2-download {
+  display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 60px;
+  padding: 14px 17px; border-radius: 15px; text-decoration: none;
+  background: linear-gradient(105deg, color-mix(in srgb, var(--primary) 92%, #fff), color-mix(in srgb, var(--primary) 68%, #fff)); color: var(--primary-foreground);
+  box-shadow: 0 9px 32px color-mix(in srgb, var(--primary) 18%, transparent);
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
-.dl-download svg { width: 21px; height: 21px; transition: transform 0.2s ease; }
-.dl-download:hover { transform: translateY(-2px); filter: brightness(1.04); box-shadow: 0 13px 32px color-mix(in srgb, var(--primary) 30%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.7); }
-.dl-download:hover svg { transform: translateY(2px); }
-.dl-download:active { transform: translateY(0); }
-.dl-download:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
-.dl-footnote { display: flex; justify-content: center; align-items: center; gap: 7px; margin: 13px 0 0; color: color-mix(in srgb, var(--muted-foreground) 82%, transparent); font-size: 0.72rem; text-align: center; line-height: 1.7; }
-.dl-footnote svg { width: 14px; height: 14px; flex: none; color: var(--muted-foreground); }
-@media (max-width: 440px) {
-  .dl-card { border-radius: 23px; }
-  .dl-topline { margin-bottom: 20px; }
-  .dl-header { gap: 12px; flex-wrap: wrap; }
-  .dl-icon { width: 68px; height: 68px; flex-basis: 68px; border-radius: 21px; }
-  .dl-icon::after { border-radius: 16px; }
-  .dl-version { margin-right: auto; }
-  .dl-heading { flex-basis: calc(100% - 84px); }
-  .dl-title { font-size: 1.55rem; }
-  .dl-subtitle { font-size: 0.8rem; }
-  .dl-meta { gap: 8px; }
-  .dl-meta-item { padding: 11px 9px; gap: 8px; }
-  .dl-meta-icon { width: 31px; height: 31px; flex-basis: 31px; }
-  .dl-meta-value { font-size: 0.82rem; }
+.dl2-download:hover { transform: translateY(-2px); filter: brightness(1.04); box-shadow: 0 13px 36px color-mix(in srgb, var(--primary) 28%, transparent); }
+.dl2-download:active { transform: translateY(0); }
+.dl2-download:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+.dl2-download > svg { width: 23px; height: 23px; flex-shrink: 0; }
+.dl2-btn-text { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
+.dl2-btn-title { font-size: 0.88rem; font-weight: 800; }
+.dl2-btn-sub { font-size: 0.63rem; font-weight: 500; opacity: 0.7; }
+.dl2-links { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 10px; }
+.dl2-links:has(> :only-child) { grid-template-columns: 1fr; }
+.dl2-secondary {
+  display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 45px; padding: 10px 6px;
+  border: 1px solid var(--border); border-radius: 12px; color: var(--muted-foreground); background: rgba(255, 255, 255, 0.02);
+  text-decoration: none; font-size: 0.7rem; transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.dl2-secondary:hover { background: rgba(255, 255, 255, 0.05); border-color: color-mix(in srgb, var(--primary) 30%, transparent); color: var(--foreground); }
+.dl2-secondary svg { width: 17px; height: 17px; flex-shrink: 0; }
+.dl2-secondary-icon { width: 17px; height: 17px; flex-shrink: 0; }
+.dl2-note { display: flex; align-items: flex-start; gap: 8px; margin: 15px 0 0; color: var(--muted-foreground); font-size: 0.63rem; line-height: 1.9; }
+.dl2-note svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; color: var(--primary); }
+.dl2-trust { max-width: 560px; margin: 14px auto 0; padding: 17px 19px; border: 1px solid var(--border); background: color-mix(in srgb, var(--card) 75%, transparent); border-radius: 19px; }
+.dl2-trust-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+.dl2-trust-icon { display: grid; place-items: center; width: 32px; height: 32px; flex: 0 0 32px; border-radius: 10px; background: color-mix(in srgb, var(--primary) 8%, transparent); color: var(--primary); }
+.dl2-trust-icon svg { width: 17px; height: 17px; }
+.dl2-trust-heading h2 { margin: 0; font-size: 0.82rem; font-weight: 700; }
+.dl2-trust p { margin: 0; color: var(--muted-foreground); font-size: 0.7rem; line-height: 1.9; }
+.dl2-trust-points { display: flex; flex-wrap: wrap; gap: 8px 15px; margin-top: 13px; }
+.dl2-trust-points span { color: var(--muted-foreground); font-size: 0.63rem; }
+.dl2-trust-points b { color: var(--primary); margin-left: 4px; }
+@media (max-width: 400px) {
+  .dl2-card { padding: 19px 14px; }
+  .dl2-icon { width: 86px; height: 86px; }
+  .dl2-title { font-size: 1.9rem; }
+  .dl2-subtitle { font-size: 0.76rem; }
+  .dl2-meta { gap: 6px; }
+  .dl2-meta-item { padding: 12px 5px; }
+  .dl2-meta-value { font-size: 0.7rem; }
+  .dl2-area { padding: 12px; }
+  .dl2-trust { padding: 15px; }
 }
 
 /* ============================================================
