@@ -5,6 +5,9 @@ import PxImg from "@/components/PxImg";
 import { px } from "@/lib/img";
 import { getCompareList } from "@/components/CompareButton";
 import { Scale, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type CApp = {
   slug: string; nameFa: string; iconUrl: string | null; shortDescFa: string | null;
@@ -41,18 +44,18 @@ export default function CompareClient() {
     setSlugs([]); setApps([]);
   };
 
-  if (loading) return <p className="text-muted">در حال بارگذاری...</p>;
+  if (loading) return <p className="text-muted-foreground">در حال بارگذاری...</p>;
   if (!apps.length) return (
     <div className="text-center py-16">
-      <Scale className="w-12 h-12 mx-auto mb-4 text-muted" aria-hidden="true" />
+      <Scale className="w-12 h-12 mx-auto mb-4 text-muted-foreground" aria-hidden="true" />
       <p className="font-bold mb-2">لیست مقایسه خالی است</p>
-      <p className="text-sm text-muted mb-6">از صفحه‌ی هر برنامه، «افزودن به مقایسه» را بزنید</p>
+      <p className="text-sm text-muted-foreground mb-6">از صفحه‌ی هر برنامه، «افزودن به مقایسه» را بزنید</p>
       <Link href="/" className="text-primary font-bold">← بازگشت به خانه</Link>
     </div>
   );
 
   const rows: [string, (a: CApp) => React.ReactNode][] = [
-    ["توضیح", (a) => <span className="text-xs text-muted line-clamp-3">{a.shortDescFa || "—"}</span>],
+    ["توضیح", (a) => <span className="text-xs text-muted-foreground line-clamp-3">{a.shortDescFa || "—"}</span>],
     ["آخرین نسخه", (a) => fa(a.versionName as any) === "—" ? (a.versionName || "—") : a.versionName],
     ["حجم فایل", (a) => a.fileSize ? `${(a.fileSize / 1048576).toLocaleString("fa-IR", { maximumFractionDigits: 1 })} مگابایت` : "—"],
     ["دانلودها", (a) => fa(a.downloadCount)],
@@ -65,8 +68,8 @@ export default function CompareClient() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-muted">{fa(apps.length)} برنامه در حال مقایسه</p>
-        <button onClick={clear} className="btn btn-error btn-sm">پاک کردن همه</button>
+        <p className="text-sm text-muted-foreground">{fa(apps.length)} برنامه در حال مقایسه</p>
+        <Button onClick={clear} variant="destructive" size="sm">پاک کردن همه</Button>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[560px] border-collapse">
@@ -75,10 +78,10 @@ export default function CompareClient() {
               <th className="w-28"></th>
               {apps.map((a) => (
                 <th key={a.slug} className="p-3 align-top">
-                  <div className="bg-surface border border-border rounded-3xl p-4">
+                  <div className="bg-card border border-border rounded-3xl p-4">
                     {a.iconUrl && <PxImg src={px(a.iconUrl) || ""} alt={a.nameFa} width={64} height={64} className="w-16 h-16 rounded-2xl mx-auto mb-2 object-cover" />}
                     <Link href={`/app/${a.slug}`} className="font-extrabold text-sm hover:text-primary block mb-2">{a.nameFa}</Link>
-                    <button onClick={() => remove(a.slug)} className="btn btn-ghost btn-xs">حذف ✕</button>
+                    <Button onClick={() => remove(a.slug)} variant="ghost" size="sm" className="h-6 px-2 text-xs">حذف ✕</Button>
                   </div>
                 </th>
               ))}
@@ -87,7 +90,7 @@ export default function CompareClient() {
           <tbody>
             {rows.map(([label, fn]) => (
               <tr key={label} className="border-t border-border">
-                <td className="py-3 px-2 text-sm font-bold text-muted whitespace-nowrap">{label}</td>
+                <td className="py-3 px-2 text-sm font-bold text-muted-foreground whitespace-nowrap">{label}</td>
                 {apps.map((a) => <td key={a.slug} className="py-3 px-3 text-sm text-center align-top">{fn(a)}</td>)}
               </tr>
             ))}
@@ -95,7 +98,7 @@ export default function CompareClient() {
               <td></td>
               {apps.map((a) => (
                 <td key={a.slug} className="py-4 px-3 text-center">
-                  <Link href={`/app/${a.slug}`} className="inline-block bg-primary text-primary-fg text-sm font-bold rounded-2xl px-6 py-2.5">مشاهده و دانلود</Link>
+                  <Link href={`/app/${a.slug}`} className={cn(buttonVariants({ size: "lg" }), "rounded-2xl font-bold")}>مشاهده و دانلود</Link>
                 </td>
               ))}
             </tr>

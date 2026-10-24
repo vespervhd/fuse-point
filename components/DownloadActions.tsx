@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Download, Globe, ChevronDown, Package } from "lucide-react";
 import { formatBytes, toFaDigits } from "@/lib/fa";
+import { Button } from "@/components/ui/button";
 
 // ─── آیکون‌های برند (اینلاین، بدون وابستگی) ───
 const GithubIcon = ({ className }: { className?: string }) => (
@@ -52,35 +53,31 @@ const hostOf = (url: string) => {
 };
 
 // ─── منطق هوشمند ساخت گزینه‌ها ───
+// قانون مالک (تأیید مجدد ۲۰۲۶-۱۰-۲۴): مقصد هر پلتفرم جدا حساب می‌شود —
+// اول فایل مستقیم رسمی (از مسیر ترکینگ داخلی)، بعد وب‌سایت رسمی پروژه
+// (اپی که فقط وب‌سایت دارد به همان وب‌سایت می‌رود)، و در نبودش گیت‌هاب
+// (اگر وب‌سایت جدا هست: خود ریپو؛ وگرنه صفحه‌ی ریلیزها).
 export function getDownloadOptions(app: DownloadAppInfo): Option[] {
   const out: Option[] = [];
   const v = app.version;
+  const sHost = app.sourceUrl ? hostOf(app.sourceUrl) : "";
+  const isGithubUrl = sHost === "github.com";
+  const hasSeparateWebsite = !!app.sourceUrl && !isGithubUrl && app.sourceType !== "fdroid";
 
-  // ۱) اندروید: دانلود مستقیم APK (با ترکینگ داخلی)
-  if (
-    app.platform === "android" &&
-    v &&
-    v.fileType !== "external" &&
-    v.fileUrl
-  ) {
+  // ۱) فایل مستقیم این پلتفرم — از /api/download (ثبت رویداد + ریدایرکت به فایل واقعی)
+  if (v && v.fileType !== "external" && v.fileUrl) {
     out.push({
       key: "apk",
       label: `دانلود نسخه ${v.versionName}`,
-      sub: v.fileSize ? formatBytes(v.fileSize) : "فایل APK",
+      sub: v.fileSize ? formatBytes(v.fileSize) : "دانلود مستقیم",
       href: `/api/download/${v.id}`,
       icon: <AndroidIcon className="w-5 h-5" />,
       primary: true,
     });
   }
 
-  // ۱-ب) اندروید: نسخه‌ی external (مثلاً صفحه‌ی F-Droid) — لینک به همان صفحه‌ی رسمی دانلود
-  if (
-    app.platform === "android" &&
-    v &&
-    v.fileType === "external" &&
-    v.fileUrl &&
-    out.length === 0
-  ) {
+  // ۲) نسخه‌ی external — لینک به همان صفحه‌ی رسمی دانلود
+  if (v && v.fileType === "external" && v.fileUrl && out.length === 0) {
     out.push({
       key: "fdroid",
       label: "دانلود",
@@ -92,9 +89,20 @@ export function getDownloadOptions(app: DownloadAppInfo): Option[] {
     });
   }
 
-  // ۲) گیت‌هاب: اگر وب‌سایت رسمی جدا داریم (یعنی ریلیز خالی بوده)، لینک به خود ریپو نه ریلیزها
-  const sHostEarly = app.sourceUrl ? hostOf(app.sourceUrl) : "";
-  const hasSeparateWebsite = !!app.sourceUrl && sHostEarly !== "github.com" && app.sourceType !== "fdroid";
+  // ۳) وب‌سایت رسمی پروژه (بیرون گیت‌هاب) — قبل از گیت‌هاب می‌آید
+  if (hasSeparateWebsite && app.sourceUrl) {
+    out.push({
+      key: "web",
+      label: "صفحه رسمی پروژه",
+      sub: sHost || "وب‌سایت رسمی",
+      href: app.sourceUrl,
+      icon: <Globe className="w-5 h-5" aria-hidden="true" />,
+      primary: out.length === 0,
+      external: true,
+    });
+  }
+
+  // ۴) گیت‌هاب — با وب‌سایت جدا: خود ریپو؛ بدون آن: ریلیزها
   if (app.githubRepo) {
     out.push({
       key: "github",
@@ -107,38 +115,23 @@ export function getDownloadOptions(app: DownloadAppInfo): Option[] {
         ? `https://github.com/${app.githubRepo}`
         : `https://github.com/${app.githubRepo}/releases`,
       icon: <GithubIcon className="w-5 h-5" />,
-      primary: out.length === 0 && !hasSeparateWebsite,
-      external: true,
-    });
-  }
-
-  // ۳) سایت رسمی: اگر گیت‌هاب است ولی githubRepo ست نشده، همان را نشان بده (تکراری نشود)
-  // sHostEarly از بالا
-  const isGithubUrl = sHostEarly === "github.com";
-  if (
-    app.sourceUrl &&
-    app.sourceType !== "fdroid" &&
-    (!isGithubUrl || !app.githubRepo)
-  ) {
-    // اگر URL گیت‌هاب است، سعی کن repo را استخراج کنی
-    let href = app.sourceUrl;
-    let label = "صفحه رسمی پروژه";
-    if (isGithubUrl && !app.githubRepo) {
-      const m = app.sourceUrl.match(/github\.com\/([^\/]+\/[^\/\#\?]+)/);
-      if (m) {
-        href = `https://github.com/${m[1]}/releases`;
-        label = "مشاهده در گیت‌هاب";
-      }
-    }
-    out.push({
-      key: "web",
-      label,
-      sub: sHostEarly || "وب‌سایت رسمی",
-      href,
-      icon: <Globe className="w-5 h-5" aria-hidden="true" />,
       primary: out.length === 0,
       external: true,
     });
+  } else if (isGithubUrl && app.sourceUrl) {
+    // منبع، خود گیت‌هاب است ولی githubRepo جدا ثبت نشده
+    const m = app.sourceUrl.match(/github\.com\/([^\/]+\/[^\/\#\?]+)/);
+    if (m) {
+      out.push({
+        key: "github",
+        label: "مشاهده در گیت‌هاب",
+        sub: m[1],
+        href: `https://github.com/${m[1]}/releases`,
+        icon: <GithubIcon className="w-5 h-5" />,
+        primary: out.length === 0,
+        external: true,
+      });
+    }
   }
 
   // حذف تکراری‌ها
@@ -166,17 +159,19 @@ export default function DownloadActions({ app }: { app: DownloadAppInfo }) {
   return (
     <section aria-label="دانلود" className="mt-6">
       <ActionButton option={primary} big />
-      <button
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="btn btn-ghost btn-sm w-full mt-3"
+        className="w-full mt-3"
       >
         <ChevronDown
           className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`}
           aria-hidden="true"
         />
         {open ? "بستن گزینه‌ها" : `گزینه‌های بیشتر (${toFaDigits(rest.length)})`}
-      </button>
+      </Button>
       <div
         className={`grid transition-all duration-300 ease-in-out ${
           open ? "grid-rows-[1fr] opacity-100 mt-1" : "grid-rows-[0fr] opacity-0"
@@ -196,31 +191,37 @@ export default function DownloadActions({ app }: { app: DownloadAppInfo }) {
 
 function ActionButton({ option: o, big }: { option: Option; big?: boolean }) {
   return (
+    <Button
+      asChild
+      variant={o.primary ? "default" : "ghost"}
+      size={o.primary && big ? "lg" : "default"}
+      className={
+        o.primary
+          ? "w-full"
+          : "w-full justify-start h-auto py-3 text-start"
+      }
+    >
     <a
       href={o.href}
       {...(o.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className={
-        o.primary
-          ? `btn btn-primary w-full ${big ? "btn-lg" : ""}`
-          : `btn btn-ghost w-full justify-start h-auto py-3 text-start`
-      }
     >
       <span className={o.primary ? "" : "text-primary shrink-0"}>{o.icon}</span>
       <span className={`text-start ${big && o.primary ? "" : "flex-1"}`}>
         <span className={`block font-bold ${big && o.primary ? "text-lg" : "text-sm"}`}>{o.label}</span>
         <span
           className={`block text-xs mt-0.5 ${
-            o.primary ? "opacity-80" : "text-muted"
+            o.primary ? "opacity-80" : "text-muted-foreground"
           } ${o.key === "github" ? "font-mono" : ""}`}
           dir={o.key === "github" ? "ltr" : undefined}
         >
           {o.sub}
         </span>
       </span>
-      {!o.primary && <Download className="w-4 h-4 text-muted ms-auto shrink-0" aria-hidden="true" />}
+      {!o.primary && <Download className="w-4 h-4 text-muted-foreground ms-auto shrink-0" aria-hidden="true" />}
       {o.primary && o.key === "apk" && (
         <Package className="w-5 h-5 opacity-70" aria-hidden="true" />
       )}
     </a>
+    </Button>
   );
 }

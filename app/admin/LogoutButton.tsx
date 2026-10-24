@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export default function LogoutButton() {
   const router = useRouter();
@@ -9,9 +10,9 @@ export default function LogoutButton() {
     router.refresh();
   };
   return (
-    <button onClick={logout}
-      className="btn btn-ghost justify-start w-full text-error">
+    <Button variant="ghost" onClick={logout}
+      className="justify-start w-full text-destructive">
       🚪 خروج
-    </button>
+    </Button>
   );
 }

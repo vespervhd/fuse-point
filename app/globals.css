@@ -1,42 +1,134 @@
 @import "tailwindcss";
-@plugin "daisyui" {
-  themes: dim --default, dracula, halloween, luxury, forest;
-}
+
+/* ============================================================
+   Fuse Point — سیستم توکن shadcn + چهار تم «زنده»
+   تم فعال با data-theme روی <html> مشخص می‌شود (پیش‌فرض: sky)
+   رنگ‌های تابعی (success/info/warning/destructive) در همه‌ی تم‌ها ثابت‌اند
+   ============================================================ */
 
 :root {
-  /* نگاشت به تم فعال daisyUI — با عوض شدن data-theme همه به‌روز می‌شن */
-  --bg: var(--color-base-100);
-  --surface: var(--color-base-200);
-  --surface-2: var(--color-base-300);
-  --fg: var(--color-base-content);
-  --muted: color-mix(in oklab, var(--color-base-content) 62%, transparent);
-  --border: var(--color-base-300);
-  --primary: var(--color-primary);
-  --primary-soft: color-mix(in oklab, var(--color-primary) 13%, transparent);
-  --primary-fg: var(--color-primary-content);
-  --accent: var(--color-secondary);
-  --danger: var(--color-error);
   --radius: 0.75rem;
-  /* کارت هیرو — هماهنگ با تم فعال */
-  --peach-1: var(--color-primary);
-  --peach-2: var(--color-secondary);
-  --peach-ink: var(--color-primary-content);
-  --peach-cta: var(--color-neutral);
-  --peach-cta-fg: var(--color-neutral-content);
+
+  /* رنگ‌های تابعی — ثابت در همه‌ی تم‌ها (از تم dim دِیزی) */
+  --success: oklch(86.171% 0.142 166.534);
+  --success-foreground: oklch(17.234% 0.028 166.534);
+  --info: oklch(86.078% 0.142 206.182);
+  --info-foreground: oklch(17.215% 0.028 206.182);
+  --warning: oklch(86.163% 0.142 94.818);
+  --warning-foreground: oklch(17.232% 0.028 94.818);
+  --destructive: oklch(82.418% 0.099 33.756);
+  --destructive-foreground: oklch(16.483% 0.019 33.756);
+
+  /* آسمان زنده (پیش‌فرض) */
+  --background: #06070f;
+  --foreground: #eef0ff;
+  --card: #0c0f1c;
+  --card-foreground: #eef0ff;
+  --popover: #0c0f1c;
+  --popover-foreground: #eef0ff;
+  --primary: #cfd6ff;
+  --primary-foreground: #141a38;
+  --secondary: #7aa2ff;
+  --secondary-foreground: #0a1030;
+  --muted: #12152a;
+  --muted-foreground: #8f94b8;
+  --accent: #1b2145;
+  --accent-foreground: #eef0ff;
+  --border: #252a45;
+  --input: #252a45;
+  --ring: #cfd6ff;
+}
+
+[data-theme="embers"] {
+  --background: #0b0908;
+  --foreground: #f7ece4;
+  --card: #141010;
+  --card-foreground: #f7ece4;
+  --popover: #141010;
+  --popover-foreground: #f7ece4;
+  --primary: #ff7a33;
+  --primary-foreground: #2e1402;
+  --secondary: #ffb347;
+  --secondary-foreground: #2e1a02;
+  --muted: #1d1414;
+  --muted-foreground: #ad8d80;
+  --accent: #331a0c;
+  --accent-foreground: #f7ece4;
+  --border: #332222;
+  --input: #332222;
+  --ring: #ff7a33;
+}
+
+[data-theme="aurora"] {
+  --background: #090d18;
+  --foreground: #eef2ff;
+  --card: #101828;
+  --card-foreground: #eef2ff;
+  --popover: #101828;
+  --popover-foreground: #eef2ff;
+  --primary: #5ee8b5;
+  --primary-foreground: #04231a;
+  --secondary: #a78bfa;
+  --secondary-foreground: #1d1038;
+  --muted: #182238;
+  --muted-foreground: #93a3c4;
+  --accent: #12332b;
+  --accent-foreground: #eef2ff;
+  --border: #2b3a55;
+  --input: #2b3a55;
+  --ring: #5ee8b5;
+}
+
+[data-theme="constellation"] {
+  --background: #0b0a1e;
+  --foreground: #efeafd;
+  --card: #12102a;
+  --card-foreground: #efeafd;
+  --popover: #12102a;
+  --popover-foreground: #efeafd;
+  --primary: #d4af37;
+  --primary-foreground: #241a02;
+  --secondary: #9990c4;
+  --secondary-foreground: #171233;
+  --muted: #1a1838;
+  --muted-foreground: #9990c4;
+  --accent: #2a2144;
+  --accent-foreground: #efeafd;
+  --border: #2e2a55;
+  --input: #2e2a55;
+  --ring: #d4af37;
 }
 
 @theme inline {
-  --color-bg: var(--bg);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
-  --color-fg: var(--fg);
-  --color-muted: var(--muted);
-  --color-border: var(--border);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
-  --color-primary-soft: var(--primary-soft);
-  --color-primary-fg: var(--primary-fg);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
-  --color-danger: var(--danger);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
   --font-sans: var(--font-inter), var(--font-vazir), system-ui, sans-serif;
   --font-head: var(--font-inter), var(--font-vazir), system-ui, sans-serif;
   --font-wordmark: var(--font-cinzel), "Times New Roman", serif;
@@ -48,50 +140,71 @@ html {
 }
 
 body {
-  background: var(--bg);
-  color: var(--fg);
+  background: var(--background);
+  color: var(--foreground);
   font-family: var(--font-inter), var(--font-vazir), system-ui, Tahoma, sans-serif;
   -webkit-font-smoothing: antialiased;
+  /* محو نرم هنگام تعویض تم */
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 /* اسکرول‌بار ظریف */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
-::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
 
-/* انیمیشن کوتاه ظاهرشدن */
+/* ---------- کی‌فریم‌های پایه ---------- */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
 }
 .animate-fade-up { animation: fade-up 0.35s ease both; }
 
-/* ورود پلکانی کارت‌ها */
 @keyframes card-in {
   from { opacity: 0; transform: translateY(14px) scale(0.98); }
   to { opacity: 1; transform: none; }
 }
 .animate-card-in { animation: card-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
-/* باتم‌شیت دانلود */
 @keyframes sheet-up {
   from { opacity: 0; transform: translateY(100%); }
   to { opacity: 1; transform: translateY(0); }
 }
-.animate-sheet-up { animation: sheet-up 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; }
-@media (min-width: 640px) {
-  @keyframes sheet-center {
-    from { opacity: 0; transform: translate(-50%, -46%) scale(0.97); }
-    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  }
-  .animate-sheet-up { animation-name: sheet-center; }
+@keyframes sheet-in-top {
+  from { opacity: 0; transform: translateY(-100%); }
+  to { opacity: 1; transform: translateY(0); }
 }
+@keyframes sheet-in-right {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes sheet-in-left {
+  from { opacity: 0; transform: translateX(-100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-.animate-fade-in { animation: fade-in 0.25s ease both; }
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes dialog-in {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes dialog-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+}
+@keyframes menu-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
 
 /* اسکلت لودینگ */
 @keyframes shimmer {
@@ -99,7 +212,7 @@ body {
   to { background-position: -200% 0; }
 }
 .skeleton {
-  background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 50%, var(--surface-2) 75%);
+  background: linear-gradient(90deg, var(--muted) 25%, var(--border) 50%, var(--muted) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease infinite;
   border-radius: 0.75rem;
@@ -112,28 +225,213 @@ body {
   animation-timing-function: ease;
 }
 
-/* هاله‌های پس‌زمینه — ظریف، هماهنگ با حس گرم هر تم */
-.bg-glows { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.bg-glows span { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.16; }
-.bg-glows .g1 { width: 480px; height: 480px; background: color-mix(in oklab, var(--color-primary) 55%, transparent); top: -160px; right: -140px; }
-.bg-glows .g2 { width: 380px; height: 380px; background: color-mix(in oklab, var(--color-secondary) 55%, transparent); bottom: 8%; left: -160px; opacity: 0.12; }
-.bg-glows .g3 { display: none; }
+/* ============================================================
+   پس‌زمینه‌ی محیطی «زنده» — لایه‌های ثابت، وابسته به تم فعال
+   ============================================================ */
+.ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.ambient .glow { position: absolute; border-radius: 50%; filter: blur(120px); }
+.ambient .glow-a { width: 480px; height: 480px; background: color-mix(in oklab, var(--primary) 55%, transparent); opacity: 0.16; top: -160px; right: -140px; }
+.ambient .glow-b { width: 380px; height: 380px; background: color-mix(in oklab, var(--secondary) 55%, transparent); opacity: 0.12; bottom: 8%; left: -160px; }
+
+.amb-layer { position: absolute; inset: 0; display: none; }
+
+/* چشمک ستاره‌ها — دو لایه با ریتم متفاوت (نمونه‌ی تأییدشده) */
+@keyframes twinkle {
+  from { opacity: 0.15; }
+  to { opacity: 0.85; }
+}
+.amb-stars-a {
+  background-image:
+    radial-gradient(1.5px 1.5px at 22px 34px, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 130px 90px, #fff 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 200px 160px, #dfe6ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 70px 210px, #fff 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 250px 40px, #fff 50%, transparent 51%);
+  background-size: 280px 280px;
+  animation: twinkle 2.6s ease-in-out infinite alternate;
+}
+.amb-stars-b {
+  background-image:
+    radial-gradient(1px 1px at 40px 120px, #cdd8ff 50%, transparent 51%),
+    radial-gradient(1.6px 1.6px at 160px 30px, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 300px 190px, #fff 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 90px 260px, #e6ecff 50%, transparent 51%),
+    radial-gradient(1px 1px at 230px 300px, #fff 50%, transparent 51%);
+  background-size: 340px 340px;
+  animation: twinkle 3.9s ease-in-out infinite alternate-reverse;
+}
+
+/* شهاب — آسمان زنده */
+@keyframes meteor {
+  0% { opacity: 0; transform: rotate(-24deg) translateX(0); }
+  4% { opacity: 1; }
+  16% { opacity: 0; transform: rotate(-24deg) translateX(min(-62vw, -640px)); }
+  100% { opacity: 0; transform: rotate(-24deg) translateX(min(-62vw, -640px)); }
+}
+.amb-meteor {
+  inset: auto; top: 9%; inset-inline-start: -180px;
+  width: 130px; height: 2px; border-radius: 2px;
+  background: linear-gradient(to left, #fff, rgba(255, 255, 255, 0));
+  opacity: 0;
+  animation: meteor 7s linear infinite;
+}
+
+/* شفق — سه نوار محو با تاب آرام */
+@keyframes sway {
+  from { transform: translateX(-46px); }
+  to { transform: translateX(46px); }
+}
+.amb-aurora { overflow: visible; }
+.amb-aurora .band { position: absolute; border-radius: 50%; filter: blur(46px); }
+.amb-aurora .band-1 { top: -90px; inset-inline-start: -6%; width: 62%; height: 190px; background: rgba(94, 232, 181, 0.20); animation: sway 24s ease-in-out infinite alternate; }
+.amb-aurora .band-2 { top: -60px; inset-inline-start: 26%; width: 55%; height: 170px; background: rgba(45, 212, 191, 0.15); animation: sway 24s ease-in-out infinite alternate-reverse; }
+.amb-aurora .band-3 { top: -110px; inset-inline-start: 52%; width: 58%; height: 200px; background: rgba(150, 120, 255, 0.17); animation: sway 24s ease-in-out infinite alternate; animation-delay: -8s; }
+
+/* اخگر — ذره‌های بالارونده با هاله */
+@keyframes ember-rise {
+  from { background-position: 0 260px; }
+  to { background-position: 24px -260px; }
+}
+@keyframes ember-rise2 {
+  from { background-position: 0 340px; }
+  to { background-position: 30px -340px; }
+}
+.amb-embers-a {
+  background-image:
+    radial-gradient(2px 2px at 30px 40px, rgba(255, 122, 51, 0.9) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 120px 150px, rgba(255, 179, 71, 0.8) 50%, transparent 51%),
+    radial-gradient(2.2px 2.2px at 190px 80px, rgba(255, 94, 32, 0.75) 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 80px 230px, rgba(255, 160, 80, 0.85) 50%, transparent 51%);
+  background-size: 220px 260px;
+  filter: drop-shadow(0 0 5px rgba(255, 122, 51, 0.8));
+  animation: ember-rise 10s linear infinite;
+}
+.amb-embers-b {
+  background-image:
+    radial-gradient(1.4px 1.4px at 60px 90px, rgba(255, 179, 71, 0.8) 50%, transparent 51%),
+    radial-gradient(2px 2px at 210px 200px, rgba(255, 122, 51, 0.85) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 150px 300px, rgba(255, 140, 60, 0.7) 50%, transparent 51%),
+    radial-gradient(1.8px 1.8px at 260px 60px, rgba(255, 110, 40, 0.8) 50%, transparent 51%);
+  background-size: 320px 340px;
+  filter: drop-shadow(0 0 6px rgba(255, 150, 60, 0.7));
+  animation: ember-rise2 16s linear infinite;
+}
+
+/* صور فلکی — کاشی خطوط طلایی با تپش + نقطه‌های چشمک‌زن */
+@keyframes constpulse {
+  from { opacity: 0.45; }
+  to { opacity: 0.8; }
+}
+.amb-constellation {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='none' stroke='%23d4af37' stroke-opacity='0.34' stroke-width='1'%3E%3Cpolyline points='18,182 66,124 118,142 168,78'/%3E%3Cpolyline points='150,206 192,164 226,178'/%3E%3Cpolyline points='36,52 84,30 128,58'/%3E%3C/g%3E%3Cg fill='%23d4af37' fill-opacity='0.5'%3E%3Ccircle cx='18' cy='182' r='2'/%3E%3Ccircle cx='66' cy='124' r='1.6'/%3E%3Ccircle cx='118' cy='142' r='2.2'/%3E%3Ccircle cx='168' cy='78' r='1.8'/%3E%3Ccircle cx='150' cy='206' r='1.5'/%3E%3Ccircle cx='192' cy='164' r='2'/%3E%3Ccircle cx='226' cy='178' r='1.4'/%3E%3Ccircle cx='36' cy='52' r='1.7'/%3E%3Ccircle cx='84' cy='30' r='1.4'/%3E%3Ccircle cx='128' cy='58' r='1.9'/%3E%3C/g%3E%3Cpath d='M206 34a13 13 0 1 0 8 24 10.5 10.5 0 1 1-8-24z' fill='%23d4af37' fill-opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+  animation: constpulse 6s ease-in-out infinite alternate;
+}
+.amb-const-dots {
+  background-image:
+    radial-gradient(1.3px 1.3px at 50px 60px, #efe6c8 50%, transparent 51%),
+    radial-gradient(1px 1px at 180px 130px, #fff 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 110px 220px, #e9dcb0 50%, transparent 51%);
+  background-size: 260px 260px;
+  animation: twinkle 3.4s ease-in-out infinite alternate;
+}
+
+/* نمایش لایه‌ها بر اساس تم */
+[data-theme="sky"] .amb-stars-a,
+[data-theme="sky"] .amb-stars-b,
+[data-theme="sky"] .amb-meteor { display: block; }
+[data-theme="embers"] .amb-embers-a,
+[data-theme="embers"] .amb-embers-b { display: block; }
+[data-theme="aurora"] .amb-aurora,
+[data-theme="aurora"] .amb-stars-a { display: block; }
+[data-theme="constellation"] .amb-constellation,
+[data-theme="constellation"] .amb-const-dots { display: block; }
+
+/* ============================================================
+   «جریان» — پالس نورِ در حرکت روی بوردر (نمونه‌ی تأییدشده)
+   ============================================================ */
+@property --a {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes current {
+  to { --a: 360deg; }
+}
+.fx-current {
+  position: relative;
+}
+.fx-current::before {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px;
+  background: conic-gradient(from var(--a), transparent 0deg, transparent 265deg, var(--primary) 325deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: current 4.5s linear infinite; pointer-events: none;
+}
+
+/* موج جریان روی جداکننده‌ی بخش‌ها — با ورود به دید روشن می‌شود (.lit) */
+.divider-current { position: relative; overflow: hidden; }
+.divider-current::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 34%;
+  background: linear-gradient(to left, transparent, var(--primary), transparent);
+  opacity: 0; transform: translateX(-140%);
+}
+.divider-current.lit::after { animation: sweep 6.5s ease-in-out infinite; }
+@keyframes sweep {
+  0% { opacity: 0; transform: translateX(-140%); }
+  10% { opacity: 1; }
+  34% { opacity: 1; transform: translateX(320%); }
+  44%, 100% { opacity: 0; transform: translateX(320%); }
+}
+
+/* «جرقه» — ذره‌های انفجار کلیک (با JS ساخته می‌شن) */
+.spark {
+  position: fixed; z-index: 200; width: 9px; height: 2.6px; border-radius: 3px; pointer-events: none;
+}
+
+
+/* ============================================================
+   هیرو — لوگوی کسوف با پرتوهای چرخان آرام (نمونه‌ی تأییدشده)
+   ============================================================ */
+.hero-logo {
+  position: relative; width: 216px; height: 216px;
+  margin: 4px auto 6px; display: grid; place-items: center;
+}
+.corona-rays {
+  position: absolute; inset: 0; opacity: 0.5;
+  animation: spin-slow 120s linear infinite;
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+/* ورود پلکانی با اسکرول (Reveal) — مشخصات نمونه: riseIn ۰٫۵۵s */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+.fx-reveal.in { animation: rise-in 0.55s ease both; }
 
 /* بوردر گرادیانی ظریف — فقط برای تأکید، نه همه‌جا */
 .grad-border { position: relative; }
 .grad-border::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
-  background: linear-gradient(140deg, color-mix(in oklab, var(--color-primary) 40%, transparent), transparent 45%, transparent 55%, color-mix(in oklab, var(--color-secondary) 30%, transparent));
+  background: linear-gradient(140deg, color-mix(in oklab, var(--primary) 40%, transparent), transparent 45%, transparent 55%, color-mix(in oklab, var(--secondary) 30%, transparent));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor; mask-composite: exclude;
   pointer-events: none;
 }
 
 /* درخشش متن هیرو — ملایم */
-.hero-glow { text-shadow: 0 0 28px color-mix(in oklab, var(--color-primary) 35%, transparent); }
+.hero-glow { text-shadow: 0 0 28px color-mix(in oklab, var(--primary) 35%, transparent); }
 
-/* کارت هلویی هیرو — امضای طراحی بنفش-هلویی */
+/* کارت گرادیانی هیرو — هماهنگ با تم فعال */
 .hero-peach {
+  --peach-1: var(--primary);
+  --peach-2: var(--secondary);
+  --peach-ink: var(--primary-foreground);
+  --peach-cta: var(--background);
+  --peach-cta-fg: var(--foreground);
   position: relative; overflow: hidden;
   background: linear-gradient(135deg, var(--peach-1), var(--peach-2));
   color: var(--peach-ink);
@@ -142,7 +440,7 @@ body {
 }
 .hero-peach::after {
   content: ""; position: absolute; width: 220px; height: 220px; border-radius: 50%;
-  background: rgba(255,255,255,.35); top: -100px; left: -70px; pointer-events: none;
+  background: rgba(255, 255, 255, 0.35); top: -100px; left: -70px; pointer-events: none;
 }
 .hero-peach .kicker {
   display: inline-block; font-size: 12px; font-weight: 700;
@@ -182,15 +480,276 @@ body {
   html { scroll-behavior: auto; }
 }
 
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+/* ============================================================
+   کارت دانلود — عین طرح تأییدشده‌ی مالک (fuse_point_download_card_v2)
+   همه‌ی رنگ‌ها از توکن‌های تم فعال می‌آیند تا در هر چهار تم منسجم بماند
+   ============================================================ */
+.dl-card {
+  position: relative; isolation: isolate; overflow: hidden;
+  width: 100%; max-width: 640px; margin-inline: auto; padding: clamp(20px, 4vw, 30px);
+  border: 1px solid var(--border); border-radius: 28px;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--muted) 98%, transparent), color-mix(in srgb, var(--background) 60%, var(--card) 40%) 72%);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  color: var(--foreground); text-align: start;
 }
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.dl-card::before {
+  content: ""; position: absolute; z-index: -1; width: 230px; height: 230px; top: -150px; left: -75px;
+  border-radius: 50%; background: color-mix(in srgb, var(--primary) 16%, transparent); filter: blur(12px); pointer-events: none;
 }
+.dl-topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 23px; }
+.dl-brand { display: flex; align-items: center; gap: 9px; color: color-mix(in srgb, var(--foreground) 55%, var(--muted-foreground) 45%); font-size: 0.72rem; letter-spacing: 0.16em; font-weight: 800; direction: ltr; }
+.dl-brand-mark { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 14px color-mix(in srgb, var(--primary) 75%, transparent); }
+.dl-status { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid color-mix(in srgb, var(--muted-foreground) 15%, transparent); border-radius: 999px; color: color-mix(in srgb, var(--foreground) 55%, var(--muted-foreground) 45%); background: rgba(255, 255, 255, 0.025); font-size: 0.72rem; white-space: nowrap; }
+.dl-status-dot { width: 6px; height: 6px; border-radius: 50%; background: color-mix(in srgb, var(--secondary) 55%, #fff); }
+.dl-header { display: flex; align-items: center; gap: 17px; }
+.dl-icon {
+  position: relative; display: grid; place-items: center; flex: 0 0 82px; width: 82px; height: 82px;
+  border: 1px solid color-mix(in srgb, var(--border) 62%, var(--muted-foreground) 38%); border-radius: 25px; color: var(--primary);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--muted) 55%, var(--primary) 16%), color-mix(in srgb, var(--muted) 78%, var(--background) 22%));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 9px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden; font-size: 2rem; font-weight: 800;
+}
+.dl-icon::after { content: ""; position: absolute; inset: 6px; border: 1px solid color-mix(in srgb, var(--primary) 7%, transparent); border-radius: 19px; pointer-events: none; }
+.dl-icon img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.dl-heading { min-width: 0; flex: 1; }
+.dl-title { margin: 0; text-align: right; direction: ltr; font-size: clamp(1.55rem, 4.6vw, 2rem); letter-spacing: -0.045em; line-height: 1.2; font-weight: 800; overflow-wrap: anywhere; }
+.dl-subtitle { margin: 8px 0 0; color: var(--muted-foreground); font-size: 0.9rem; line-height: 1.7; }
+.dl-version { align-self: flex-start; padding: 8px 11px; border: 1px solid color-mix(in srgb, var(--border) 78%, var(--muted-foreground) 22%); border-radius: 12px; background: color-mix(in srgb, var(--background) 72%, var(--muted) 28%); color: color-mix(in srgb, var(--foreground) 90%, var(--primary) 10%); font-size: 0.76rem; direction: ltr; white-space: nowrap; }
+.dl-rule { height: 1px; margin: 24px 0 17px; background: linear-gradient(90deg, transparent, var(--border) 12%, var(--border) 88%, transparent); }
+.dl-section-label { margin: 0 0 11px; color: color-mix(in srgb, var(--muted-foreground) 90%, var(--background) 10%); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; }
+.dl-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.dl-meta-item { display: flex; align-items: center; gap: 11px; min-width: 0; padding: 13px; border: 1px solid color-mix(in srgb, var(--muted-foreground) 15%, transparent); border-radius: 16px; background: linear-gradient(145deg, color-mix(in srgb, var(--muted) 90%, transparent), color-mix(in srgb, var(--card) 88%, transparent)); }
+.dl-meta-icon { display: grid; place-items: center; flex: 0 0 36px; width: 36px; height: 36px; border-radius: 12px; background: color-mix(in srgb, var(--primary) 8%, transparent); color: color-mix(in srgb, var(--primary) 82%, #fff); }
+.dl-meta-icon svg { width: 20px; height: 20px; }
+.dl-meta-copy { min-width: 0; }
+.dl-meta-label { display: block; margin-bottom: 5px; color: var(--muted-foreground); font-size: 0.72rem; }
+.dl-meta-value { display: block; color: var(--foreground); font-size: 0.9rem; font-weight: 700; overflow-wrap: anywhere; }
+.dl-download {
+  display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 57px; margin-top: 17px;
+  padding: 15px 18px; border: 1px solid rgba(255, 255, 255, 0.48); border-radius: 17px;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--primary) 86%, #fff), color-mix(in srgb, var(--primary) 58%, #fff)); color: var(--primary-foreground);
+  text-decoration: none; font-size: 1rem; font-weight: 800;
+  box-shadow: 0 8px 26px color-mix(in srgb, var(--primary) 20%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.dl-download svg { width: 21px; height: 21px; transition: transform 0.2s ease; }
+.dl-download:hover { transform: translateY(-2px); filter: brightness(1.04); box-shadow: 0 13px 32px color-mix(in srgb, var(--primary) 30%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.7); }
+.dl-download:hover svg { transform: translateY(2px); }
+.dl-download:active { transform: translateY(0); }
+.dl-download:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+.dl-footnote { display: flex; justify-content: center; align-items: center; gap: 7px; margin: 13px 0 0; color: color-mix(in srgb, var(--muted-foreground) 82%, transparent); font-size: 0.72rem; text-align: center; line-height: 1.7; }
+.dl-footnote svg { width: 14px; height: 14px; flex: none; color: var(--muted-foreground); }
+@media (max-width: 440px) {
+  .dl-card { border-radius: 23px; }
+  .dl-topline { margin-bottom: 20px; }
+  .dl-header { gap: 12px; flex-wrap: wrap; }
+  .dl-icon { width: 68px; height: 68px; flex-basis: 68px; border-radius: 21px; }
+  .dl-icon::after { border-radius: 16px; }
+  .dl-version { margin-right: auto; }
+  .dl-heading { flex-basis: calc(100% - 84px); }
+  .dl-title { font-size: 1.55rem; }
+  .dl-subtitle { font-size: 0.8rem; }
+  .dl-meta { gap: 8px; }
+  .dl-meta-item { padding: 11px 9px; gap: 8px; }
+  .dl-meta-icon { width: 31px; height: 31px; flex-basis: 31px; }
+  .dl-meta-value { font-size: 0.82rem; }
+}
+
+/* ============================================================
+   کشوی «مشخصات کامل» — عین طرح تأییدشده‌ی مالک (fuse_point_collapsible_details)
+   رنگ‌ها از توکن‌های تم فعال می‌آیند
+   ============================================================ */
+.dt-details {
+  border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
+  background: linear-gradient(150deg, color-mix(in srgb, var(--card) 92%, var(--foreground) 4%), color-mix(in srgb, var(--background) 55%, var(--card) 45%) 78%);
+  box-shadow: 0 22px 65px rgba(0, 0, 0, 0.25);
+}
+.dt-details summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 14px;
+  min-height: 76px; padding: 18px 20px; user-select: none; transition: background 0.18s ease;
+}
+.dt-details summary::-webkit-details-marker { display: none; }
+.dt-details summary:hover { background: rgba(255, 255, 255, 0.018); }
+.dt-details summary:focus-visible { outline: 2px solid var(--primary); outline-offset: -4px; border-radius: 18px; }
+.dt-summary-icon {
+  width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; border-radius: 12px;
+  color: var(--primary); background: color-mix(in srgb, var(--primary) 11%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+}
+.dt-summary-icon svg { width: 20px; height: 20px; }
+.dt-summary-copy { flex: 1; min-width: 0; }
+.dt-summary-title { display: block; margin: 0; font-size: 1rem; font-weight: 800; }
+.dt-summary-caption { display: block; margin: 5px 0 0; color: var(--muted-foreground); font-size: 0.78rem; line-height: 1.6; }
+.dt-chevron { width: 18px; height: 18px; flex: 0 0 18px; color: color-mix(in srgb, var(--muted-foreground) 85%, var(--primary) 15%); transition: transform 0.22s ease; }
+.dt-details[open ] .dt-chevron { transform: rotate(180deg); }
+.dt-content { border-top: 1px solid var(--border); padding: 5px 20px 20px; animation: dt-reveal 0.22s ease both; }
+@keyframes dt-reveal {
+  from { opacity: 0.35; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.dt-section-label { margin: 18px 0 8px; color: color-mix(in srgb, var(--muted-foreground) 88%, var(--background) 12%); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.02em; }
+.dt-info-list { margin: 0; }
+.dt-info-row {
+  display: grid; grid-template-columns: minmax(92px, 0.72fr) minmax(0, 1.28fr);
+  align-items: start; gap: 14px; padding: 12px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--muted-foreground) 13%, transparent);
+}
+.dt-info-row:last-child { border-bottom: 0; }
+.dt-info-row dt { color: var(--muted-foreground); font-size: 0.82rem; line-height: 1.8; }
+.dt-info-row dd { margin: 0; min-width: 0; color: color-mix(in srgb, var(--foreground) 92%, var(--primary) 8%); font-size: 0.84rem; font-weight: 650; line-height: 1.8; overflow-wrap: anywhere; }
+.dt-info-row dd a { color: var(--primary); text-decoration: none; }
+.dt-ltr { direction: ltr; text-align: right; }
+.dt-hash-box {
+  display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 11px 12px;
+  border: 1px solid var(--border); border-radius: 12px;
+  background: color-mix(in srgb, var(--background) 70%, var(--card) 30%);
+}
+.dt-hash-value {
+  flex: 1; min-width: 0; color: color-mix(in srgb, var(--primary) 85%, var(--secondary) 15%);
+  direction: ltr; text-align: left; font: 12px/1.8 ui-monospace, SFMono-Regular, Consolas, monospace;
+  overflow-wrap: anywhere; user-select: text;
+}
+.dt-copy {
+  display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 34px;
+  border: 1px solid var(--border); border-radius: 9px;
+  background: color-mix(in srgb, var(--muted) 75%, var(--card) 25%); color: var(--primary);
+  cursor: pointer; transition: background 0.18s ease;
+}
+.dt-copy:hover { background: color-mix(in srgb, var(--muted) 55%, var(--primary) 12%); }
+.dt-copy svg { width: 17px; height: 17px; }
+.dt-copy-status { min-height: 18px; margin: 7px 2px 0; color: color-mix(in srgb, var(--primary) 78%, #fff); font-size: 0.72rem; }
+.dt-perm {
+  display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; align-items: center;
+  padding: 13px 0; border-bottom: 1px solid color-mix(in srgb, var(--muted-foreground) 13%, transparent);
+}
+.dt-perm:last-child { border-bottom: 0; }
+.dt-perm-icon {
+  width: 36px; height: 36px; display: grid; place-items: center; border-radius: 11px;
+  color: color-mix(in srgb, var(--primary) 78%, #fff); background: color-mix(in srgb, var(--primary) 11%, transparent);
+}
+.dt-perm-icon svg { width: 19px; height: 19px; }
+.dt-perm-title { margin: 0; font-size: 0.84rem; font-weight: 750; line-height: 1.7; }
+.dt-perm-desc { margin: 3px 0 0; color: var(--muted-foreground); font-size: 0.77rem; line-height: 1.8; }
+.dt-perm-raw { direction: ltr; text-align: right; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.72rem; overflow-wrap: anywhere; }
+.dt-report {
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  width: 100%; min-height: 46px; margin-top: 18px; padding: 11px 14px;
+  border: 1px solid color-mix(in srgb, var(--border) 78%, var(--muted-foreground) 22%); border-radius: 12px;
+  background: transparent; color: color-mix(in srgb, var(--foreground) 88%, var(--primary) 12%);
+  font-size: 0.84rem; font-weight: 750; cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.dt-report:hover { background: color-mix(in srgb, var(--primary) 6%, transparent); border-color: color-mix(in srgb, var(--border) 55%, var(--primary) 30%); }
+.dt-report svg { width: 17px; height: 17px; color: color-mix(in srgb, var(--primary) 80%, #fff); }
+@media (max-width: 430px) {
+  .dt-details { border-radius: 17px; }
+  .dt-details summary { padding: 15px; gap: 11px; }
+  .dt-content { padding: 3px 15px 15px; }
+  .dt-info-row { grid-template-columns: 94px minmax(0, 1fr); gap: 10px; }
+  .dt-info-row dt, .dt-info-row dd { font-size: 0.78rem; }
+  .dt-hash-value { font-size: 10px; }
+}
+
+/* ============================================================
+   اجزای نمونه‌ی تأییدشده (space-15) — وردمارک، کپسول‌ها، فوتر، ردیف‌ها
+   ============================================================ */
+
+/* وردمارک: سنس سبک، حروف باز — FUSE متوسط (۵۰۰) و POINT سبک (۳۰۰) */
+.wordmark {
+  direction: ltr; text-transform: uppercase; letter-spacing: 0.32em;
+  margin-inline-end: -0.32em; white-space: nowrap; line-height: 1;
+  color: color-mix(in srgb, var(--foreground) 92%, transparent);
+  font-family: var(--font-vazir), system-ui, sans-serif;
+}
+.wordmark .wm-f { font-weight: 500; }
+.wordmark .wm-p { font-weight: 300; }
+
+/* قرص زبان هدر */
+.lang-pill {
+  height: 38px; min-width: 44px; padding: 0 12px; border-radius: 999px; flex: none;
+  border: 1px solid var(--border); background: var(--card); color: var(--foreground);
+  font-size: 13px; font-weight: 800; display: grid; place-items: center; cursor: pointer;
+  font-family: inherit; transition: border-color 0.2s;
+}
+.lang-pill:hover { border-color: var(--muted-foreground); }
+
+/* دکمه‌ی آیکنی هدر */
+.hdr-icon-btn {
+  width: 38px; height: 38px; border-radius: 10px; border: 1px solid transparent;
+  background: transparent; color: var(--muted-foreground); display: grid; place-items: center;
+  transition: color 0.2s, border-color 0.2s, background 0.2s; flex: none; position: relative;
+}
+.hdr-icon-btn:hover { color: var(--foreground); border-color: var(--border); background: var(--card); }
+.hdr-icon-btn.faved { color: var(--primary); }
+.hdr-icon-btn.faved svg { fill: var(--primary); }
+
+/* دکمه‌ی دایره‌ای تم با نقطه‌ی نورانی (عین نمونه) */
+.theme-dot-btn {
+  display: grid; place-items: center; width: 38px; height: 38px; padding: 0;
+  border-radius: 50%; border: 1px solid var(--border); background: var(--card);
+  color: var(--foreground); flex: none; cursor: pointer;
+}
+.theme-dot-btn .dot { width: 13px; height: 13px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 10px var(--primary); }
+
+/* نقطه‌ی رنگی پلتفرم روی چیپ‌ها (رنگ تابعی ثابت در همه‌ی تم‌ها) */
+.pdot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+.p-android { background: #43b581; }
+.p-windows { background: #5b8def; }
+.p-linux { background: #e0a83c; }
+
+/* چورون «جلو» — در LTR آینه می‌شود */
+[dir="ltr"] .flip-x svg, [dir="ltr"] svg.flip-x { transform: scaleX(-1); }
+
+/* کپسول‌های دنبال‌کردن/نشان زیر هدر کارت دانلود (۳۲px، عین نمونه) */
+.fp-capsules { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+.fp-cap {
+  height: 32px; padding: 0 13px; border: 1px solid var(--border); border-radius: 999px;
+  background: color-mix(in srgb, var(--card) 72%, transparent); color: var(--muted-foreground);
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12.5px; font-weight: 700; font-family: inherit; cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.fp-cap svg { width: 15px; height: 15px; flex: none; }
+.fp-cap:hover { color: var(--foreground); }
+.fp-cap:disabled { opacity: 0.6; cursor: default; }
+.fp-cap.on, .fp-cap.faved {
+  color: var(--primary); border-color: color-mix(in srgb, var(--primary) 50%, var(--border));
+  background: color-mix(in srgb, var(--primary) 14%, var(--card));
+}
+.fp-cap.faved svg { fill: var(--primary); }
+.fp-follow-note { color: var(--muted-foreground); font-size: 11.5px; line-height: 1.8; margin: 9px 2px 0; }
+
+/* خط جریان بالای فوتر */
+.foot-line {
+  position: absolute; top: -1px; inset-inline: 0; height: 2px; overflow: hidden;
+  background: linear-gradient(to left, transparent, color-mix(in srgb, var(--primary) 55%, transparent), color-mix(in srgb, var(--secondary) 55%, transparent), transparent);
+}
+.foot-line::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 30%;
+  background: linear-gradient(to left, transparent, var(--primary), transparent);
+  opacity: 0; transform: translateX(-140%);
+  animation: sweep 7s ease-in-out infinite;
+}
+
+/* کرونا — چرخش پرتوها و مدارها (عین نمونه) */
+.corona .rays { transform-box: fill-box; transform-origin: center; animation: corona-spin 90s linear infinite; }
+.corona .orbit-a { transform-box: fill-box; transform-origin: center; animation: corona-spin 55s linear infinite; }
+.corona .orbit-b { transform-box: fill-box; transform-origin: center; animation: corona-spin-rev 40s linear infinite; }
+@keyframes corona-spin { to { transform: rotate(360deg); } }
+@keyframes corona-spin-rev { to { transform: rotate(-360deg); } }
+
+/* ردیف‌های نسخه‌های قبلی داخل کشو */
+.ver-row { padding: 13px 0; border-bottom: 1px solid color-mix(in srgb, var(--muted-foreground) 13%, transparent); }
+.ver-row:last-child { border-bottom: 0; }
+.ver-src { color: var(--muted-foreground); font-size: 12.5px; margin: 14px 0 2px; line-height: 1.9; }
+.ver-src b { color: var(--foreground); font-weight: 700; }
+.ver-log { color: var(--muted-foreground); font-size: 12.5px; line-height: 1.9; margin: 7px 0 0; white-space: pre-line; }
+
+/* لینک توسعه‌دهنده داخل کشوی مشخصات */
+.dev-link {
+  color: var(--primary); font-weight: 700; display: inline-flex; align-items: center; gap: 5px;
+  text-decoration: none; border-radius: 6px;
+}
+.dev-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+.dev-link svg { color: var(--muted-foreground); flex: none; }
+[dir="ltr"] .dev-link svg { transform: scaleX(-1); }

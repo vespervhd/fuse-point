@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import DownloadSheet, { type DownloadOption } from "./DownloadSheet";
 import { getDownloadOptions, type DownloadAppInfo } from "./DownloadActions";
 
@@ -36,14 +37,15 @@ export default function DownloadTrigger({ app, appName, iconUrl, sha256 }: Props
 
   return (
     <>
-      <button
+      <Button
         onClick={() => setOpen(true)}
-        className="btn btn-primary btn-lg w-full"
+        size="lg"
+        className="w-full"
       >
         <Download className="w-5 h-5" aria-hidden="true" />
         دانلود
         {versionName && <span dir="ltr" className="opacity-80 text-sm">{versionName}</span>}
-      </button>
+      </Button>
       <DownloadSheet
         open={open}
         onClose={() => setOpen(false)}

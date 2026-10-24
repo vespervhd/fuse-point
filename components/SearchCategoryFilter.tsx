@@ -1,5 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const ALL = "all";
 
 export default function SearchCategoryFilter({
   cats, current, base,
@@ -10,16 +19,19 @@ export default function SearchCategoryFilter({
 }) {
   const router = useRouter();
   return (
-    <select
-      value={current}
-      onChange={(e) => router.push(`${base}${e.target.value ? `&cat=${e.target.value}` : ""}`)}
-      aria-label="فیلتر دسته‌بندی"
-      className="select select-bordered select-sm max-w-44"
+    <Select
+      value={current === "" ? ALL : current}
+      onValueChange={(v) => router.push(`${base}${v === ALL ? "" : `&cat=${v}`}`)}
     >
-      <option value="">همه‌ی دسته‌ها</option>
-      {cats.map((c) => (
-        <option key={c.slug} value={c.slug}>{c.nameFa}</option>
-      ))}
-    </select>
+      <SelectTrigger size="sm" aria-label="فیلتر دسته‌بندی" className="max-w-44 w-full">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value={ALL}>همه‌ی دسته‌ها</SelectItem>
+        {cats.map((c) => (
+          <SelectItem key={c.slug} value={c.slug}>{c.nameFa}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

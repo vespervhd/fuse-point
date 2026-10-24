@@ -31,7 +31,7 @@ export default async function TopPage({ searchParams }: Props) {
       <div className="text-center mb-10">
         <Trophy className="w-12 h-12 mx-auto mb-4 text-primary" aria-hidden="true" />
         <h1 className="text-2xl sm:text-3xl font-extrabold mb-3">برترین‌های هر دسته</h1>
-        <p className="text-muted">محبوب‌ترین برنامه‌های هر دسته‌بندی، یک‌جا.</p>
+        <p className="text-muted-foreground">محبوب‌ترین برنامه‌های هر دسته‌بندی، یک‌جا.</p>
       </div>
       {rails.map((r) => (
         <TopInRail key={r.slug} title={r.title} categorySlug={r.slug} apps={r.apps} platform={platform} />

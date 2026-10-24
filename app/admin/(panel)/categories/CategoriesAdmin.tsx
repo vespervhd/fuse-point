@@ -1,5 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type Cat = {
   id: string; slug: string; nameFa: string; nameEn: string | null;
@@ -50,40 +54,44 @@ export default function CategoriesAdmin() {
     load();
   };
 
-  const input = "h-11 rounded-xl bg-surface border border-border px-4 text-sm focus:outline-none focus:border-primary";
 
   return (
     <div className="animate-fade-up max-w-4xl">
       <h1 className="text-2xl font-extrabold mb-6">دسته‌بندی‌ها</h1>
-      {msg && <p className="mb-4 text-sm bg-surface border border-border rounded-xl p-3">{msg}</p>}
+      {msg && <p role={msg.startsWith("❌") ? "alert" : "status"} className={`mb-4 text-sm border rounded-xl p-3 ${msg.startsWith("❌") ? "text-destructive bg-destructive/10 border-destructive/30" : "text-info bg-info/10 border-info/30"}`}>{msg}</p>}
 
-      <div className="bg-surface border border-border rounded-3xl p-6 mb-6">
+      <div className="bg-card border border-border rounded-3xl p-6 mb-6">
         <h2 className="font-bold mb-3">＋ دسته جدید</h2>
         <div className="flex flex-wrap gap-3">
-          <input className={input + " flex-1 min-w-40"} placeholder="نام فارسی" value={nameFa} onChange={(e) => setNameFa(e.target.value)} />
-          <input className={input + " w-24"} placeholder="آیکون 🎁" value={icon} onChange={(e) => setIcon(e.target.value)} />
-          <select className="select select-bordered" value={parentId} onChange={(e) => setParentId(e.target.value)}>
-            <option value="">بدون والد (ریشه)</option>
-            {cats.filter((c) => !c.parentId).map((c) => <option key={c.id} value={c.id}>{c.nameFa}</option>)}
-          </select>
-          <button onClick={create} className="btn btn-primary">ثبت</button>
+          <Input className="h-11 flex-1 min-w-40" placeholder="نام فارسی" value={nameFa} onChange={(e) => setNameFa(e.target.value)} />
+          <Input className="h-11 w-24" placeholder="آیکون 🎁" value={icon} onChange={(e) => setIcon(e.target.value)} />
+          <Select value={parentId || "__root__"} onValueChange={(v) => setParentId(v === "__root__" ? "" : v)}>
+            <SelectTrigger className="h-11 min-w-44">
+              <SelectValue placeholder="بدون والد (ریشه)" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__root__">بدون والد (ریشه)</SelectItem>
+              {cats.filter((c) => !c.parentId).map((c) => <SelectItem key={c.id} value={c.id}>{c.nameFa}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Button onClick={create}>ثبت</Button>
         </div>
       </div>
 
-      {loading ? <div className="h-40 bg-surface border border-border rounded-3xl animate-pulse" /> : (
-        <div className="bg-surface border border-border rounded-3xl overflow-hidden">
+      {loading ? <Skeleton className="h-40 rounded-3xl border border-border" /> : (
+        <div className="bg-card border border-border rounded-3xl overflow-hidden">
           <ul className="divide-y divide-border">
             {cats.map((c) => (
               <li key={c.id} className={`flex items-center gap-3 p-4 ${!c.isActive ? "opacity-50" : ""}`}>
                 <span className="text-2xl" aria-hidden="true">{c.icon || "📦"}</span>
                 <div className="flex-1">
                   <p className="font-bold text-sm">{c.parentId ? "↳ " : ""}{c.nameFa}</p>
-                  <p className="text-xs text-muted" dir="ltr" style={{ textAlign: "right" }}>{c.slug}</p>
+                  <p className="text-xs text-muted-foreground" dir="ltr" style={{ textAlign: "right" }}>{c.slug}</p>
                 </div>
-                <button onClick={() => toggle(c)} className="btn btn-ghost btn-xs">
+                <Button variant="ghost" size="sm" onClick={() => toggle(c)} className="h-7 px-2 text-xs">
                   {c.isActive ? "غیرفعال" : "فعال"}
-                </button>
-                <button onClick={() => remove(c)} className="btn btn-error btn-xs">حذف</button>
+                </Button>
+                <Button variant="destructive" size="sm" onClick={() => remove(c)} className="h-7 px-2 text-xs">حذف</Button>
               </li>
             ))}
           </ul>

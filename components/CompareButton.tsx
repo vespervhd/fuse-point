@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Scale, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type App = { slug: string; nameFa: string };
 
@@ -28,9 +28,9 @@ export default function CompareButton({ slug, nameFa }: App) {
   };
 
   return (
-    <button onClick={toggle}
-      className={`btn btn-sm ${inList ? "btn-primary" : "btn-ghost"}`}>
+    <Button onClick={toggle} size="sm"
+      variant={inList ? "default" : "ghost"}>
       {inList ? <><Check className="w-4 h-4" aria-hidden="true" /> در لیست مقایسه</> : <><Scale className="w-4 h-4" aria-hidden="true" /> افزودن به مقایسه</>}
-    </button>
+    </Button>
   );
 }

@@ -34,18 +34,18 @@ export default function GuidesIndex() {
       <div className="text-center mb-10">
         <BookOpen className="w-12 h-12 mx-auto mb-4 text-primary" aria-hidden="true" />
         <h1 className="text-2xl sm:text-3xl font-extrabold mb-3">راهنماهای نصب</h1>
-        <p className="text-muted">قدم‌به‌قدم، به زبان ساده، برای هر سه پلتفرم.</p>
+        <p className="text-muted-foreground">قدم‌به‌قدم، به زبان ساده، برای هر سه پلتفرم.</p>
       </div>
       <div className="grid sm:grid-cols-3 gap-4">
         {guides.map((g) => (
           <Link
             key={g.href}
             href={g.href}
-            className="bg-surface border border-border rounded-3xl p-6 text-center hover:border-primary/50 transition group"
+            className="bg-card border border-border rounded-3xl p-6 text-center hover:border-primary/50 transition group"
           >
             <g.icon className="w-10 h-10 mx-auto mb-3 text-primary" aria-hidden="true" />
             <h2 className="font-extrabold mb-1 group-hover:text-primary transition-colors">{g.title}</h2>
-            <p className="text-xs text-muted leading-5">{g.desc}</p>
+            <p className="text-xs text-muted-foreground leading-5">{g.desc}</p>
           </Link>
         ))}
       </div>

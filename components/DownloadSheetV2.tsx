@@ -6,6 +6,7 @@ import PxImg from "@/components/PxImg";
 import { px } from "@/lib/img";
 import { toFaDigits, formatBytes } from "@/lib/fa";
 import { getDownloadOptions, type DownloadAppInfo } from "./DownloadActions";
+import { Button } from "@/components/ui/button";
 
 // ─── آیکون‌های برند ───
 const GithubIcon = ({ className }: { className?: string }) => (
@@ -76,16 +77,17 @@ export default function DownloadSheetV2({ app, appName, iconUrl, sha256 }: Props
   return (
     <>
       {/* دکمه‌ی اصلی — تمیز، بدون شماره نسخه */}
-      <button
+      <Button
         onClick={() => setOpen(true)}
-        className="btn btn-primary btn-lg w-full"
+        size="lg"
+        className="w-full"
       >
         {optionIcon(primary?.key ?? "", app, "w-6 h-6")}
         دانلود
-      </button>
+      </Button>
       {/* شماره نسخه زیر دکمه */}
       {versionName && (
-        <p className="text-center text-xs text-muted mt-2">
+        <p className="text-center text-xs text-muted-foreground mt-2">
           نسخه‌ی <span dir="ltr" className="font-bold">{versionName}</span>
           {fileSize ? <> · <span dir="ltr">{formatBytes(fileSize)}</span></> : null}
         </p>
@@ -96,15 +98,15 @@ export default function DownloadSheetV2({ app, appName, iconUrl, sha256 }: Props
           <div className="absolute inset-0 bg-black/50 animate-fade-in" onClick={() => setOpen(false)} />
           <div className="fixed bottom-0 inset-x-0 sm:absolute sm:bottom-auto sm:inset-x-auto sm:top-1/2 sm:left-1/2 sm:w-[420px] max-h-[85dvh] overflow-y-auto rounded-t-[28px] sm:rounded-[28px] border border-white/10 animate-sheet-up"
             style={{
-              background: "color-mix(in srgb, var(--surface) 88%, transparent)",
+              background: "color-mix(in srgb, var(--card) 88%, transparent)",
               backdropFilter: "blur(24px) saturate(1.4)",
               WebkitBackdropFilter: "blur(24px) saturate(1.4)",
             }}>
             <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mt-3 mb-4 sm:hidden" aria-hidden="true" />
-            <button onClick={() => setOpen(false)} aria-label="بستن"
-              className="btn btn-ghost btn-circle btn-sm absolute top-4 left-4">
+            <Button onClick={() => setOpen(false)} variant="ghost" size="icon-sm" aria-label="بستن"
+              className="absolute top-4 left-4 rounded-full">
               <X className="w-5 h-5" aria-hidden="true" />
-            </button>
+            </Button>
 
             <div className="px-6 pb-7 pt-2 sm:pt-6">
               {/* سربرگ */}
@@ -115,7 +117,7 @@ export default function DownloadSheetV2({ app, appName, iconUrl, sha256 }: Props
                 </span>
                 <div className="min-w-0">
                   <h2 className="font-extrabold text-lg leading-7 truncate">{appName}</h2>
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-emerald-500 mt-1">
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-success mt-1">
                     <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" /> نسخه‌ی پایدار
                   </span>
                 </div>
@@ -123,22 +125,22 @@ export default function DownloadSheetV2({ app, appName, iconUrl, sha256 }: Props
 
               {/* جزئیات */}
               <div className="rounded-2xl divide-y divide-white/10 mb-5 text-sm border border-white/10"
-                style={{ background: "color-mix(in srgb, var(--surface-2) 60%, transparent)" }}>
+                style={{ background: "color-mix(in srgb, var(--muted) 60%, transparent)" }}>
                 <div className="flex items-center justify-between px-4 py-3">
-                  <span className="inline-flex items-center gap-2 text-muted"><FileDown className="w-4 h-4" aria-hidden="true" /> حجم</span>
+                  <span className="inline-flex items-center gap-2 text-muted-foreground"><FileDown className="w-4 h-4" aria-hidden="true" /> حجم</span>
                   <b dir="ltr">{fileSize ? formatBytes(fileSize) : "—"}</b>
                 </div>
                 <div className="flex items-center justify-between px-4 py-3">
-                  <span className="inline-flex items-center gap-2 text-muted"><Globe className="w-4 h-4" aria-hidden="true" /> منبع</span>
+                  <span className="inline-flex items-center gap-2 text-muted-foreground"><Globe className="w-4 h-4" aria-hidden="true" /> منبع</span>
                   <b>{app.githubRepo ? "گیت‌هاب" : app.sourceType === "fdroid" ? "F-Droid" : "رسمی"}</b>
                 </div>
                 {sha256 && (
                   <div className="px-4 py-3">
-                    <button onClick={() => setShowHash(!showHash)} className="btn btn-ghost w-full justify-between">
-                      <span className="inline-flex items-center gap-2 text-muted"><Hash className="w-4 h-4" aria-hidden="true" /> هش SHA-256</span>
-                      <ChevronDown className={`w-4 h-4 text-muted transition-transform ${showHash ? "rotate-180" : ""}`} aria-hidden="true" />
-                    </button>
-                    {showHash && <p dir="ltr" className="mt-2 text-[11px] font-mono break-all text-muted select-all">{sha256}</p>}
+                    <Button variant="ghost" onClick={() => setShowHash(!showHash)} className="w-full justify-between">
+                      <span className="inline-flex items-center gap-2 text-muted-foreground"><Hash className="w-4 h-4" aria-hidden="true" /> هش SHA-256</span>
+                      <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${showHash ? "rotate-180" : ""}`} aria-hidden="true" />
+                    </Button>
+                    {showHash && <p dir="ltr" className="mt-2 text-[11px] font-mono break-all text-muted-foreground select-all">{sha256}</p>}
                   </div>
                 )}
               </div>
@@ -147,8 +149,8 @@ export default function DownloadSheetV2({ app, appName, iconUrl, sha256 }: Props
               {primary && (
                 <a href={primary.href} {...(primary.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   onClick={() => setOpen(false)}
-                  className="flex items-center justify-center gap-2.5 w-full text-white font-extrabold text-base rounded-2xl py-4 mb-2 transition active:scale-[0.98] shadow-lg"
-                  style={{ background: "var(--primary)", boxShadow: "0 8px 24px -8px var(--primary)" }}>
+                  className="flex items-center justify-center gap-2.5 w-full bg-primary text-primary-foreground font-extrabold text-base rounded-2xl py-4 mb-2 transition active:scale-[0.98] shadow-lg"
+                  style={{ boxShadow: "0 8px 24px -8px var(--primary)" }}>
                   {optionIcon(primary?.key ?? "", app, "w-6 h-6")}
                   دانلود
                 </a>
@@ -157,24 +159,25 @@ export default function DownloadSheetV2({ app, appName, iconUrl, sha256 }: Props
               {/* بقیه — کشویی */}
               {rest.length > 0 && (
                 <div>
-                  <button onClick={() => setShowMore(!showMore)}
-                    className="btn btn-ghost btn-sm w-full">
+                  <Button variant="ghost" size="sm" onClick={() => setShowMore(!showMore)}
+                    className="w-full">
                     {showMore ? "بستن گزینه‌ها" : `گزینه‌های بیشتر (${toFaDigits(rest.length)})`}
                     <ChevronDown className={`w-4 h-4 transition-transform ${showMore ? "rotate-180" : ""}`} aria-hidden="true" />
-                  </button>
+                  </Button>
                   <div className={`grid transition-all duration-300 ${showMore ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
                     <div className="overflow-hidden">
                       <div className="space-y-2 pt-1">
                         {rest.map((o) => (
-                          <a key={o.key} href={o.href} {...(o.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                            onClick={() => setOpen(false)}
-                            className="btn btn-ghost w-full justify-start h-auto py-3">
-                            <span className="text-primary shrink-0">{o.icon}</span>
-                            <span className="flex-1 min-w-0">
-                              <span className="block font-bold text-sm truncate">{o.label}</span>
-                              {o.sub && <span className="block text-xs text-muted mt-0.5 truncate">{o.sub}</span>}
-                            </span>
-                          </a>
+                          <Button asChild key={o.key} variant="ghost" className="h-auto w-full justify-start py-3">
+                            <a href={o.href} {...(o.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                              onClick={() => setOpen(false)}>
+                              <span className="text-primary shrink-0">{o.icon}</span>
+                              <span className="flex-1 min-w-0">
+                                <span className="block font-bold text-sm truncate">{o.label}</span>
+                                {o.sub && <span className="block text-xs text-muted-foreground mt-0.5 truncate">{o.sub}</span>}
+                              </span>
+                            </a>
+                          </Button>
                         ))}
                       </div>
                     </div>
@@ -182,7 +185,7 @@ export default function DownloadSheetV2({ app, appName, iconUrl, sha256 }: Props
                 </div>
               )}
 
-              <p className="text-[11px] text-muted text-center mt-4 leading-5">
+              <p className="text-[11px] text-muted-foreground text-center mt-4 leading-5">
                 فایل از منبع رسمی دانلود می‌شود
               </p>
             </div>

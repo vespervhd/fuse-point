@@ -1,15 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Bell, BellOff, Package } from "lucide-react";
-import { toFaDigits } from "@/lib/fa";
+import { BellOff, BellRing, CheckCheck } from "lucide-react";
+import { BackLink, ViewHead, EmptyState } from "@/components/Bits";
+import { STR, dateL, type Locale } from "@/lib/i18n";
 
 type Notif = {
-  id: string; title: string; message: string | null; isRead: boolean;
-  createdAt: string; appSlug: string | null; versionName: string | null;
+  id: string; type: string; title: string; message: string | null; isRead: boolean;
+  createdAt: string; appSlug: string | null; appName: string | null; appNameEn: string | null;
+  versionName: string | null;
 };
 
-export default function NotificationsPage() {
+// نمای اعلان‌ها — کارت‌های نمونه؛ خوانده‌شدن با API واقعی اعلان‌ها
+export default function NotificationsPage({ locale }: { locale: Locale }) {
+  const d = STR[locale];
   const [items, setItems] = useState<Notif[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -31,50 +35,70 @@ export default function NotificationsPage() {
     setItems((xs) => xs.map((x) => (x.id === id ? { ...x, isRead: true } : x)));
   };
 
-  if (loading) return <p className="text-muted text-sm">در حال بارگذاری...</p>;
-
   return (
-    <div className="animate-fade-up max-w-2xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-extrabold flex items-center gap-2">
-          <Bell className="w-6 h-6 text-primary" aria-hidden="true" /> اعلان‌ها
-        </h1>
-        {items.some((x) => !x.isRead) && (
-          <button onClick={markAll} className="btn btn-ghost btn-sm">
-            همه را خوانده‌شده کن
-          </button>
-        )}
-      </div>
-      {items.length === 0 ? (
-        <div className="text-center py-16 bg-surface border border-border rounded-3xl">
-          <BellOff className="w-10 h-10 mx-auto mb-3 text-muted" aria-hidden="true" />
-          <p className="text-muted text-sm">اعلانی ندارید. برنامه‌های محبوبتان را به علاقه‌مندی‌ها اضافه کنید تا از نسخه‌های جدید باخبر شوید.</p>
+    <div className="animate-fade-up">
+      <BackLink href="/" label={d.backStore} />
+      <ViewHead title={d.notifications} sub={d.notifSub} />
+
+      {loading ? (
+        <div className="space-y-2" aria-hidden="true">
+          {[1, 2].map((i) => <div key={i} className="skeleton h-[74px] border border-border rounded-2xl" />)}
         </div>
+      ) : items.length === 0 ? (
+        <EmptyState
+          icon={<BellOff className="w-6 h-6" aria-hidden="true" />}
+          text={d.notifsEmpty}
+          sub={d.notifsEmptySub}
+        />
       ) : (
-        <ul className="space-y-3">
-          {items.map((n) => (
-            <li key={n.id}
-              className={`bg-surface border rounded-2xl p-4 flex gap-3 ${n.isRead ? "border-border opacity-70" : "border-primary/40"}`}>
-              <span className="shrink-0 w-10 h-10 rounded-xl bg-surface-2 flex items-center justify-center">
-                <Package className="w-5 h-5 text-muted" aria-hidden="true" />
-              </span>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm">{n.title}</p>
-                {n.message && <p className="text-sm text-muted mt-1">{n.message}</p>}
-                <div className="flex items-center gap-3 mt-2">
+        <>
+          {items.some((x) => !x.isRead) && (
+            <div className="mb-3.5">
+              <button
+                type="button"
+                onClick={markAll}
+                className="inline-flex items-center gap-1.5 text-[13px] font-bold text-primary border border-border bg-card rounded-full px-4 py-2 min-h-[40px]"
+              >
+                <CheckCheck className="w-4 h-4" aria-hidden="true" />
+                {d.markAllRead}
+              </button>
+            </div>
+          )}
+          <div className="flex flex-col gap-2.5">
+            {items.map((n) => (
+              <article
+                key={n.id}
+                className={`flex gap-3 bg-card border rounded-[18px] p-4 ${n.isRead ? "border-border opacity-75" : "border-primary/40"}`}
+              >
+                <span className="w-[46px] h-[46px] shrink-0 rounded-[13px] grid place-items-center text-primary bg-primary/10 border border-primary/[0.22]">
+                  <BellRing className="w-[22px] h-[22px]" strokeWidth={1.8} aria-hidden="true" />
+                </span>
+                <div className="flex-1 min-w-0">
+                  {/* اعلان نسخه: متن در لحظه با زبان فعال ساخته می‌شود تا در حالت انگلیسی فارسی نماند */}
+                  <p className="font-extrabold text-[14.5px] m-0 leading-[1.7]">
+                    {n.type === "version" && n.appName
+                      ? d.notifNew.replace("{n}", locale === "fa" ? n.appName : n.appNameEn || n.appName)
+                      : n.title}
+                  </p>
+                  {(n.type === "version" && n.versionName
+                    ? <p className="text-muted-foreground text-[13px] mt-0.5 m-0 leading-[1.8]">{d.notifVer.replace("{v}", n.versionName)}</p>
+                    : n.message && <p className="text-muted-foreground text-[13px] mt-0.5 m-0 leading-[1.8]">{n.message}</p>)}
+                  <p className="text-muted-foreground text-xs mt-1.5 m-0">{dateL(n.createdAt, locale)}</p>
                   {n.appSlug && (
-                    <Link href={`/app/${n.appSlug}`} onClick={() => markOne(n.id)}
-                      className="text-xs text-primary font-bold hover:underline">مشاهده برنامه ←</Link>
-                  )}
-                  {!n.isRead && (
-                    <button onClick={() => markOne(n.id)} className="btn btn-ghost btn-xs">خوانده شد</button>
+                    <Link
+                      href={`/app/${n.appSlug}`}
+                      onClick={() => markOne(n.id)}
+                      className="inline-block text-primary text-[13px] font-bold mt-1.5 hover:underline"
+                    >
+                      {d.viewApp}
+                    </Link>
                   )}
                 </div>
-              </div>
-              {!n.isRead && <span className="w-2.5 h-2.5 rounded-full bg-primary shrink-0 mt-1.5" aria-label="خوانده‌نشده" />}
-            </li>
-          ))}
-        </ul>
+                {!n.isRead && <span className="w-2.5 h-2.5 rounded-full bg-primary shrink-0 mt-1.5" aria-label="unread" />}
+              </article>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

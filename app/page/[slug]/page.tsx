@@ -21,9 +21,9 @@ export default async function ContentPage({ params }: Props) {
   if (!page) notFound();
 
   return (
-    <article className="animate-fade-up max-w-3xl mx-auto bg-surface border border-border rounded-3xl p-6 sm:p-10">
+    <article className="animate-fade-up max-w-3xl mx-auto bg-card border border-border rounded-3xl p-6 sm:p-10">
       <h1 className="text-2xl font-extrabold mb-2">{page.title}</h1>
-      <p className="text-xs text-muted mb-6">آخرین به‌روزرسانی: {formatDate(page.updatedAt)}</p>
+      <p className="text-xs text-muted-foreground mb-6">آخرین به‌روزرسانی: {formatDate(page.updatedAt)}</p>
       <div className="text-sm leading-8 whitespace-pre-line">{page.body}</div>
     </article>
   );

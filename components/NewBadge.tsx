@@ -1,4 +1,6 @@
-// بج «جدید» برای برنامه‌های اضافه‌شده در ۷ روز اخیر — daisyUI
+import { Badge } from "@/components/ui/badge";
+
+// بج «جدید» برای برنامه‌های اضافه‌شده در ۷ روز اخیر
 const WEEK = 7 * 24 * 3600 * 1000;
 
 export function isNew(createdAt: Date | string | null | undefined): boolean {
@@ -9,5 +11,5 @@ export function isNew(createdAt: Date | string | null | undefined): boolean {
 
 export default function NewBadge({ createdAt, className = "" }: { createdAt: Date | string | null | undefined; className?: string }) {
   if (!isNew(createdAt)) return null;
-  return <span className={`badge badge-primary badge-sm ${className}`}>جدید</span>;
+  return <Badge className={className}>جدید</Badge>;
 }

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { X, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // ثبت Service Worker
 export function SWRegister() {
@@ -49,20 +50,20 @@ export function InstallButton() {
   };
 
   return (
-    <div className="toast toast-bottom toast-center z-50 mb-20" role="dialog" aria-label="نصب Fuse Point">
-      <div className="alert shadow-lg gap-3">
+    <div className="fixed inset-x-0 bottom-0 z-50 mb-20 flex justify-center px-4" role="dialog" aria-label="نصب Fuse Point">
+      <div className="flex w-full max-w-md items-center gap-3 rounded-2xl border border-border bg-card p-3 text-card-foreground shadow-lg">
         <img src="/icons/icon-192.png" alt="لوگوی Fuse Point" width={40} height={40} className="w-10 h-10 rounded-xl object-cover shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="font-bold text-sm">Fuse Point را نصب کنید</p>
           <p className="text-xs opacity-70">دسترسی سریع‌تر، مثل یک اپ واقعی</p>
         </div>
-        <button onClick={install} className="btn btn-primary btn-sm shrink-0 gap-1">
+        <Button onClick={install} size="sm" className="shrink-0 gap-1">
           <Download className="w-4 h-4" aria-hidden="true" /> نصب
-        </button>
-        <button onClick={markSeen} aria-label="بستن"
-          className="btn btn-ghost btn-circle btn-sm shrink-0">
+        </Button>
+        <Button onClick={markSeen} variant="ghost" size="icon-sm" aria-label="بستن"
+          className="shrink-0 rounded-full">
           <X className="w-4 h-4" aria-hidden="true" />
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ export default function WeeklyPicks({
     <section aria-label="پیشنهادهای هفته" className="mb-10">
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-extrabold text-lg">پیشنهادهای هفته</h2>
-        <span className="text-xs text-muted">منتخب سردبیر</span>
+        <span className="text-xs text-muted-foreground">منتخب سردبیر</span>
       </div>
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
         {apps.map((app, i) => (
@@ -42,7 +42,7 @@ export default function WeeklyPicks({
                 />
               ) : (
                 <span
-                  className="w-full h-full rounded-[24%] bg-primary-soft text-primary flex items-center justify-center text-xl font-bold"
+                  className="w-full h-full rounded-[24%] bg-primary/10 text-primary flex items-center justify-center text-xl font-bold"
                   aria-hidden="true"
                 >
                   {(app.nameFa || "?").trim().charAt(0)}

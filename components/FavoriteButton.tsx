@@ -1,10 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { sparkBurst } from "@/lib/fx/spark";
 import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function FavoriteButton({ appId, appName }: { appId: string; appName: string }) {
   const [fav, setFav] = useState<boolean | null>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
   const [busy, setBusy] = useState(false);
   const router = useRouter();
 
@@ -32,20 +35,24 @@ export default function FavoriteButton({ appId, appName }: { appId: string; appN
     if (r.ok) {
       const j = await r.json();
       setFav(j.favorited);
+      if (j.favorited && btnRef.current) sparkBurst(btnRef.current);
     }
     setBusy(false);
   };
 
   return (
-    <button
+    <Button
+      variant={fav ? "destructive" : "ghost"}
+      size="icon"
+      ref={btnRef}
       onClick={toggle}
       disabled={busy || fav === null}
       aria-label={fav ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}
       aria-pressed={!!fav}
       title={fav ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}
-      className={`btn btn-circle shrink-0 ${fav ? "btn-error" : "btn-ghost"}`}
+      className="size-12 shrink-0 rounded-full"
     >
       <Heart className="w-6 h-6" fill={fav ? "currentColor" : "none"} aria-hidden="true" />
-    </button>
+    </Button>
   );
 }

@@ -18,7 +18,7 @@ export default function AlternativesIndex() {
       <div className="text-center mb-10">
         <Leaf className="w-12 h-12 mx-auto mb-4 text-primary" aria-hidden="true" />
         <h1 className="text-2xl sm:text-3xl font-extrabold mb-3">جایگزین‌های آزاد</h1>
-        <p className="text-muted max-w-2xl mx-auto">
+        <p className="text-muted-foreground max-w-2xl mx-auto">
           برای هر برنامه‌ی معروفی که به حریم خصوصی شما احترام نمی‌گذارد، یک جایگزین آزاد هست. این‌جا پیداش کنید.
         </p>
       </div>
@@ -27,10 +27,10 @@ export default function AlternativesIndex() {
           <Link
             key={a.for}
             href={`/alternatives/${slugify(a.for)}`}
-            className="bg-surface border border-border rounded-2xl p-4 text-center font-bold hover:border-primary/50 hover:text-primary transition"
+            className="bg-card border border-border rounded-2xl p-4 text-center font-bold hover:border-primary/50 hover:text-primary transition"
           >
             جایگزین {a.forFa}
-            <span className="block text-xs text-muted font-normal mt-1">{a.alternatives.length} گزینه</span>
+            <span className="block text-xs text-muted-foreground font-normal mt-1">{a.alternatives.length} گزینه</span>
           </Link>
         ))}
       </div>

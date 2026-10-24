@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatDate } from "@/lib/fa";
+import { Button } from "@/components/ui/button";
 
 type Report = {
   id: string; type: string; message: string; status: string;
@@ -38,29 +39,28 @@ export default function ReportsAdmin() {
       <h1 className="text-2xl font-extrabold mb-6">گزارش‌های کاربران</h1>
       <div className="flex gap-2 mb-6">
         {[["open", "باز"], ["in_review", "در حال بررسی"], ["resolved", "حل‌شده"], ["dismissed", "ردشده"], ["all", "همه"]].map(([k, l]) => (
-          <button key={k} onClick={() => setFilter(k)}
-            className={`btn btn-sm ${filter === k ? "btn-primary btn-active" : "btn-ghost"}`}>{l}</button>
+          <Button key={k} size="sm" variant={filter === k ? "default" : "ghost"} onClick={() => setFilter(k)}>{l}</Button>
         ))}
       </div>
       <div className="space-y-3">
         {list.map((r) => (
-          <div key={r.id} className="bg-surface border border-border rounded-3xl p-5">
+          <div key={r.id} className="bg-card border border-border rounded-3xl p-5">
             <div className="flex flex-wrap justify-between gap-2 mb-2">
               <p className="font-bold">
                 <Link href={`/app/${r.appSlug}`} className="text-primary hover:underline">{r.appName}</Link>
-                <span className="text-xs font-normal text-muted ms-2">[{TYPE_FA[r.type]}] [{STATUS_FA[r.status]}]</span>
+                <span className="text-xs font-normal text-muted-foreground ms-2">[{TYPE_FA[r.type]}] [{STATUS_FA[r.status]}]</span>
               </p>
-              <span className="text-xs text-muted">{formatDate(r.createdAt)}</span>
+              <span className="text-xs text-muted-foreground">{formatDate(r.createdAt)}</span>
             </div>
             <p className="text-sm leading-7 mb-3">{r.message}</p>
             <div className="flex gap-2 text-xs">
-              {r.status === "open" && <button onClick={() => setStatus(r.id, "in_review")} className="btn btn-ghost btn-sm">بررسی</button>}
-              {r.status !== "resolved" && <button onClick={() => setStatus(r.id, "resolved")} className="btn btn-primary btn-sm">حل شد</button>}
-              {r.status !== "dismissed" && <button onClick={() => setStatus(r.id, "dismissed")} className="btn btn-error btn-sm">رد</button>}
+              {r.status === "open" && <Button variant="ghost" size="sm" onClick={() => setStatus(r.id, "in_review")}>بررسی</Button>}
+              {r.status !== "resolved" && <Button size="sm" onClick={() => setStatus(r.id, "resolved")}>حل شد</Button>}
+              {r.status !== "dismissed" && <Button variant="destructive" size="sm" onClick={() => setStatus(r.id, "dismissed")}>رد</Button>}
             </div>
           </div>
         ))}
-        {!list.length && <p className="text-center text-muted text-sm bg-surface border border-border rounded-3xl p-10">گزارشی وجود ندارد.</p>}
+        {!list.length && <p className="text-center text-muted-foreground text-sm bg-card border border-border rounded-3xl p-10">گزارشی وجود ندارد.</p>}
       </div>
     </div>
   );

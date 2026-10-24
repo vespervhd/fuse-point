@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatDate } from "@/lib/fa";
+import { Button } from "@/components/ui/button";
 
 type Review = {
   id: string; rating: number; text: string | null; status: string;
@@ -32,36 +33,32 @@ export default function ReviewsAdmin() {
       <h1 className="text-2xl font-extrabold mb-6">نظرات کاربران</h1>
       <div className="flex gap-2 mb-6">
         {[["pending", "در انتظار"], ["approved", "تأییدشده"], ["rejected", "ردشده"], ["all", "همه"]].map(([k, l]) => (
-          <button key={k} onClick={() => setFilter(k)}
-            className={`btn btn-sm ${filter === k ? "btn-primary btn-active" : "btn-ghost"}`}>{l}</button>
+          <Button key={k} size="sm" variant={filter === k ? "default" : "ghost"} onClick={() => setFilter(k)}>{l}</Button>
         ))}
       </div>
       <div className="space-y-3">
         {list.map((r) => (
-          <div key={r.id} className="bg-surface border border-border rounded-3xl p-5">
+          <div key={r.id} className="bg-card border border-border rounded-3xl p-5">
             <div className="flex flex-wrap justify-between gap-2 mb-2">
               <p className="font-bold text-sm">
                 <Link href={`/app/${r.appSlug}`} className="text-primary hover:underline">{r.appName}</Link>
-                <span className="text-muted font-normal ms-2">{"⭐".repeat(r.rating)} — {r.userName} [{STATUS_FA[r.status]}]</span>
+                <span className="text-muted-foreground font-normal ms-2">{"⭐".repeat(r.rating)} — {r.userName} [{STATUS_FA[r.status]}]</span>
               </p>
-              <span className="text-xs text-muted">{formatDate(r.createdAt)}</span>
+              <span className="text-xs text-muted-foreground">{formatDate(r.createdAt)}</span>
             </div>
             {r.text && <p className="text-sm leading-7 mb-3">{r.text}</p>}
             <div className="flex gap-2 text-xs">
               {r.status !== "approved" && (
-                <button onClick={() => act(r.id, "PATCH", { status: "approved" })}
-                  className="btn btn-primary btn-sm">تأیید</button>
+                <Button size="sm" onClick={() => act(r.id, "PATCH", { status: "approved" })}>تأیید</Button>
               )}
               {r.status !== "rejected" && (
-                <button onClick={() => act(r.id, "PATCH", { status: "rejected" })}
-                  className="btn btn-ghost btn-sm">رد</button>
+                <Button variant="ghost" size="sm" onClick={() => act(r.id, "PATCH", { status: "rejected" })}>رد</Button>
               )}
-              <button onClick={() => { if (confirm("حذف شود؟")) act(r.id, "DELETE"); }}
-                className="btn btn-error btn-sm">حذف</button>
+              <Button variant="destructive" size="sm" onClick={() => { if (confirm("حذف شود؟")) act(r.id, "DELETE"); }}>حذف</Button>
             </div>
           </div>
         ))}
-        {!list.length && <p className="text-center text-muted text-sm bg-surface border border-border rounded-3xl p-10">نظری وجود ندارد.</p>}
+        {!list.length && <p className="text-center text-muted-foreground text-sm bg-card border border-border rounded-3xl p-10">نظری وجود ندارد.</p>}
       </div>
     </div>
   );

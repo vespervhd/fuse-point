@@ -1,60 +1,53 @@
 import Link from "next/link";
-import PxImg from "@/components/PxImg";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAppBySlug } from "@/lib/store";
 import { getSessionUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import * as s from "@/db/schema";
-import { eq, and, desc, sql } from "drizzle-orm";
-import { toFaDigits, formatBytes, formatDate, timeAgo, androidVersion } from "@/lib/fa";
-import AppTile from "@/components/AppTile";
-import FavoriteButton from "@/components/FavoriteButton";
-import FollowButton from "@/components/FollowButton";
-import ShareButton from "@/components/ShareButton";
+import { eq, and, desc } from "drizzle-orm";
+import { sql } from "drizzle-orm";
+import { androidVersion } from "@/lib/fa";
 import VersionsDrawer from "@/components/VersionsDrawer";
-import DownloadButtons, { PlatformIcon } from "@/components/DownloadButtons";
+import DownloadCardSection from "@/components/DownloadCard";
+import AppDetailsDrawer from "@/components/AppDetailsDrawer";
 import Gallery from "@/components/Gallery";
-import { computeTags } from "@/lib/tags";
-import { px } from "@/lib/img";
-import DbIcon from "@/components/DbIcon";
-import ReportButton from "@/components/ReportButton";
+import Capsules from "@/components/Capsules";
+import SimilarCard from "@/components/SimilarCard";
+import { SectionHead } from "@/components/Bits";
 import Alternatives from "@/components/Alternatives";
 import { findAlternatives } from "@/data/alternatives";
-import {
-  RefreshCw, Download, Star,
-  BadgeCheck, TriangleAlert,
-} from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { siteUrl } from "@/lib/site-url";
-
+import { px } from "@/lib/img";
+import { getLocale } from "@/lib/i18n-server";
+import { STR, appName, appShort, appDesc, dateL, type Locale } from "@/lib/i18n";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const app = await getAppBySlug(slug);
-  if (!app) return { title: "یافت نشد" };
+  const locale = await getLocale();
+  if (!app) return { title: locale === "fa" ? "یافت نشد" : "Not found" };
   const platFa = app.platform === "android" ? "اندروید" : app.platform === "windows" ? "ویندوز" : "لینوکس";
-  const desc = app.shortDescFa || app.shortDesc || `دانلود ${app.nameFa} برای ${platFa} با لینک مستقیم و بررسی امنیتی`;
+  const platEn = app.platform === "android" ? "Android" : app.platform === "windows" ? "Windows" : "Linux";
+  const title = locale === "fa"
+    ? `دانلود ${app.nameFa} برای ${platFa}`
+    : `Download ${app.nameEn || app.nameFa} for ${platEn}`;
+  const desc = locale === "fa"
+    ? app.shortDescFa || app.shortDesc || `دانلود ${app.nameFa} برای ${platFa} با لینک مستقیم و بررسی امنیتی`
+    : app.shortDesc || app.shortDescFa || `Download ${app.nameEn || app.nameFa} for ${platEn} — direct link, security-checked`;
   return {
-    title: `دانلود ${app.nameFa} برای ${platFa}`,
+    title,
     description: desc,
     alternates: { canonical: `/app/${app.slug}` },
     openGraph: {
-      title: `دانلود ${app.nameFa} برای ${platFa}`,
+      title,
       description: desc,
       images: app.iconUrl && px(app.iconUrl) ? [siteUrl() + px(app.iconUrl)!] : undefined,
     },
   };
-}
-
-function InfoRow({ k, v, ltr = false }: { k: string; v: React.ReactNode; ltr?: boolean }) {
-  return (
-    <div className="flex justify-between gap-4 py-2 border-b border-base-300 last:border-0 text-[13px]">
-      <dt className="opacity-60 shrink-0">{k}</dt>
-      <dd className="font-medium text-left break-all min-w-0" dir={ltr ? "ltr" : "rtl"}>{v}</dd>
-    </div>
-  );
 }
 
 // پاک‌سازی نشانه‌های مارک‌داون از توضیحات (دیتای دیتابیس دست‌نخورده می‌ماند)
@@ -66,10 +59,32 @@ function stripMd(t: string | null | undefined): string {
     .replace(/^#{1,6}\s+/gm, "");
 }
 
+// منبع رسمی طبق قانون مالک: وب‌سایت رسمی اول، وگرنه گیت‌هاب؛ F-Droid فقط وقتی هیچ‌کدام نیست
+function officialSource(app: {
+  sourceUrl: string | null; sourceType: string; githubRepo: string | null;
+}, locale: Locale): { href: string | null; label: string } {
+  const isGh = (u: string) => /(^|\.)github\.com$/i.test(new URL(u).hostname);
+  const host = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
+  if (app.sourceUrl && app.sourceType !== "fdroid") {
+    try {
+      if (!isGh(app.sourceUrl)) return { href: app.sourceUrl, label: host(app.sourceUrl) };
+    } catch {}
+  }
+  if (app.githubRepo) return { href: `https://github.com/${app.githubRepo}`, label: "github.com" };
+  if (app.sourceUrl) {
+    return app.sourceType === "fdroid"
+      ? { href: app.sourceUrl, label: "F-Droid" }
+      : { href: app.sourceUrl, label: host(app.sourceUrl) };
+  }
+  return { href: null, label: locale === "fa" ? "—" : "—" };
+}
+
 export default async function AppPage({ params }: Props) {
   const { slug } = await params;
   const app = await getAppBySlug(slug);
   if (!app) notFound();
+  const locale = await getLocale();
+  const d = STR[locale];
   const v = app.current;
 
   // بررسی آپدیت: آیا کاربر لاگین‌کرده این برنامه را دانلود کرده و نسخه جدید آمده؟
@@ -91,14 +106,8 @@ export default async function AppPage({ params }: Props) {
     }
   } catch {}
 
-  const tags = computeTags({
-    permissions: app.permissions.map((p: any) => p.permission),
-    isOpenSource: app.isOpenSource,
-    fileSize: v?.fileSize ?? null,
-  });
-
   // جایگزین‌های آزاد: اگر برای این برنامه نگاشت داریم، اپ‌های جایگزین را از DB پیدا کن
-  let altEntry = findAlternatives(app.nameEn);
+  const altEntry = findAlternatives(app.nameEn);
   let altApps: { nameEn: string; why: string; slug: string; nameFa: string; iconUrl: string | null }[] = [];
   if (altEntry) {
     try {
@@ -118,265 +127,131 @@ export default async function AppPage({ params }: Props) {
     } catch {}
   }
 
+  const src = officialSource(app, locale);
+  const aboutText = appDesc(app, locale);
+  const developerHref = app.developerName
+    ? `/developer/${encodeURIComponent(app.developerName)}`
+    : null;
+  const versionsSource = app.githubRepo
+    ? "github.com"
+    : app.sourceUrl
+      ? (() => { try { return new URL(app.sourceUrl).hostname.replace(/^www\./, ""); } catch { return app.sourceUrl; } })()
+      : null;
+
   return (
-    <div className="animate-fade-up max-w-3xl mx-auto">
-      {/* دانلودسنتر به سبک iOS */}
-      <div className="card bg-base-200 shadow-sm">
-        <div className="card-body p-5 sm:p-6">
-          <div className="flex gap-4 items-start">
-            {app.iconUrl ? (
-              <PxImg src={px(app.iconUrl) || "/icons/icon-192.png"} alt={`آیکون ${app.nameFa}`} width={88} height={88}
-                className="w-[76px] h-[76px] rounded-[24%] object-cover shadow-md shrink-0" />
-            ) : (
-              <span className="w-[76px] h-[76px] rounded-[24%] bg-primary/10 text-primary flex items-center justify-center text-3xl font-bold shrink-0">
-                {app.nameFa.charAt(0)}
-              </span>
-            )}
-            <div className="flex-1 min-w-0 pt-1">
-              <h1 title={app.nameFa} className="text-[19px] font-extrabold leading-7 break-words line-clamp-2">{app.nameFa}</h1>
-              {app.developerName && (
-                <p className="text-[13px] opacity-60 mt-0.5">{app.developerName}</p>
+    <div className="animate-fade-up">
+      {/* ۱) کارت دانلود — بلوک اصلی بالای صفحه؛ مشخصات اصلی فقط پلتفرم/حجم/نسخه داخل خود کارت */}
+      <DownloadCardSection
+        app={{
+          platform: app.platform,
+          githubRepo: app.githubRepo,
+          githubStars: app.githubStars,
+          sourceUrl: app.sourceUrl,
+          sourceType: app.sourceType,
+          version: v
+            ? {
+                id: v.id,
+                versionName: v.versionName,
+                fileSize: v.fileSize,
+                fileType: v.fileType,
+                fileUrl: v.fileUrl,
+              }
+            : null,
+        }}
+        title={appName(app, locale)}
+        subtitle={appShort(app, locale) || app.categories[0]?.nameFa || null}
+        iconUrl={app.iconUrl}
+        locale={locale}
+      />
+
+      {/* ۲) کپسول‌های دنبال‌کردن و نشان — زیر هدر کارت، بالای خط اطلاعات فایل */}
+      <Capsules appId={app.id} slug={app.slug} locale={locale} />
+
+      {/* بنر آپدیت برای کاربری که نسخه‌ی قدیمی‌تر را دانلود کرده */}
+      {hasUpdate && v && (
+        <div className="mt-4 flex items-center gap-3 rounded-xl bg-success px-4 py-3 text-success-foreground shadow-sm" role="status">
+          <RefreshCw className="w-5 h-5 shrink-0" aria-hidden="true" />
+          <p className="text-sm">
+            <b>{d.updateAvailable}</b>{" "}
+            <span className="opacity-80">
+              {downloadedVersion ? (
+                <>{d.updateFromTo.replace("{from}", downloadedVersion).replace("{to}", v.versionName ?? "")}</>
+              ) : (
+                <>{d.updateReleased.replace("{v}", v.versionName ?? "")}</>
               )}
-              <p className="text-[12px] mt-1.5 flex items-center gap-1.5 opacity-60">
-                <PlatformIcon platform={app.platform} className="w-4 h-4" />
-                {v?.versionName && <span dir="ltr">{v.versionName}</span>}
-              </p>
-            </div>
-            <div className="flex flex-row gap-2 shrink-0 pt-1">
-              <FavoriteButton appId={app.id} appName={app.slug} />
-              <FollowButton appId={app.id} />
-              <ShareButton appName={app.nameFa} slug={app.slug} />
-            </div>
-          </div>
-
-          {/* قرص‌های اطلاعات — متقارن */}
-          <div className="flex flex-wrap justify-center gap-2 mt-4">
-            {v?.fileSize ? (
-              <span className="badge badge-lg gap-1.5">
-                <Download className="w-4 h-4" aria-hidden="true" /> {formatBytes(v.fileSize)}
-              </span>
-            ) : null}
-            {(app.githubStars ?? 0) > 0 && (
-              <span className="badge badge-lg gap-1.5">
-                <Star className="w-4 h-4" aria-hidden="true" /> {toFaDigits(app.githubStars ?? 0)}
-              </span>
-            )}
-            {v?.verifiedAt && (
-              <span className="badge badge-lg badge-success gap-1.5">
-                <BadgeCheck className="w-4 h-4" aria-hidden="true" /> تأیید شده
-              </span>
-            )}
-          </div>
-
-          {/* بنر آپدیت */}
-          {hasUpdate && v && (
-            <div className="alert alert-success mt-4" role="status">
-              <RefreshCw className="w-5 h-5 shrink-0" aria-hidden="true" />
-              <p className="text-sm">
-                <b>نسخه‌ی جدید موجوده!</b>{" "}
-                <span className="opacity-80">
-                  {downloadedVersion ? (
-                    <>از <span dir="ltr">{downloadedVersion}</span> به <span dir="ltr">{v.versionName}</span></>
-                  ) : (
-                    <>نسخه‌ی <span dir="ltr">{v.versionName}</span> منتشر شده</>
-                  )}
-                </span>
-              </p>
-            </div>
-          )}
-
-          <div className="divider my-4" />
-
-          {/* دانلود */}
-          <DownloadButtons
-            app={{
-              platform: app.platform,
-              githubRepo: app.githubRepo,
-              githubStars: app.githubStars,
-              sourceUrl: app.sourceUrl,
-              sourceType: app.sourceType,
-              version: v
-                ? {
-                    id: v.id,
-                    versionName: v.versionName,
-                    fileSize: v.fileSize,
-                    fileType: v.fileType,
-                    fileUrl: v.fileUrl,
-                  }
-                : null,
-            }}
-          />
+            </span>
+          </p>
         </div>
-      </div>
+      )}
 
-      {/* تصاویر */}
+      {/* ۳) پیش‌نمایش — اسکرین‌شات‌های واقعی + لایت‌باکس */}
       {app.screenshots.length > 0 && (
-        <section className="py-6" aria-label="تصاویر محیط برنامه">
-          <h2 className="font-extrabold text-[17px] px-1 mb-3">پیش‌نمایش</h2>
+        <section className="mt-9" aria-label={d.preview}>
+          <SectionHead title={d.preview} locale={locale} />
           <Gallery
-            appName={app.nameFa}
+            appName={appName(app, locale)}
+            locale={locale}
             shots={app.screenshots.map((sh) => ({ id: sh.id, url: px(sh.url) || sh.url }))}
           />
         </section>
       )}
 
-      {/* معرفی */}
-      {(app.descriptionFa || app.description) && (
-        <>
-          <div className="h-px bg-border" />
-          <section className="py-6" aria-label="معرفی">
-            <h2 className="font-extrabold text-[17px] px-1 mb-3">درباره‌ی این برنامه</h2>
-            <p className="text-[15px] leading-8 px-1 whitespace-pre-line text-foreground/90">{stripMd(app.descriptionFa || app.description)}</p>
-          </section>
-        </>
+      {/* ۴) درباره */}
+      {aboutText && (
+        <section className="mt-9" aria-label={d.about}>
+          <SectionHead title={d.about} locale={locale} />
+          <p className="text-[15px] leading-8 whitespace-pre-line text-foreground/90">{stripMd(aboutText)}</p>
+        </section>
       )}
 
-      {/* نسخه‌های قبلی */}
-      {app.versions.length > 1 && (
-        <>
-          <div className="h-px bg-border" />
-          <div className="py-4">
-            <VersionsDrawer versions={app.versions} />
-          </div>
-        </>
-      )}
-
-      <div className="h-px bg-border" />
-
-      {/* اطلاعات — daisyUI */}
-      <section className="py-6" aria-label="اطلاعات">
-        <h2 className="font-extrabold text-[15px] px-1 mb-3">اطلاعات</h2>
-
-        {/* اعداد کلیدی */}
-        <div className="stats w-full bg-base-200 shadow-sm mb-3">
-          {app.platform === "android" ? (
-            <>
-              <div className="stat px-4 py-3">
-                <div className="stat-title text-[11px]">نسخه</div>
-                <div className="stat-value text-lg font-bold" dir="ltr">{v?.versionName ?? "—"}</div>
-              </div>
-              <div className="stat px-4 py-3">
-                <div className="stat-title text-[11px]">حجم</div>
-                <div className="stat-value text-lg font-bold">{formatBytes(v?.fileSize)}</div>
-              </div>
-            </>
-          ) : (
-            <div className="stat px-4 py-3">
-              <div className="stat-title text-[11px]">پلتفرم</div>
-              <div className="stat-value text-lg font-bold">{app.platform === "windows" ? "ویندوز" : "لینوکس"}</div>
-            </div>
-          )}
-          <div className="stat px-4 py-3">
-            <div className="stat-title text-[11px]">مجوز</div>
-            <div className="stat-value text-[13px] font-bold break-words" dir="ltr">{app.license || "—"}</div>
-          </div>
-        </div>
-
-        {/* جزئیات */}
-        <div className="card bg-base-200 shadow-sm">
-          <div className="card-body p-4">
-            <dl>
-              {app.platform === "android" && (
-                <InfoRow k="حداقل اندروید" v={androidVersion(v?.minSdk)} />
-              )}
-              <InfoRow k="توسعه‌دهنده" v={app.developerName || "نامشخص"} />
-              <InfoRow k="به‌روزرسانی" v={v ? timeAgo(v.publishedAt || v.createdAt) : "—"} />
-              <InfoRow k="منبع" v={app.sourceUrl ? (
-                <a href={app.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-primary" dir="ltr">
-                  {app.sourceType === "fdroid" ? "F-Droid" : new URL(app.sourceUrl).hostname.replace(/^www\./, "")}
-                </a>
-              ) : "داخلی"} />
-              <div className="flex justify-between items-center gap-4 py-2 text-[13px]">
-                <dt className="opacity-60 shrink-0">وضعیت بررسی</dt>
-                <dd>
-                  {v?.verifiedAt ? (
-                    <span className="badge badge-success badge-sm gap-1">
-                      <BadgeCheck className="w-3.5 h-3.5" aria-hidden="true" /> {formatDate(v.verifiedAt)}
-                    </span>
-                  ) : (
-                    <span className="badge badge-ghost badge-sm">در انتظار بررسی</span>
-                  )}
-                </dd>
-              </div>
-            </dl>
-          </div>
-        </div>
-
-        {/* هش و مجوزها */}
-        {(v?.sha256 || app.permissions.length > 0) && (
-          <div className="space-y-2 mt-3">
-            {v?.sha256 && (
-              <div className="collapse collapse-arrow bg-base-200 shadow-sm">
-                <input type="checkbox" />
-                <div className="collapse-title text-[13px] font-bold py-3 min-h-0">هش SHA-256</div>
-                <div className="collapse-content">
-                  <code className="block p-3 bg-base-300 rounded-xl break-all font-mono text-[11px]" dir="ltr">{v.sha256}</code>
-                </div>
-              </div>
-            )}
-            {app.permissions.length > 0 && (
-              <div className="collapse collapse-arrow bg-base-200 shadow-sm">
-                <input type="checkbox" />
-                <div className="collapse-title text-[13px] font-bold py-3 min-h-0">مجوزهای درخواستی ({toFaDigits(app.permissions.length)})</div>
-                <div className="collapse-content">
-                  <div className="flex flex-wrap gap-1.5 max-h-44 overflow-y-auto">
-                    {app.permissions.map((p) => (
-                      <span key={p.id} className="badge badge-ghost badge-sm font-mono" dir="ltr">{p.permission}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+      {/* ۵) مشخصات کامل — یک کشوی جمع‌وجور برای همه‌ی متای فرعی */}
+      <section className="mt-9" aria-label={d.fullDetails}>
+        <AppDetailsDrawer
+          developer={app.developerName || (locale === "fa" ? "نامشخص" : "Unknown")}
+          license={app.license || null}
+          updatedLabel={v ? dateL(v.publishedAt || v.createdAt, locale) : "—"}
+          sourceHref={src.href}
+          sourceLabel={src.label}
+          minAndroidLabel={app.platform === "android" ? androidVersion(v?.minSdk) : null}
+          verifiedLabel={v?.verifiedAt ? dateL(v.verifiedAt, locale) : null}
+          sha256={v?.sha256 ?? null}
+          permissions={app.permissions.map((p) => p.permission)}
+          appId={app.id}
+          appName={appName(app, locale)}
+          developerHref={developerHref}
+          locale={locale}
+        />
       </section>
 
-      {/* جایگزین‌ها */}
-      {altEntry && altApps.length > 0 && (
-        <>
-          <div className="h-px bg-border" />
-          <div className="py-6">
-            <Alternatives entry={altEntry} apps={altApps} />
-          </div>
-        </>
+      {/* ۶) نسخه‌های قبلی */}
+      {app.versions.length > 1 && (
+        <section className="mt-4" aria-label={d.versions}>
+          <VersionsDrawer versions={app.versions} currentId={v?.id ?? null} locale={locale} sourceLabel={versionsSource} />
+        </section>
       )}
 
-      {/* دسته‌بندی‌ها */}
-      {app.categories.length > 0 && (
-        <>
-          <div className="h-px bg-border" />
-          <section className="py-6" aria-label="دسته‌بندی‌ها">
-            <h2 className="font-extrabold text-[17px] px-1 mb-3">دسته‌بندی</h2>
-            <div className="flex flex-wrap gap-2 px-1">
-              {app.categories.map((c) => (
-                <Link key={c.slug} href={`/category/${c.slug}`}
-                  className="text-[13px] bg-surface rounded-full px-4 py-2 inline-flex items-center gap-1.5">
-                  <DbIcon icon={c.icon} className="w-4 h-4 text-primary" /> {c.nameFa}
-                </Link>
-              ))}
-            </div>
-          </section>
-        </>
-      )}
-
-      <div className="h-px bg-border" />
-      <div className="py-6 px-1 space-y-3">
-        <ReportButton appId={app.id} appName={app.nameFa} />
-        <Link href={`/report?app=${app.slug}`}
-          className="flex items-center justify-center gap-2 text-[13px] text-muted py-2">
-          <TriangleAlert className="w-4 h-4" aria-hidden="true" /> گزارش مشکل یا لینک خراب
-        </Link>
-      </div>
-
-      {/* شاید بپسندی */}
+      {/* ۷) برنامه‌های مشابه — کارت‌های فشرده */}
       {app.similar.length > 0 && (
-        <section className="mt-8" aria-label="شاید بپسندی">
-          <h2 className="text-[17px] font-extrabold mb-4 px-1">شاید بپسندی</h2>
-          <div className="grid grid-cols-3 gap-4">
-            {app.similar.slice(0, 6).map((a, i) => <AppTile key={a.id} app={a} index={i} />)}
+        <section className="mt-10" aria-label={d.similar}>
+          <SectionHead title={d.similar} locale={locale} />
+          <div className="flex flex-col gap-[9px]">
+            {app.similar.slice(0, 6).map((a) => (
+              <SimilarCard key={a.id} app={a} locale={locale} />
+            ))}
           </div>
         </section>
       )}
+
+      {/* جایگزین‌های آزاد (ویژگی موجود تولید) */}
+      {altEntry && altApps.length > 0 && (
+        <section className="mt-10">
+          <Alternatives entry={altEntry} apps={altApps} locale={locale} />
+        </section>
+      )}
+
+      <div className="mt-8">
+        <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">← {d.backHome}</Link>
+      </div>
     </div>
   );
 }

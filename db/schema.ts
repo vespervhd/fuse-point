@@ -305,6 +305,22 @@ export const collectionApps = pgTable("collection_apps", {
   index("collection_apps_cidx").on(t.collectionId, t.sortOrder),
 ]);
 
+// ─── درخواست افزودن برنامه (از فرم «درخواست اپ») ──────────────────
+
+export const appRequests = pgTable("app_requests", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  appName: varchar("app_name", { length: 255 }).notNull(),
+  sourceLink: text("source_link"),
+  platform: varchar("platform", { length: 16 }).notNull().default("android"),
+  note: text("note"),
+  status: varchar("status", { length: 32 }).notNull().default("pending"), // pending | added | rejected
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (t) => [
+  index("app_requests_user_idx").on(t.userId, t.createdAt),
+  index("app_requests_status_idx").on(t.status, t.createdAt),
+]);
+
 // ─── نوع‌های کمکی ────────────────────────────────────────────────
 
 export type App = typeof apps.$inferSelect;

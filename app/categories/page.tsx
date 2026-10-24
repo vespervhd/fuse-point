@@ -1,55 +1,50 @@
 import Link from "next/link";
-import { getAllCategories, getCategoryCounts } from "@/lib/store";
-import type { Platform } from "@/lib/store";
+import { getRootCategories, type Platform } from "@/lib/store";
 import DbIcon from "@/components/DbIcon";
+import { BackLink, ViewHead, EmptyState } from "@/components/Bits";
+import { LayoutGrid } from "lucide-react";
+import { getLocale } from "@/lib/i18n-server";
+import { STR, catName, appsCount } from "@/lib/i18n";
 
-export const metadata = { title: "دسته‌بندی‌ها" };
+export async function generateMetadata() {
+  const locale = await getLocale();
+  return { title: STR[locale].cats };
+}
 
 type Props = { searchParams: Promise<{ platform?: string }> };
 
+// نمای دسته‌بندی‌ها — گرید دوسطونه‌ی کاشی آیکنی با شمار واقعی همین پلتفرم (عین نمونه)
 export default async function CategoriesPage({ searchParams }: Props) {
   const { platform } = await searchParams;
-  const plat = (platform === "windows" || platform === "linux") ? platform as Platform : undefined;
-  const [cats, counts] = await Promise.all([getAllCategories(), getCategoryCounts(plat)]);
-  // فقط ریشه‌هایی که در این پلتفرم برنامه دارن
-  const roots = cats.filter((c) => !c.parentId && (counts.get(c.id) ?? 0) > 0);
-  const childrenOf = (id: string) => cats.filter((c) => c.parentId === id);
+  const plat: Platform = platform === "windows" || platform === "linux" ? platform : "android";
+  const locale = await getLocale();
+  const d = STR[locale];
+  const cats = await getRootCategories(plat);
+  const qs = plat === "android" ? "" : `?platform=${plat}`;
 
   return (
     <div className="animate-fade-up">
-      <h1 className="text-2xl font-extrabold mb-6">دسته‌بندی‌ها</h1>
-      <div className="space-y-6">
-        {roots.map((r) => {
-          const kids = childrenOf(r.id);
-          return (
-            <section key={r.id} className="bg-surface border border-border rounded-3xl p-6" aria-label={r.nameFa}>
-              <Link href={`/category/${r.slug}`} className="flex items-center gap-3 mb-4 group">
-                <span className="w-11 h-11 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                  <DbIcon icon={r.icon} className="w-6 h-6" />
-                </span>
-                <h2 className="text-lg font-extrabold group-hover:text-primary transition">{r.nameFa}</h2>
-                <span className="text-xs font-bold bg-primary-soft text-primary rounded-full px-2.5 py-1">
-                  {(counts.get(r.id) ?? 0).toLocaleString("fa-IR")} برنامه
-                </span>
-                <span className="text-primary text-sm">←</span>
-              </Link>
-              {kids.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {kids.map((k) => (
-                    <Link key={k.id} href={`/category/${k.slug}`}
-                      className="text-sm bg-surface-2 hover:bg-primary-soft hover:text-primary border border-border rounded-full px-4 py-2 transition flex items-center gap-1.5">
-                      <DbIcon icon={k.icon} className="w-4 h-4" /> {k.nameFa}
-                      <span className="text-xs text-muted font-bold">{(counts.get(k.id) ?? 0).toLocaleString("fa-IR")}</span>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-muted">زیرشاخه‌ای ثبت نشده است.</p>
-              )}
-            </section>
-          );
-        })}
-      </div>
+      <BackLink href={`/${qs}`} label={d.backStore} />
+      <ViewHead title={d.cats} sub={d.catsSub} />
+      {cats.length ? (
+        <div className="grid grid-cols-2 gap-[11px]">
+          {cats.map((c) => (
+            <Link
+              key={c.id}
+              href={`/category/${c.slug}${qs}`}
+              className="flex flex-col items-start gap-2.5 bg-card border border-border rounded-[18px] p-[18px] shadow-sm hover:border-primary/60 transition-colors"
+            >
+              <span className="w-[46px] h-[46px] rounded-[13px] grid place-items-center text-primary bg-primary/10 border border-primary/[0.22]">
+                <DbIcon icon={c.icon} className="w-[23px] h-[23px]" />
+              </span>
+              <span className="text-[15px] font-extrabold leading-[1.7]">{catName(c, locale)}</span>
+              <span className="text-muted-foreground text-xs">{appsCount(c.appCount, locale)}</span>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <EmptyState icon={<LayoutGrid className="w-6 h-6" aria-hidden="true" />} text={d.emptyHome} sub={d.tryAnotherPlatform} />
+      )}
     </div>
   );
 }

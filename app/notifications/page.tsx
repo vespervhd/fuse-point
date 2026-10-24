@@ -1,7 +1,13 @@
 import NotificationsPage from "./NotificationsPage";
+import { getLocale } from "@/lib/i18n-server";
+import { STR } from "@/lib/i18n";
 
-export const metadata = { title: "اعلان‌ها" };
+export async function generateMetadata() {
+  const locale = await getLocale();
+  return { title: STR[locale].notifications };
+}
 
-export default function Page() {
-  return <NotificationsPage />;
+export default async function Page() {
+  const locale = await getLocale();
+  return <NotificationsPage locale={locale} />;
 }

@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatBytes, formatDate, toFaDigits } from "@/lib/fa";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Version = {
   id: string; versionName: string; versionCode: number; fileUrl: string;
@@ -89,9 +94,8 @@ export default function EditApp() {
     }
   };
 
-  if (loading) return <div className="space-y-3">{[1, 2, 3].map((i) => <div key={i} className="h-24 bg-surface border border-border rounded-3xl animate-pulse" />)}</div>;
+  if (loading) return <div className="space-y-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-24 rounded-3xl border border-border" />)}</div>;
 
-  const input = "w-full h-11 rounded-xl bg-surface-2 border border-border px-4 text-sm focus:outline-none focus:border-primary";
 
   return (
     <div className="animate-fade-up max-w-4xl">
@@ -100,29 +104,29 @@ export default function EditApp() {
         <h1 className="text-2xl font-extrabold">ویرایش: {form.nameFa}</h1>
       </div>
 
-      {msg && <p className="mb-4 text-sm bg-surface border border-border rounded-xl p-3">{msg}</p>}
+      {msg && <p role={msg.startsWith("❌") ? "alert" : "status"} className={`mb-4 text-sm border rounded-xl p-3 ${msg.startsWith("❌") ? "text-destructive bg-destructive/10 border-destructive/30" : "text-success bg-success/10 border-success/30"}`}>{msg}</p>}
 
-      <section className="bg-surface border border-border rounded-3xl p-6 mb-6">
+      <section className="bg-card border border-border rounded-3xl p-6 mb-6">
         <h2 className="font-extrabold mb-4">اطلاعات اصلی</h2>
         <div className="grid sm:grid-cols-2 gap-4">
           <div><label className="block text-xs font-bold mb-1.5">نام فارسی</label>
-            <input className={input} value={form.nameFa || ""} onChange={(e) => set("nameFa", e.target.value)} /></div>
+            <Input className="h-11 bg-muted" value={form.nameFa || ""} onChange={(e) => set("nameFa", e.target.value)} /></div>
           <div><label className="block text-xs font-bold mb-1.5">نام انگلیسی</label>
-            <input className={input} dir="ltr" value={form.nameEn || ""} onChange={(e) => set("nameEn", e.target.value)} /></div>
+            <Input className="h-11 bg-muted" dir="ltr" value={form.nameEn || ""} onChange={(e) => set("nameEn", e.target.value)} /></div>
           <div className="sm:col-span-2"><label className="block text-xs font-bold mb-1.5">توضیح کوتاه</label>
-            <input className={input} value={form.shortDesc || ""} onChange={(e) => set("shortDesc", e.target.value)} /></div>
+            <Input className="h-11 bg-muted" value={form.shortDesc || ""} onChange={(e) => set("shortDesc", e.target.value)} /></div>
           <div className="sm:col-span-2"><label className="block text-xs font-bold mb-1.5">معرفی کامل</label>
-            <textarea className={input + " h-32 py-3"} value={form.description || ""} onChange={(e) => set("description", e.target.value)} /></div>
+            <Textarea className="h-32 bg-muted" value={form.description || ""} onChange={(e) => set("description", e.target.value)} /></div>
           <div><label className="block text-xs font-bold mb-1.5">آدرس آیکون</label>
-            <input className={input} dir="ltr" value={form.iconUrl || ""} onChange={(e) => set("iconUrl", e.target.value)} /></div>
+            <Input className="h-11 bg-muted" dir="ltr" value={form.iconUrl || ""} onChange={(e) => set("iconUrl", e.target.value)} /></div>
           <div><label className="block text-xs font-bold mb-1.5">مجوز</label>
-            <input className={input} dir="ltr" value={form.license || ""} onChange={(e) => set("license", e.target.value)} /></div>
+            <Input className="h-11 bg-muted" dir="ltr" value={form.license || ""} onChange={(e) => set("license", e.target.value)} /></div>
           <div><label className="block text-xs font-bold mb-1.5">منبع رسمی</label>
-            <input className={input} dir="ltr" value={form.sourceUrl || ""} onChange={(e) => set("sourceUrl", e.target.value)} /></div>
+            <Input className="h-11 bg-muted" dir="ltr" value={form.sourceUrl || ""} onChange={(e) => set("sourceUrl", e.target.value)} /></div>
           <div className="flex flex-wrap gap-x-6 gap-y-3 pt-6 text-sm">
             {[["isPublished", "منتشرشده"], ["featured", "منتخب"], ["editorChoice", "منتخب سردبیر"], ["isOpenSource", "متن‌باز"]].map(([k, l]) => (
               <label key={k} className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={!!form[k]} onChange={(e) => set(k, e.target.checked)} className="toggle toggle-primary toggle-sm" />{l}
+                <input type="checkbox" checked={!!form[k]} onChange={(e) => set(k, e.target.checked)} className="size-4 shrink-0 accent-primary" />{l}
               </label>
             ))}
           </div>
@@ -131,21 +135,22 @@ export default function EditApp() {
           <label className="block text-xs font-bold mb-1.5">دسته‌بندی‌ها</label>
           <div className="flex flex-wrap gap-2">
             {cats.map((c) => (
-              <button key={c.id} type="button"
+              <Button key={c.id} type="button"
                 onClick={() => setCatIds((p) => p.includes(c.id) ? p.filter((x) => x !== c.id) : [...p, c.id])}
-                className={`btn btn-xs rounded-full ${catIds.includes(c.id) ? "btn-primary" : "btn-ghost"}`}>
+                variant={catIds.includes(c.id) ? "default" : "ghost"} size="sm"
+                className="h-7 rounded-full px-2.5 text-xs">
                 {c.nameFa}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
-        <button onClick={save} disabled={saving}
-          className="btn btn-primary mt-6">
+        <Button onClick={save} disabled={saving}
+          className="mt-6">
           {saving ? "در حال ذخیره..." : "ذخیره تغییرات"}
-        </button>
+        </Button>
       </section>
 
-      <section className="bg-surface border border-border rounded-3xl p-6 mb-6">
+      <section className="bg-card border border-border rounded-3xl p-6 mb-6">
         <h2 className="font-extrabold mb-4">نسخه‌ها ({toFaDigits(versions.length)})</h2>
         <ul className="space-y-3 mb-6">
           {versions.map((v) => (
@@ -153,27 +158,24 @@ export default function EditApp() {
               <div className="flex flex-wrap items-center gap-3 justify-between">
                 <div>
                   <p className="font-bold"><span dir="ltr">v{v.versionName}</span>
-                    <span className="text-xs text-muted font-normal ms-2" dir="ltr">({v.versionCode})</span>
-                    {v.isCurrent && <span className="text-xs bg-primary-soft text-primary rounded-full px-2 py-0.5 ms-2">جاری</span>}
+                    <span className="text-xs text-muted-foreground font-normal ms-2" dir="ltr">({v.versionCode})</span>
+                    {v.isCurrent && <Badge variant="outline" className="ms-2 bg-primary/10 text-primary">جاری</Badge>}
                   </p>
-                  <p className="text-xs text-muted mt-1">{STATUS_FA[v.status]} • {formatBytes(v.fileSize)} • {formatDate(v.createdAt)}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{STATUS_FA[v.status]} • {formatBytes(v.fileSize)} • {formatDate(v.createdAt)}</p>
                 </div>
                 <div className="flex gap-2 text-xs">
                   {v.status !== "active" && (
-                    <button onClick={() => verAction(v.id, { status: "active" })}
-                      className="btn btn-primary btn-sm">تأیید و انتشار</button>
+                    <Button size="sm" onClick={() => verAction(v.id, { status: "active" })}>تأیید و انتشار</Button>
                   )}
                   {v.status === "active" && !v.isCurrent && (
-                    <button onClick={() => verAction(v.id, { isCurrent: true })}
-                      className="btn btn-ghost btn-sm">جاری کن</button>
+                    <Button variant="ghost" size="sm" onClick={() => verAction(v.id, { isCurrent: true })}>جاری کن</Button>
                   )}
                   {v.status === "pending" && (
-                    <button onClick={() => verAction(v.id, { status: "rejected" })}
-                      className="btn btn-error btn-sm">رد</button>
+                    <Button variant="destructive" size="sm" onClick={() => verAction(v.id, { status: "rejected" })}>رد</Button>
                   )}
                   {v.status === "active" && (
-                    <button onClick={() => verAction(v.id, { _delete: true })}
-                      className="px-3 py-1.5 rounded-lg bg-surface-2 border border-border hover:border-danger text-danger">غیرفعال</button>
+                    <Button variant="outline" size="sm" onClick={() => verAction(v.id, { _delete: true })}
+                      className="text-destructive hover:border-destructive hover:text-destructive">غیرفعال</Button>
                   )}
                 </div>
               </div>
@@ -183,24 +185,24 @@ export default function EditApp() {
 
         <h3 className="font-bold mb-3">＋ افزودن نسخه جدید</h3>
         <div className="grid sm:grid-cols-2 gap-3">
-          <input className={input} dir="ltr" placeholder="versionName مثل 3.6.5" value={newVer.versionName}
+          <Input className="h-11 bg-muted" dir="ltr" placeholder="versionName مثل 3.6.5" value={newVer.versionName}
             onChange={(e) => setNewVer({ ...newVer, versionName: e.target.value })} />
-          <input className={input} dir="ltr" placeholder="versionCode (عدد)" value={newVer.versionCode}
+          <Input className="h-11 bg-muted" dir="ltr" placeholder="versionCode (عدد)" value={newVer.versionCode}
             onChange={(e) => setNewVer({ ...newVer, versionCode: e.target.value })} />
-          <input className={input + " sm:col-span-2"} dir="ltr" placeholder="آدرس مستقیم فایل APK" value={newVer.fileUrl}
+          <Input className="h-11 bg-muted sm:col-span-2" dir="ltr" placeholder="آدرس مستقیم فایل APK" value={newVer.fileUrl}
             onChange={(e) => setNewVer({ ...newVer, fileUrl: e.target.value })} />
-          <input className={input} dir="ltr" placeholder="حجم (بایت)" value={newVer.fileSize}
+          <Input className="h-11 bg-muted" dir="ltr" placeholder="حجم (بایت)" value={newVer.fileSize}
             onChange={(e) => setNewVer({ ...newVer, fileSize: e.target.value })} />
-          <input className={input} dir="ltr" placeholder="SHA-256 (۶۴ کاراکتر)" value={newVer.sha256}
+          <Input className="h-11 bg-muted" dir="ltr" placeholder="SHA-256 (۶۴ کاراکتر)" value={newVer.sha256}
             onChange={(e) => setNewVer({ ...newVer, sha256: e.target.value })} />
-          <input className={input} dir="ltr" placeholder="minSdk" value={newVer.minSdk}
+          <Input className="h-11 bg-muted" dir="ltr" placeholder="minSdk" value={newVer.minSdk}
             onChange={(e) => setNewVer({ ...newVer, minSdk: e.target.value })} />
-          <textarea className={input + " sm:col-span-2 h-20 py-2"} placeholder="تغییرات نسخه" value={newVer.changelog}
+          <Textarea className="sm:col-span-2 h-20 bg-muted" placeholder="تغییرات نسخه" value={newVer.changelog}
             onChange={(e) => setNewVer({ ...newVer, changelog: e.target.value })} />
         </div>
-        <button onClick={addVersion} className="btn btn-primary mt-4">
+        <Button onClick={addVersion} className="mt-4">
           ثبت نسخه (در انتظار بررسی)
-        </button>
+        </Button>
       </section>
     </div>
   );

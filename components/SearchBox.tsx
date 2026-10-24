@@ -4,6 +4,9 @@ import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { Search, Loader2 } from "lucide-react";
 import PxImg from "./PxImg";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { STR, type Locale } from "@/lib/i18n";
 
 type Suggestion = {
   slug: string;
@@ -30,10 +33,16 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [hi, setHi] = useState(-1);
+  const [locale, setLocale] = useState<Locale>("fa");
   const router = useRouter();
   const sp = useSearchParams();
   const boxRef = useRef<HTMLDivElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const d = STR[locale];
+
+  useEffect(() => {
+    if (document.documentElement.lang === "en") setLocale("en");
+  }, []);
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -106,33 +115,34 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
   return (
     <div ref={boxRef} className={`relative ${compact ? "w-full" : "w-full max-w-xl"}`}>
       <form onSubmit={submit} role="search" className="relative">
-        <input
+        <Input
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onFocus={() => { if (items.length > 0) setOpen(true); }}
           onKeyDown={onKey}
-          placeholder="جست‌وجوی برنامه‌ها..."
-          aria-label="جست‌وجوی برنامه‌ها"
+          placeholder={d.searchPh}
+          aria-label={d.searchPh}
           autoComplete="off"
-          className={`w-full ${h} ${radius} bg-surface-2 border border-border pe-11 ps-4 text-fg placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition text-sm`}
+          className={`w-full ${h} ${radius} bg-muted border-border ${large ? "pe-13" : "pe-11"} ps-4 text-foreground placeholder:text-muted-foreground transition text-sm`}
         />
-        <button
+        <Button
           type="submit"
-          aria-label="جست‌وجو"
-          className={`absolute end-1 top-1/2 -translate-y-1/2 btn btn-primary ${large ? "rounded-xl" : "btn-sm rounded-lg"} shrink-0`}
+          aria-label={d.advSearch}
+          size={large ? "icon-lg" : "icon-sm"}
+          className={`absolute end-1 top-1/2 -translate-y-1/2 ${large ? "rounded-xl" : "rounded-lg"} shrink-0`}
         >
           {loading
-            ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-            : <Search className="w-4 h-4" strokeWidth={2} aria-hidden="true" />}
-        </button>
+            ? <Loader2 className={`${large ? "w-5 h-5" : "w-4 h-4"} animate-spin`} aria-hidden="true" />
+            : <Search className={large ? "w-5 h-5" : "w-4 h-4"} strokeWidth={2} aria-hidden="true" />}
+        </Button>
       </form>
 
       {open && items.length > 0 && (
         <div
-          className="absolute top-full mt-2 inset-x-0 z-50 bg-surface border border-border rounded-xl shadow-xl overflow-hidden animate-fade-up"
+          className="absolute top-full mt-2 inset-x-0 z-50 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-fade-up"
           role="listbox"
-          aria-label="پیشنهادهای جست‌وجو"
+          aria-label={locale === "fa" ? "پیشنهادهای جست‌وجو" : "Search suggestions"}
         >
           <ul className="max-h-80 overflow-y-auto py-1">
             {items.map((s, i) => (
@@ -141,32 +151,33 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
                   href={`/app/${s.slug}`}
                   onClick={() => setOpen(false)}
                   onMouseEnter={() => setHi(i)}
-                  className={`flex items-center gap-3 px-3 py-2.5 transition ${i === hi ? "bg-surface-2" : ""}`}
+                  className={`flex items-center gap-3 px-3 py-2.5 transition ${i === hi ? "bg-muted" : ""}`}
                 >
                   {s.iconUrl ? (
                     <PxImg src={s.iconUrl} alt="" width={32} height={32} className="w-8 h-8 rounded-lg object-cover shrink-0" />
                   ) : (
-                    <span className="w-8 h-8 rounded-lg bg-primary-soft text-primary flex items-center justify-center text-sm font-bold shrink-0">
+                    <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-bold shrink-0">
                       {s.nameFa.charAt(0)}
                     </span>
                   )}
                   <span className="flex-1 min-w-0">
-                    <span className="block text-sm font-bold truncate">{s.nameFa}</span>
-                    {s.nameEn && s.nameEn !== s.nameFa && (
-                      <span className="block text-xs text-muted truncate" dir="ltr" style={{ textAlign: "right" }}>{s.nameEn}</span>
+                    <span className="block text-sm font-bold truncate">{locale === "en" ? (s.nameEn || s.nameFa) : s.nameFa}</span>
+                    {s.nameEn && s.nameEn !== s.nameFa && locale === "fa" && (
+                      <span className="block text-xs text-muted-foreground truncate" dir="ltr" style={{ textAlign: "right" }}>{s.nameEn}</span>
                     )}
                   </span>
                 </Link>
               </li>
             ))}
           </ul>
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => goSearch(q)}
-            className="btn btn-ghost w-full"
+            className="w-full"
           >
             دیدن همه‌ی نتایج «{q.trim()}»
-          </button>
+          </Button>
         </div>
       )}
     </div>

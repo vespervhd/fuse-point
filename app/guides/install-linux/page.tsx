@@ -33,22 +33,20 @@ export default function InstallLinuxGuide() {
       <div className="text-center mb-10">
         <Terminal className="w-12 h-12 mx-auto mb-4 text-primary" aria-hidden="true" />
         <h1 className="text-2xl sm:text-3xl font-extrabold mb-3">راهنمای نصب برنامه در لینوکس</h1>
-        <p className="text-muted">سه روش اصلی نصب برنامه در لینوکس، از ساده به پیشرفته.</p>
+        <p className="text-muted-foreground">سه روش اصلی نصب برنامه در لینوکس، از ساده به پیشرفته.</p>
       </div>
       <div className="space-y-4">
         {steps.map((s) => (
-          <section key={s.title} className="card bg-base-200 shadow-sm">
-            <div className="card-body p-6">
-              <h2 className="font-extrabold mb-2">{s.title}</h2>
-              <p className="text-sm opacity-70 leading-7">{s.text}</p>
-              {s.code && (
-                <div className="mockup-code mt-4 text-sm" dir="ltr">
-                  {s.code.map((c) => (
-                    <pre key={c} data-prefix="$"><code>{c}</code></pre>
-                  ))}
-                </div>
-              )}
-            </div>
+          <section key={s.title} className="bg-card border border-border rounded-3xl shadow-sm p-6">
+            <h2 className="font-extrabold mb-2">{s.title}</h2>
+            <p className="text-sm text-muted-foreground leading-7">{s.text}</p>
+            {s.code && (
+              <div className="mt-4 bg-muted border border-border rounded-xl p-4 text-sm space-y-1.5" dir="ltr">
+                {s.code.map((c) => (
+                  <pre key={c} className="flex gap-2"><span className="text-muted-foreground select-none" aria-hidden="true">$</span><code>{c}</code></pre>
+                ))}
+              </div>
+            )}
           </section>
         ))}
       </div>

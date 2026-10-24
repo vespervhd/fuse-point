@@ -1,7 +1,17 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { LogoMark } from "@/components/Logo";
+import type { Locale } from "@/lib/i18n";
+
+const COPY = {
+  fa: { title: "ساخت حساب کاربری", sub: "نشان‌ها و پیگیری‌هات ذخیره می‌شه", name: "نام", email: "ایمیل", password: "رمز عبور", min: "حداقل ۸ کاراکتر", submit: "ثبت‌نام", busy: "در حال ثبت‌نام…", have: "حساب داری؟", login: "وارد شو", errSignup: "خطا در ثبت‌نام", errNet: "دریافت اطلاعات با خطا مواجه شد" },
+  en: { title: "Create account", sub: "Your bookmarks and follows are saved", name: "Name", email: "Email", password: "Password", min: "At least 8 characters", submit: "Sign up", busy: "Creating…", have: "Already have an account?", login: "Sign in", errSignup: "Sign-up failed", errNet: "Something went wrong — try again" },
+} as const;
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -9,8 +19,13 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [locale, setLocale] = useState<"fa" | "en">("fa");
   const router = useRouter();
-  const input = "w-full h-11 rounded-xl bg-surface-2 border border-border px-4 text-sm focus:outline-none focus:border-primary";
+  const c = COPY[locale];
+
+  useEffect(() => {
+    if (document.documentElement.lang === "en") setLocale("en");
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,39 +37,38 @@ export default function SignupPage() {
       });
       const j = await r.json();
       if (r.ok) { router.push("/"); router.refresh(); }
-      else setError(j.error || "خطا در ثبت‌نام");
-    } catch { setError("دریافت اطلاعات با خطا مواجه شد"); }
+      else setError(j.error || c.errSignup);
+    } catch { setError(c.errNet); }
     finally { setLoading(false); }
   };
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center">
-      <form onSubmit={submit} className="w-full max-w-sm bg-surface border border-border rounded-3xl p-8 space-y-5">
+      <form onSubmit={submit} className="w-full max-w-sm bg-card border border-border rounded-3xl p-8 space-y-5">
         <div className="text-center">
-          <img src="/icons/icon-192.png" alt="لوگوی Fuse Point" width={48} height={48} className="inline-flex w-12 h-12 rounded-2xl object-cover mb-3" />
-          <h1 className="text-xl font-extrabold">ساخت حساب کاربری</h1>
-          <p className="text-xs text-muted mt-1">علاقه‌مندی‌ها و نظرات شما ذخیره می‌شود</p>
+          <span className="inline-grid place-items-center mb-3"><LogoMark size={48} /></span>
+          <h1 className="text-xl font-extrabold">{c.title}</h1>
+          <p className="text-xs text-muted-foreground mt-1">{c.sub}</p>
         </div>
         <div>
-          <label htmlFor="name" className="block text-sm font-bold mb-2">نام</label>
-          <input id="name" required minLength={2} value={name} onChange={(e) => setName(e.target.value)} className={input} />
+          <Label htmlFor="name" className="font-bold mb-2">{c.name}</Label>
+          <Input id="name" required minLength={2} value={name} onChange={(e) => setName(e.target.value)} className="h-11 bg-muted" />
         </div>
         <div>
-          <label htmlFor="email" className="block text-sm font-bold mb-2">ایمیل</label>
-          <input id="email" type="email" dir="ltr" required value={email} onChange={(e) => setEmail(e.target.value)} className={input} />
+          <Label htmlFor="email" className="font-bold mb-2">{c.email}</Label>
+          <Input id="email" type="email" dir="ltr" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-11 bg-muted" />
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-bold mb-2">رمز عبور</label>
-          <input id="password" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className={input} />
-          <p className="text-xs text-muted mt-1">حداقل ۸ کاراکتر</p>
+          <Label htmlFor="password" className="font-bold mb-2">{c.password}</Label>
+          <Input id="password" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className="h-11 bg-muted" />
+          <p className="text-xs text-muted-foreground mt-1">{c.min}</p>
         </div>
-        {error && <p className="text-sm text-danger bg-danger/10 rounded-xl p-3">{error}</p>}
-        <button type="submit" disabled={loading}
-          className="btn btn-primary w-full">
-          {loading ? "در حال ثبت‌نام..." : "ثبت‌نام"}
-        </button>
-        <p className="text-center text-sm text-muted">
-          حساب دارید؟ <Link href="/login" className="text-primary font-bold hover:underline">وارد شوید</Link>
+        {error && <p role="alert" className="text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-xl p-3">{error}</p>}
+        <Button type="submit" disabled={loading} className="w-full">
+          {loading ? c.busy : c.submit}
+        </Button>
+        <p className="text-center text-sm text-muted-foreground">
+          {c.have} <Link href="/login" className="text-primary font-bold hover:underline">{c.login}</Link>
         </p>
       </form>
     </div>
