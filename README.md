@@ -1,71 +1,54 @@
-<div align="center">
+# Fuse Point | فروشگاه اپ‌های آزاد
 
-```
-██╗   ██╗███████╗███████╗██████╗ ███████╗██████╗
-██║   ██║██╔════╝██╔════╝██╔══██╗██╔════╝██╔══██╗
-██║   ██║█████╗  ███████╗██████╔╝█████╗  ██████╔╝
-╚██╗ ██╔╝██╔══╝  ╚════██║██╔═══╝ ██╔══╝  ██╔══██╗
- ╚████╔╝ ███████╗███████║██║     ███████╗██║  ██║
-  ╚═══╝  ╚══════╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝
-```
+فروشگاه نرم‌افزارهای آزاد برای اندروید، ویندوز و لینوکس.
 
-# Fuse Point
-
-**فروشگاه اپ‌های آزاد** — A Persian app store for Android, Windows and Linux.
-
-[فارسی](#فارسی) | [English](#english)
-
-</div>
-
----
-
-## فارسی
+[English](#english)
 
 <div dir="rtl">
 
-Fuse Point یه فروشگاه فارسی برای معرفی و دانلود امن نرم‌افزاره — اندروید، ویندوز و لینوکس. یه پروژه‌ی شخصیه که از یه ایده‌ی ساده شروع شد: نرم‌افزار خوب، به زبان خودت.
+## درباره
 
-۲٬۳۶۸ برنامه‌ی واقعی (اندروید ۸۲۶، لینوکس ۸۲۳، ویندوز ۷۱۹) از F-Droid و گیت‌هاب — بدون تبلیغ، بدون آمار جعلی. اعتماد اولویت اوله: هش SHA-256 هر فایل، لینک منبع رسمی، و دکمه‌ی گزارش مشکل توی خود صفحه‌ی هر برنامه.
+Fuse Point یه فروشگاه فارسی برای پیدا کردن و دانلود نرم‌افزارهای آزاده. هر برنامه برای هر پلتفرم رکورد جدا داره و فایل‌ها از منبع رسمی خود پروژه میان؛ هش SHA-256 و مجوزهای هر نسخه هم توی صفحه‌ی همون برنامه هست تا قبل از دانلود بشه بررسی‌شون کرد.
 
-نسخه‌ی زنده: https://narmstore.onrender.com
+نسخه‌ی زنده: https://fusepoint.bond
 
-### ویژگی‌ها
+## امکانات
 
-- ویترین کاملاً فارسی و راست‌چین، با سوییچر پلتفرم (اندروید / ویندوز / لینوکس)
-- دانلود هوشمند: لینک مستقیم APK یا صفحه‌ی رسمی/گیت‌هاب، با شمارش واقعی دانلود (هش روزانه‌ی IP، بدون ذخیره‌ی IP خام)
-- هش SHA-256 هر فایل با دکمه‌ی کپی
-- کارت گیت‌هاب با تعداد استار
-- علاقه‌مندی، دنبال‌کردن برنامه‌ها و اعلان انتشار نسخه‌ی جدید
-- دراور نسخه‌های قبلی و جست‌وجوی فارسی با نرمال‌سازی
-- چهار تم: روشن / تیره / گرم / امولد
+- کاتالوگ چندپلتفرمی؛ رکورد جدا برای نسخه‌ی اندروید، ویندوز و لینوکس هر برنامه
+- نمایش هش SHA-256 و مجوزهای دسترسی هر نسخه
+- گزارش مشکل برای هر برنامه، داخل صفحه‌ی خود برنامه
+- حساب کاربری، علاقه‌مندی‌ها و اعلان انتشار نسخه‌ی جدید
+- پنل مدیریت با لاگ حسابرسی
+- همگام‌سازی روزانه با F-Droid؛ نسخه‌های جدید فقط بعد از تأیید دستی منتشر می‌شن
 - PWA با پشتیبانی آفلاین
-- همگام‌سازی روزانه‌ی F-Droid — نسخه‌های جدید فقط با تأیید دستی منتشر می‌شن
-- پنل ادمین با لاگ حسابرسی
-- امنیت: scrypt، نشست HMAC، محدودسازی نرخ، اعتبارسنجی Zod
 
-### تکنولوژی‌ها
+## فناوری
 
-**Next.js 16** + TypeScript · **Tailwind CSS 4** · **PostgreSQL 16** + Drizzle ORM · Zod · فونت Vazirmatn · آیکون‌های Lucide
+Next.js 16 + TypeScript · Tailwind CSS 4 · PostgreSQL 16 + Drizzle ORM · Zod · فونت Vazirmatn · آیکون‌های Lucide
 
-### اجرای محلی
+## اجرا در محیط توسعه
 
 ```bash
 npm install
-cp .env.example .env        # DATABASE_URL و SESSION_SECRET را تنظیم کن
-npx drizzle-kit migrate
-npx tsx --env-file=.env db/seed.ts
-npm run dev                 # http://localhost:3000
 ```
 
-### دیپلوی و نگهداری
+یه فایل `.env` در ریشه‌ی پروژه بسازید و این دو متغیر را داخلش بذارید:
 
-- استقرار روی Render با `render.yaml` (وب‌سرویس + دیتابیس)
-- سینک روزانه‌ی F-Droid و بکاپ خودکار دیتابیس (۷ نسخه‌ی آخر نگه داشته می‌شه) با `scripts/backup-cloud-db.mjs` و `scripts/restore-cloud-db.mjs`
-- برنامه‌ی خروج از Render در `docs/render-exit-plan.md`
+```ini
+DATABASE_URL=postgres://user:password@localhost:5432/narmstore
+SESSION_SECRET=<یه رشته‌ی تصادفی و بلند>
+```
 
-### مجوز
+بعد اسکیمای دیتابیس را بسازید و سرور توسعه را اجرا کنید:
 
-MIT
+```bash
+npx drizzle-kit push
+npm run dev   # http://localhost:3000
+```
+
+## استقرار
+
+نسخه‌ی production روی یه سرور Ubuntu اجرا می‌شه: PostgreSQL 16 روی خود سرور، اپ Next.js با systemd روی پورت 3000 و nginx به‌عنوان reverse proxy جلوی اون.
 
 </div>
 
@@ -73,46 +56,21 @@ MIT
 
 ## English
 
-Fuse Point is a Persian store for discovering and safely downloading software — Android, Windows and Linux. A personal project that started from a simple idea: good software, in your own language.
+Fuse Point is a Persian free-software app store for Android, Windows and Linux. Each app has a separate record per platform, files come from the project's official source, and every version shows its SHA-256 hash and permissions so you can check before you download.
 
-2,368 real apps (Android 826, Linux 823, Windows 719) sourced from F-Droid and GitHub — no ads, no fake stats. Trust comes first: SHA-256 hash per file, official source links, and in-page issue reporting on every app page.
+Live: https://fusepoint.bond
 
-Live: https://narmstore.onrender.com
+**Features:** multi-platform catalog with per-platform records · SHA-256 hash and permissions per version · in-page issue reports · accounts, favorites and new-version notifications · admin panel with audit log · daily F-Droid sync (new versions publish only after manual approval) · offline-ready PWA
 
-### Features
+**Stack:** Next.js 16 + TypeScript · Tailwind CSS 4 · PostgreSQL 16 + Drizzle ORM · Zod · Vazirmatn font · Lucide icons
 
-- Fully Persian RTL storefront with a platform switcher (Android / Windows / Linux)
-- Smart downloads: direct APK link or official/GitHub page, with real download counts (daily-hashed IP, no raw IPs stored)
-- SHA-256 hash per file with a copy button
-- GitHub card with star count
-- Favorites, app follows and new-version notifications
-- Previous-versions drawer and normalized Persian search
-- Four themes: light / dark / warm / amoled
-- Offline-ready PWA
-- Daily F-Droid sync — new versions only publish after manual approval
-- Admin panel with audit log
-- Security: scrypt, HMAC sessions, rate limiting, Zod validation
-
-### Tech stack
-
-**Next.js 16** + TypeScript · **Tailwind CSS 4** · **PostgreSQL 16** + Drizzle ORM · Zod · Vazirmatn font · Lucide icons
-
-### Getting started
+**Development:**
 
 ```bash
 npm install
-cp .env.example .env        # set DATABASE_URL and SESSION_SECRET
-npx drizzle-kit migrate
-npx tsx --env-file=.env db/seed.ts
-npm run dev                 # http://localhost:3000
+# create a .env file with DATABASE_URL and SESSION_SECRET
+npx drizzle-kit push
+npm run dev   # http://localhost:3000
 ```
 
-### Deploy & maintenance
-
-- Deploys on Render via `render.yaml` (web service + database)
-- Daily F-Droid sync and automatic database backups (last 7 kept) with `scripts/backup-cloud-db.mjs` and `scripts/restore-cloud-db.mjs`
-- Render exit plan in `docs/render-exit-plan.md`
-
-### License
-
-MIT
+**Deployment:** production runs on an Ubuntu VPS — PostgreSQL 16 on the box, the Next.js app under systemd on port 3000, and nginx as reverse proxy in front of it.
