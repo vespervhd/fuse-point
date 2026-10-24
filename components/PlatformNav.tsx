@@ -52,6 +52,10 @@ function PlatformNavInner({ locale }: { locale: Locale }) {
       if (p === "android") localStorage.removeItem("narm-platform");
       else localStorage.setItem("narm-platform", p);
     } catch {}
+    // همگام‌سازی فوری state با localStorage — بدون این، افکت چسبندگی با مقدار
+    // کهنه‌ی stored، تپِ اندروید (URL بدون پارامتر) را به پلتفرم قبلی برمی‌گرداند
+    // و نوار روی گوشی گیر می‌کرد تا رفرش دستی
+    setStored(p === "android" ? null : p);
   };
 
   const href = (p: Platform) => {
