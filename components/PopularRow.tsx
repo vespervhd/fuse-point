@@ -1,5 +1,5 @@
 import Link from "next/link";
-import PxImg from "@/components/PxImg";
+import AppIcon from "@/components/AppIcon";
 import { px } from "@/lib/img";
 
 export type PopularApp = {
@@ -30,14 +30,9 @@ export default function PopularRow({ app, platform, index = 0 }: { app: PopularA
         >
           {rank}
         </span>
-        {app.iconUrl ? (
-          <PxImg src={px(app.iconUrl, "icon") || "/icons/icon-192.png"} alt="" width={44} height={44}
-            className="w-11 h-11 rounded-xl object-cover shrink-0" />
-        ) : (
-          <span className="w-11 h-11 rounded-xl bg-muted grid place-items-center text-lg font-bold opacity-60 shrink-0" dir="ltr">
-            {app.nameEn.charAt(0)}
-          </span>
-        )}
+        <AppIcon src={app.iconUrl ? px(app.iconUrl, "icon") || app.iconUrl : null} name={app.nameEn} width={44} height={44}
+          imgClassName="w-11 h-11 rounded-xl object-cover shrink-0"
+          letterClassName="w-11 h-11 rounded-xl bg-muted grid place-items-center text-lg font-bold opacity-60 shrink-0" />
         <span className={`flex-1 min-w-0 font-bold leading-5 line-clamp-2 ${nameSize}`}>
           {app.nameFa}
         </span>

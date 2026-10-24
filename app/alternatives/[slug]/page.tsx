@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { ALTERNATIVES, findAlternatives } from "@/data/alternatives";
 import { getAppByNameEn } from "@/lib/store";
 import AppTile from "@/components/AppTile";
-import PxImg from "@/components/PxImg";
 import { px } from "@/lib/img";
 import { ArrowLeft, Leaf } from "lucide-react";
 import { getLocale } from "@/lib/i18n-server";

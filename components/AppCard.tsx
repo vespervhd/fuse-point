@@ -1,5 +1,5 @@
 import Link from "next/link";
-import PxImg from "@/components/PxImg";
+import AppIcon from "@/components/AppIcon";
 import PlatformBadge from "@/components/PlatformBadge";
 import { toFaDigits } from "@/lib/fa";
 import { px } from "@/lib/img";
@@ -21,29 +21,17 @@ export type CardApp = {
   isOpenSource?: boolean | null;
 };
 
-function Initial({ name }: { name: string }) {
-  const ch = (name || "?").trim().charAt(0);
-  return (
-    <span
-      className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center text-2xl font-bold shrink-0"
-      aria-hidden="true"
-    >
-      {ch}
-    </span>
-  );
-}
-
 function Icon({ app }: { app: CardApp }) {
-  return app.iconUrl ? (
-    <PxImg
-      src={px(app.iconUrl, "icon") || app.iconUrl}
-      alt={`آیکون ${app.nameFa}`}
+  return (
+    <AppIcon
+      src={app.iconUrl ? px(app.iconUrl, "icon") || app.iconUrl : null}
+      name={app.nameFa}
       width={56}
       height={56}
-      className="w-14 h-14 rounded-xl object-cover shrink-0 bg-muted"
+      imgClassName="w-14 h-14 rounded-xl object-cover shrink-0 bg-muted"
+      letterClassName="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center text-2xl font-bold shrink-0"
+      alt={`آیکون ${app.nameFa}`}
     />
-  ) : (
-    <Initial name={app.nameFa} />
   );
 }
 

@@ -1,5 +1,10 @@
 // تبدیل آدرس عکس خارجی به پروکسی داخلی — چون f-droid.org و google.com ممکن است برای کاربر قابل دسترس نباشند
-const ALLOWED_PREFIXES = ["https://f-droid.org/", "https://www.google.com/s2/favicons", "https://dl.flathub.org/"];
+// هاست‌های مجاز فقط سرویس‌های شناخته‌شده‌ی آیکن‌اند (نه پروکسیِ باز): f-droid،
+// فاوآیکن گوگل، Flathub، گیت‌هاب (آواتار/فایل خام، مثل آیکن Namida) و سرویس آیکن DuckDuckGo.
+// هاست‌های تک‌موردیِ سایت‌های فروشنده‌ها (ghisler، meldmerge و…) عمداً اضافه نشده‌اند؛
+// آن‌ها به‌جای نمادِ خراب، کاشیِ حرف‌اول می‌گیرند.
+const ALLOWED_PREFIXES = ["https://f-droid.org/", "https://www.google.com/s2/favicons", "https://dl.flathub.org/",
+  "https://raw.githubusercontent.com/", "https://github.com/", "https://icons.duckduckgo.com/"];
 
 function isAllowed(url: string): boolean {
   return ALLOWED_PREFIXES.some((p) => url.startsWith(p));

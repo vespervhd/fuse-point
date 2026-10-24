@@ -9,7 +9,7 @@ import { getLocale } from "@/lib/i18n-server";
 import { STR, num } from "@/lib/i18n";
 import { px } from "@/lib/img";
 import { Inbox, RefreshCw, CheckCircle2 } from "lucide-react";
-import PxImg from "@/components/PxImg";
+import AppIcon from "@/components/AppIcon";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -89,14 +89,10 @@ export default async function UpdatesPage() {
           {updates.map((app) => (
             <Link key={app.id} href={`/app/${app.slug}`}
               className="flex items-center gap-4 bg-card border border-border rounded-2xl p-4 hover:border-primary/50 transition">
-              {(app.iconUrl ? (
-                <PxImg src={px(app.iconUrl, "icon") || app.iconUrl} alt={app.nameFa} width={56} height={56}
-                  className="w-14 h-14 rounded-2xl object-cover shrink-0 bg-muted" />
-              ) : (
-                <span className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center text-2xl font-bold shrink-0">
-                  {app.nameFa.charAt(0)}
-                </span>
-              ))}
+              <AppIcon src={app.iconUrl ? px(app.iconUrl, "icon") || app.iconUrl : null} name={app.nameFa} width={56} height={56}
+                imgClassName="w-14 h-14 rounded-2xl object-cover shrink-0 bg-muted"
+                letterClassName="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center text-2xl font-bold shrink-0"
+                alt={app.nameFa} />
               <div className="flex-1 min-w-0">
                 <h3 className="font-bold truncate">{app.nameFa}</h3>
                 <p className="text-xs text-muted-foreground" dir="ltr" style={{ textAlign: "right" }}>{app.nameEn}</p>

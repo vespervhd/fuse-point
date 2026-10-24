@@ -1,5 +1,5 @@
 import Link from "next/link";
-import PxImg from "@/components/PxImg";
+import AppIcon from "@/components/AppIcon";
 import { px } from "@/lib/img";
 import { appName, bytesL, platName, STR, type Locale } from "@/lib/i18n";
 
@@ -31,11 +31,7 @@ export default function SimilarCard({
     <article className="relative flex gap-2.5 bg-card border border-border rounded-[14px] p-[11px] shadow-sm">
       <Link href={`/app/${app.slug}`} className="absolute inset-0 z-[1]" aria-label={name} />
       <span className="w-10 h-10 rounded-[10px] grid place-items-center overflow-hidden shrink-0 bg-primary/[0.13] border border-primary/25 text-primary">
-        {app.iconUrl ? (
-          <PxImg src={px(app.iconUrl, "icon") || app.iconUrl} alt="" width={40} height={40} className="w-full h-full object-cover" />
-        ) : (
-          <span className="text-base font-bold" dir="ltr">{(app.nameEn || name || "?").charAt(0)}</span>
-        )}
+        <AppIcon src={app.iconUrl ? px(app.iconUrl, "icon") || app.iconUrl : null} name={app.nameEn || name} width={40} height={40} imgClassName="w-full h-full object-cover" letterClassName="text-base font-bold" />
       </span>
       <span className="flex-1 min-w-0 pointer-events-none">
         <span className="block text-[12.5px] font-extrabold truncate" dir="auto">{name}</span>

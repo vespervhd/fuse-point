@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import PxImg from "@/components/PxImg";
+import AppIcon from "@/components/AppIcon";
 import { px } from "@/lib/img";
 import { getCompareList } from "@/components/CompareButton";
 import { STR, dateL, type Locale } from "@/lib/i18n";
@@ -80,7 +80,7 @@ export default function CompareClient({ locale = "fa" }: { locale?: Locale }) {
               {apps.map((a) => (
                 <th key={a.slug} className="p-3 align-top">
                   <div className="bg-card border border-border rounded-3xl p-4">
-                    {a.iconUrl && <PxImg src={px(a.iconUrl, "icon") || ""} alt={a.nameFa} width={64} height={64} className="w-16 h-16 rounded-2xl mx-auto mb-2 object-cover" />}
+                    <AppIcon src={a.iconUrl ? px(a.iconUrl, "icon") || a.iconUrl : null} name={a.nameFa} width={64} height={64} imgClassName="w-16 h-16 rounded-2xl mx-auto mb-2 object-cover" letterClassName="w-16 h-16 rounded-2xl mx-auto mb-2 grid place-items-center bg-muted text-lg font-bold" alt={a.nameFa} />
                     <Link href={`/app/${a.slug}`} className="font-extrabold text-sm hover:text-primary block mb-2">{a.nameFa}</Link>
                     <Button onClick={() => remove(a.slug)} variant="ghost" size="sm" className="h-6 px-2 text-xs">{d.cmp_remove} ✕</Button>
                   </div>

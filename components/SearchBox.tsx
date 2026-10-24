@@ -3,7 +3,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { Search, Loader2 } from "lucide-react";
-import PxImg from "./PxImg";
+import AppIcon from "@/components/AppIcon";
+import { px } from "@/lib/img";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { STR, type Locale } from "@/lib/i18n";
@@ -155,13 +156,7 @@ function SearchBoxInner({ compact = false, slim = false, large = false, locale: 
                   onMouseEnter={() => setHi(i)}
                   className={`flex items-center gap-3 px-3 py-2.5 transition ${i === hi ? "bg-muted" : ""}`}
                 >
-                  {s.iconUrl ? (
-                    <PxImg src={s.iconUrl} alt="" width={32} height={32} className="w-8 h-8 rounded-lg object-cover shrink-0" />
-                  ) : (
-                    <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-bold shrink-0">
-                      {s.nameFa.charAt(0)}
-                    </span>
-                  )}
+                  <AppIcon src={s.iconUrl ? px(s.iconUrl, "icon") || s.iconUrl : null} name={s.nameFa} width={32} height={32} imgClassName="w-8 h-8 rounded-lg object-cover shrink-0" letterClassName="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-bold shrink-0" />
                   <span className="flex-1 min-w-0">
                     <span className="block text-sm font-bold truncate">{locale === "en" ? (s.nameEn || s.nameFa) : s.nameFa}</span>
                     {s.nameEn && s.nameEn !== s.nameFa && locale === "fa" && (
