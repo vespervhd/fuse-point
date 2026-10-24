@@ -552,15 +552,10 @@ body {
 .dl2-secondary-icon { width: 17px; height: 17px; flex-shrink: 0; }
 .dl2-note { display: flex; align-items: flex-start; gap: 8px; margin: 15px 0 0; color: var(--muted-foreground); font-size: 0.63rem; line-height: 1.9; }
 .dl2-note svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; color: var(--primary); }
-.dl2-trust { max-width: 560px; margin: 14px auto 0; padding: 17px 19px; border: 1px solid var(--border); background: color-mix(in srgb, var(--card) 75%, transparent); border-radius: 19px; }
-.dl2-trust-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
-.dl2-trust-icon { display: grid; place-items: center; width: 32px; height: 32px; flex: 0 0 32px; border-radius: 10px; background: color-mix(in srgb, var(--primary) 8%, transparent); color: var(--primary); }
-.dl2-trust-icon svg { width: 17px; height: 17px; }
-.dl2-trust-heading h2 { margin: 0; font-size: 0.82rem; font-weight: 700; }
-.dl2-trust p { margin: 0; color: var(--muted-foreground); font-size: 0.7rem; line-height: 1.9; }
-.dl2-trust-points { display: flex; flex-wrap: wrap; gap: 8px 15px; margin-top: 13px; }
-.dl2-trust-points span { color: var(--muted-foreground); font-size: 0.63rem; }
-.dl2-trust-points b { color: var(--primary); margin-left: 4px; }
+/* کپسول‌های دنبال‌کردن/نشان پایینِ کارت دانلود — اندازه و رفتارشان عین قبل
+   است (fp-cap)؛ فقط جای‌شان از زیر کارت به داخل کارت آمده است */
+.dl2-capsules { margin-top: 15px; }
+.dl2-capsules .fp-capsules { margin-top: 0; }
 @media (max-width: 400px) {
   .dl2-card { padding: 19px 14px; }
   .dl2-icon { width: 86px; height: 86px; }
@@ -570,7 +565,6 @@ body {
   .dl2-meta-item { padding: 12px 5px; }
   .dl2-meta-value { font-size: 0.7rem; }
   .dl2-area { padding: 12px; }
-  .dl2-trust { padding: 15px; }
 }
 
 /* ============================================================
@@ -723,7 +717,7 @@ body {
 /* چورون «جلو» — در LTR آینه می‌شود */
 [dir="ltr"] .flip-x svg, [dir="ltr"] svg.flip-x { transform: scaleX(-1); }
 
-/* کپسول‌های دنبال‌کردن/نشان زیر هدر کارت دانلود (۳۲px، عین نمونه) */
+/* کپسول‌های دنبال‌کردن/نشان (۳۲px، عین نمونه) — پایینِ کارت دانلود */
 .fp-capsules { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
 .fp-cap {
   height: 32px; padding: 0 13px; border: 1px solid var(--border); border-radius: 999px;
