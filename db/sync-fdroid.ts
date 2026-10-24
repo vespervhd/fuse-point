@@ -28,6 +28,19 @@ function loc(obj: any): any {
   if (!obj || typeof obj !== "object") return undefined;
   return obj["en-US"] ?? obj["en"] ?? Object.values(obj)[0];
 }
+// متن رسمی فارسی از دیکشنری زبانی F-Droid — اولویت: fa، بعد fa-IR و گونه‌های دیگر fa.
+// توجه: loc() دست نمی‌خورد چون ستون‌های EN (shortDesc/description) و changelog را تغذیه
+// می‌کند؛ اگر loc() فارسی را ترجیح می‌داد، صفحه‌ی انگلیسی هم فارسی نشان می‌داد.
+function locFa(obj: any): any {
+  if (!obj || typeof obj !== "object") return undefined;
+  if (obj["fa"]) return obj["fa"];
+  const keys = Object.keys(obj);
+  const ir = keys.find((k) => /^fa[-_]ir$/i.test(k));
+  if (ir) return obj[ir];
+  const anyFa = keys.find((k) => /^fa([-_]|$)/i.test(k));
+  if (anyFa) return obj[anyFa];
+  return undefined;
+}
 function cleanText(t: string, max = 4000): string {
   return t.replace(/\r/g, "").replace(/\n{3,}/g, "\n\n").trim().slice(0, max);
 }
@@ -175,6 +188,22 @@ async function main() {
     if (newShort && newShort !== app.shortDesc) patch.shortDesc = newShort;
     const newDesc = cleanText(description);
     if (newDesc && newDesc !== app.description) patch.description = newDesc;
+    // متن رسمی فارسی — فقط وقتی خالی است یا منشأ فعلی رسمی/ماشینی است؛ متن دستی
+    // قدیمی (منشأ NULL با متن موجود) حفظ می‌شود، و رسمی بر ماشینی ارجح است
+    const faSummary = locFa(md.summary);
+    if (faSummary) {
+      const t = cleanText(faSummary, 300);
+      if (t && t !== app.shortDescFa && (app.shortDescFa == null || app.shortDescFaSource === "official" || app.shortDescFaSource === "machine")) {
+        patch.shortDescFa = t; patch.shortDescFaSource = "official";
+      }
+    }
+    const faDescription = locFa(md.description);
+    if (faDescription) {
+      const t = cleanText(faDescription);
+      if (t && t !== app.descriptionFa && (app.descriptionFa == null || app.descriptionFaSource === "official" || app.descriptionFaSource === "machine")) {
+        patch.descriptionFa = t; patch.descriptionFaSource = "official";
+      }
+    }
     if (iconName && FDROID + iconName !== app.iconUrl) patch.iconUrl = FDROID + iconName;
     if (Object.keys(patch).length > 1) {
       await db.update(s.apps).set(patch).where(eq(s.apps.id, app.id));

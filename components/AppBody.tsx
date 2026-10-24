@@ -65,6 +65,10 @@ export async function AppTop({ slug, locale, capsules }: { slug: string; locale:
     ? app.pendingVersion
     : null;
   const shown = v ?? pv;
+  // برچسب صداقت ترجمه: فقط وقتی متن فارسیِ نمایشی واقعاً همان فیلد ماشینی است؛
+  // در حالت انگلیسی فقط وقتی متن انگلیسی خالی است و فارسیِ ماشینی جایگزین شده
+  const summaryMachine = !!app.shortDescFa && app.shortDescFaSource === "machine" &&
+    (locale === "fa" ? true : !app.shortDesc);
   return (
     <DownloadCardSection
       app={{
@@ -86,6 +90,7 @@ export async function AppTop({ slug, locale, capsules }: { slug: string; locale:
       }}
       title={appName(app, locale)}
       subtitle={appShort(app, locale) || (app.categories[0] ? catName(app.categories[0], locale) : null)}
+      subtitleNote={summaryMachine ? STR[locale].machineTranslation : null}
       iconUrl={app.iconUrl}
       hasOlderVersions={app.versions.length > 1}
       locale={locale}
@@ -104,6 +109,8 @@ export async function AppRest({ slug, locale }: { slug: string; locale: Locale }
   const v = app.current;
   const src = officialSource(app, locale);
   const aboutText = appDesc(app, locale);
+  const descMachine = !!app.descriptionFa && app.descriptionFaSource === "machine" &&
+    (locale === "fa" ? true : !app.description);
   const developerHref = app.developerName
     ? `/developer/${encodeURIComponent(app.developerName)}`
     : null;
@@ -153,6 +160,7 @@ export async function AppRest({ slug, locale }: { slug: string; locale: Locale }
         <section className="mt-9" aria-label={d.about}>
           <SectionHead title={d.about} locale={locale} />
           <p className="text-[14px] leading-8 whitespace-pre-line text-foreground/90"><BidiText text={stripMd(aboutText)} /></p>
+          {descMachine && <p className="mt-1 text-[11px] text-muted-foreground">{d.machineTranslation}</p>}
         </section>
       )}
 
@@ -170,6 +178,7 @@ export async function AppRest({ slug, locale }: { slug: string; locale: Locale }
           permissions={app.permissions.map((p) => p.permission)}
           appId={app.id}
           appName={appName(app, locale)}
+          appSlug={app.slug}
           developerHref={developerHref}
           locale={locale}
         />

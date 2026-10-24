@@ -13,6 +13,7 @@ const typeLabel = (d: Dict, type: string): string | undefined => {
   if (type === "broken_link") return d.adm_repType_broken_link;
   if (type === "wrong_info") return d.adm_repType_wrong_info;
   if (type === "malware_suspicion") return d.adm_repType_malware_suspicion;
+  if (type === "bad_translation") return d.adm_repType_bad_translation;
   if (type === "other") return d.adm_repType_other;
   return undefined;
 };

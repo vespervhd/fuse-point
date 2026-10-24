@@ -319,6 +319,7 @@ export async function getAppBySlugCore(slug: string) {
     id: s.apps.id, slug: s.apps.slug, packageName: s.apps.packageName, platform: s.apps.platform,
     nameFa: s.apps.nameFa, nameEn: s.apps.nameEn,
     iconUrl: s.apps.iconUrl, shortDesc: s.apps.shortDesc, shortDescFa: s.apps.shortDescFa, description: s.apps.description, descriptionFa: s.apps.descriptionFa,
+    shortDescFaSource: s.apps.shortDescFaSource, descriptionFaSource: s.apps.descriptionFaSource,
     license: s.apps.license, isOpenSource: s.apps.isOpenSource,
     sourceType: s.apps.sourceType, sourceUrl: s.apps.sourceUrl,
     githubRepo: s.apps.githubRepo, githubStars: s.apps.githubStars,

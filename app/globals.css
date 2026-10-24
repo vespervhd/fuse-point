@@ -512,6 +512,7 @@ body {
 .dl2-icon img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .dl2-title { margin: 0; direction: ltr; font-size: clamp(1.9rem, 6vw, 2.1rem); line-height: 1.4; font-weight: 800; letter-spacing: -0.05em; overflow-wrap: anywhere; }
 .dl2-subtitle { margin: 7px 0 0; max-width: 340px; color: var(--muted-foreground); font-size: 0.76rem; line-height: 2; }
+.dl2-subtitle-note { margin: 1px 0 0; color: var(--muted-foreground); font-size: 0.68rem; line-height: 1.8; opacity: 0.85; }
 .dl2-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 15px; }
 .dl2-version {
   display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 30px; direction: ltr;

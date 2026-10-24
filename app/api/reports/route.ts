@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 
 const Body = z.object({
   appSlug: z.string().max(255).optional(),
-  type: z.enum(["broken_link", "wrong_info", "malware_suspicion", "other"]),
+  type: z.enum(["broken_link", "wrong_info", "malware_suspicion", "bad_translation", "other"]),
   message: z.string().trim().min(5, "شرح مشکل خیلی کوتاه است").max(5000),
 });
 
