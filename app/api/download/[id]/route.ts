@@ -15,11 +15,30 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
   }).from(s.appVersions).where(eq(s.appVersions.id, id)).limit(1);
   const ver = rows[0];
 
-  if (!ver || ver.status !== "active" || !ver.fileUrl) {
+  if (!ver || !ver.fileUrl) {
     return NextResponse.json(
       { error: "لینک دانلود در دسترس نیست" },
       { status: 404 }
     );
+  }
+  // فالبک دانلود (گزینه‌ی ۱ مالک): نسخه‌ی در انتظار بازبینی فقط وقتی قابل دانلود
+  // است که اپ هیچ نسخه‌ی فعالی نداشته باشد؛ وگرنه دروازه‌ی بازبینی بسته می‌ماند.
+  if (ver.status !== "active") {
+    if (ver.status !== "pending") {
+      return NextResponse.json(
+        { error: "لینک دانلود در دسترس نیست" },
+        { status: 404 }
+      );
+    }
+    const act = await db.select({ id: s.appVersions.id }).from(s.appVersions)
+      .where(and(eq(s.appVersions.appId, ver.appId), eq(s.appVersions.status, "active")))
+      .limit(1);
+    if (act.length) {
+      return NextResponse.json(
+        { error: "لینک دانلود در دسترس نیست" },
+        { status: 404 }
+      );
+    }
   }
 
   // جلوگیری از شمارش تکراری: هر IP در هر ۲۴ ساعت یک‌بار شمرده می‌شود

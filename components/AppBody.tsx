@@ -57,6 +57,12 @@ export async function AppTop({ slug, locale }: { slug: string; locale: Locale })
   const app = await getAppBySlugCore(slug);
   if (!app) return null;
   const v = app.current;
+  // فالبک دانلود: فقط وقتی هیچ نسخه‌ی فعالی نیست و نسخه‌ی در انتظار بازبینی
+  // فایل مستقیم دارد، همان نسخه برای کارت دانلود استفاده می‌شود (با برچسب).
+  const pv = !v && app.pendingVersion && app.pendingVersion.fileUrl && app.pendingVersion.fileType !== "external"
+    ? app.pendingVersion
+    : null;
+  const shown = v ?? pv;
   return (
     <DownloadCardSection
       app={{
@@ -65,13 +71,14 @@ export async function AppTop({ slug, locale }: { slug: string; locale: Locale })
         githubStars: app.githubStars,
         sourceUrl: app.sourceUrl,
         sourceType: app.sourceType,
-        version: v
+        pending: !!pv,
+        version: shown
           ? {
-              id: v.id,
-              versionName: v.versionName,
-              fileSize: v.fileSize,
-              fileType: v.fileType,
-              fileUrl: v.fileUrl,
+              id: shown.id,
+              versionName: shown.versionName,
+              fileSize: shown.fileSize,
+              fileType: shown.fileType,
+              fileUrl: shown.fileUrl,
             }
           : null,
       }}

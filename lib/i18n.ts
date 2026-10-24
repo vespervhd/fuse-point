@@ -153,7 +153,7 @@ const fa = {
   minAndroid: "حداقل اندروید",
   verifyStatus: "وضعیت بررسی",
   verified: "بررسی‌شده",
-  pendingReview: "در انتظار بررسی",
+  pendingReview: "در انتظار بازبینی",
   unknown: "نامشخص",
   updateAvailable: "نسخه‌ی جدید موجوده!",
   updateFromTo: "از {from} به {to}",
