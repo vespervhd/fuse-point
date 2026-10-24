@@ -1,8 +1,10 @@
 // بدنه‌ی عمومی صفحه‌ی اپ با کشِ رندر (Next 16 «use cache»)
-// بیرون می‌ماند (داینامیک، در پوسته‌ی صفحه): کپسول‌های علاقه‌مندی/دنبال‌کردن و بنر
-// آپدیت — هر دو به نشستِ کاربر وابسته‌اند و هرگز نباید کش شوند. بقیه‌ی بدنه (کارت
-// دانلود، گالری، درباره، مشخصات، نسخه‌ها، مشابه‌ها) عمومی است و با revalidate ۳۶۰۰
-// ثانیه کش می‌شود؛ کلیدِ کش از روی slug و زبان ساخته می‌شود.
+// بیرون می‌ماند (داینامیک، در پوسته‌ی صفحه): بنر آپدیت — به نشستِ کاربر وابسته
+// است و هرگز نباید کش شود. کپسول‌های علاقه‌مندی/دنبال‌کردن از صفحه به‌صورت prop
+// به کارت دانلود می‌رسند تا پایینِ کارت رندر شوند؛ خودِ المان بیرون از کش ساخته
+// می‌شود و وضعیت کاربر را فقط از مرورگر می‌خواند، پس چیزی از نشست در کش نمی‌رود.
+// بقیه‌ی بدنه (کارت دانلود، گالری، درباره، مشخصات، نسخه‌ها، مشابه‌ها) عمومی است
+// و با revalidate ۳۶۰۰ ثانیه کش می‌شود؛ کلیدِ کش از روی slug و زبان ساخته می‌شود.
 import { cacheLife } from "next/cache";
 import { db } from "@/lib/db";
 import * as s from "@/db/schema";
@@ -50,8 +52,8 @@ function officialSource(app: {
   return { href: null, label: locale === "fa" ? "—" : "—" };
 }
 
-// ۱) کارت دانلود — بالای کپسول‌ها قرار می‌گیرد
-export async function AppTop({ slug, locale }: { slug: string; locale: Locale }) {
+// ۱) کارت دانلود — کپسول‌ها پایینِ همین کارت قرار می‌گیرند
+export async function AppTop({ slug, locale, capsules }: { slug: string; locale: Locale; capsules?: React.ReactNode }) {
   "use cache";
   cacheLife({ stale: 300, revalidate: 3600, expire: 86400 });
   const app = await getAppBySlugCore(slug);
@@ -87,6 +89,7 @@ export async function AppTop({ slug, locale }: { slug: string; locale: Locale })
       iconUrl={app.iconUrl}
       hasOlderVersions={app.versions.length > 1}
       locale={locale}
+      capsules={capsules}
     />
   );
 }

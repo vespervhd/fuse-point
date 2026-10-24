@@ -90,11 +90,13 @@ export default async function AppPage({ params }: Props) {
 
   return (
     <div className="animate-fade-up">
-      {/* ۱) کارت دانلود — بلوک اصلی بالای صفحه */}
-      <AppTop slug={slug} locale={locale} />
-
-      {/* ۲) کپسول‌های دنبال‌کردن و نشان — زیر هدر کارت، بالای خط اطلاعات فایل */}
-      <Capsules appId={head.id} slug={slug} locale={locale} />
+      {/* ۱) کارت دانلود — بلوک اصلی بالای صفحه؛ کپسول‌های دنبال‌کردن و نشان
+          پایینِ همین کارت رندر می‌شوند (به‌صورت prop از بیرون کش می‌آیند) */}
+      <AppTop
+        slug={slug}
+        locale={locale}
+        capsules={<Capsules appId={head.id} slug={slug} locale={locale} />}
+      />
 
       {/* بنر آپدیت برای کاربری که نسخه‌ی قدیمی‌تر را دانلود کرده */}
       <UpdateBanner head={head} locale={locale} />

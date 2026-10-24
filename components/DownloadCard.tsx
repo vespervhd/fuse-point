@@ -120,13 +120,18 @@ type CardProps = {
   source: { href: string; github: boolean } | null;
   hasOlderVersions: boolean;
   locale: Locale;
+  // کپسول‌های دنبال‌کردن/نشان — از صفحه (بیرون از کش) به‌صورت prop می‌آیند تا
+  // داخل کارت رندر شوند؛ خودشان کلاینت‌اند و وضعیت کاربر را از مرورگر می‌خوانند
+  capsules?: React.ReactNode;
 };
 
 // کارت دانلود — عین نمونه‌ی دوم کادر دانلود، با داده‌ی واقعی و رنگ‌های توکنی تم؛
-// تنها تغییرِ دستوری مالک: فلشِ روی دکمه‌ی دانلود حذف شده، فقط آیکون دانلود مانده
+// تنها تغییرِ دستوری مالک: فلشِ روی دکمه‌ی دانلود حذف شده، فقط آیکون دانلود مانده؛
+// پنل اعتماد («تجربه دانلود بهتر») به دستور مالک کاملاً حذف شده و کپسول‌ها
+// پایینِ کارت، زیر ناحیه‌ی دانلود، قرار می‌گیرند
 export function DownloadCard({
   title, subtitle, iconUrl, versionName, platform, fileSize, fileType, fileUrl,
-  downloadHref, downloadExternal, pendingBadge, source, hasOlderVersions, locale,
+  downloadHref, downloadExternal, pendingBadge, source, hasOlderVersions, locale, capsules,
 }: CardProps) {
   const d = STR[locale];
   const versionChip = versionName
@@ -229,20 +234,9 @@ export function DownloadCard({
             <span>{d.dlNote}</span>
           </p>
         </div>
-      </article>
 
-      <div className="dl2-trust">
-        <div className="dl2-trust-heading">
-          <span className="dl2-trust-icon" aria-hidden="true"><ShieldGlyph /></span>
-          <h2>{d.dlTrustTitle}</h2>
-        </div>
-        <p>{d.dlTrustDesc}</p>
-        <div className="dl2-trust-points">
-          <span><b>✓</b> {d.dlTrustP1}</span>
-          <span><b>✓</b> {d.dlTrustP2}</span>
-          <span><b>✓</b> {d.dlTrustP3}</span>
-        </div>
-      </div>
+        {capsules && <div className="dl2-capsules">{capsules}</div>}
+      </article>
     </section>
   );
 }
@@ -254,12 +248,13 @@ type SectionProps = {
   iconUrl: string | null;
   hasOlderVersions: boolean;
   locale: Locale;
+  capsules?: React.ReactNode;
 };
 
 // بخش دانلود اصلی صفحه‌ی اپ — کارت همیشه بالای صفحه است و دکمه‌اش از مسیر
 // ترکینگ داخلی می‌گذرد؛ لینک ثانویه طبق قانون منبع هوشمند است و «نسخه‌های دیگر»
 // کشوی نسخه‌های قبلیِ همان صفحه را باز می‌کند (نه لینک خارجی ریلیزها)
-export default function DownloadCardSection({ app, title, subtitle, iconUrl, hasOlderVersions, locale }: SectionProps) {
+export default function DownloadCardSection({ app, title, subtitle, iconUrl, hasOlderVersions, locale, capsules }: SectionProps) {
   const opts = getDownloadOptions(app);
   const primary = opts.find((o) => o.primary) ?? opts[0] ?? null;
   const v = app.version;
@@ -280,6 +275,7 @@ export default function DownloadCardSection({ app, title, subtitle, iconUrl, has
       source={smartSource(app)}
       hasOlderVersions={hasOlderVersions}
       locale={locale}
+      capsules={capsules}
     />
   );
 }
