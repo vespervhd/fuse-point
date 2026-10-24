@@ -57,7 +57,7 @@ export default function Alternatives({
           {/* ردیف جایگزین‌ها */}
           <div className="mt-4 space-y-2.5 relative">
             {apps.map((a) => {
-              const icon = px(a.iconUrl);
+              const icon = px(a.iconUrl, "icon");
               return (
                 <Link
                   key={a.slug}

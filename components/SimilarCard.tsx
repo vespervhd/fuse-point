@@ -32,7 +32,7 @@ export default function SimilarCard({
       <Link href={`/app/${app.slug}`} className="absolute inset-0 z-[1]" aria-label={name} />
       <span className="w-10 h-10 rounded-[10px] grid place-items-center overflow-hidden shrink-0 bg-primary/[0.13] border border-primary/25 text-primary">
         {app.iconUrl ? (
-          <PxImg src={px(app.iconUrl) || app.iconUrl} alt="" width={40} height={40} className="w-full h-full object-cover" />
+          <PxImg src={px(app.iconUrl, "icon") || app.iconUrl} alt="" width={40} height={40} className="w-full h-full object-cover" />
         ) : (
           <span className="text-base font-bold" dir="ltr">{(app.nameEn || name || "?").charAt(0)}</span>
         )}

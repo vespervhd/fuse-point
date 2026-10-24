@@ -84,7 +84,7 @@ export function DownloadCard({
       <header className="dl-header">
         <div className="dl-icon" aria-hidden="true">
           {iconUrl ? (
-            <PxImg src={px(iconUrl) || iconUrl} alt="" width={82} height={82} />
+            <PxImg src={px(iconUrl, "icon") || iconUrl} alt="" width={82} height={82} />
           ) : (
             <span>{(title || "?").trim().charAt(0)}</span>
           )}

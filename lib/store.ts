@@ -23,8 +23,7 @@ const cardCols = {
 };
 
 // آمار نوار صفحه‌ی اصلی (فیلتر پلتفرم‌محور)
-export async function getHomeStats(platform?: Platform) {
-  await dyn();
+export async function getHomeStatsCore(platform?: Platform) {
   const conds = [pub, plat(platform)];
   const [a, d, c] = await Promise.all([
     db.select({ c: sql<number>`count(*)` }).from(s.apps).where(and(...conds)),
@@ -43,6 +42,12 @@ export async function getHomeStats(platform?: Platform) {
     categories: Number(c[0]?.c ?? 0),
   };
 }
+
+export async function getHomeStats(platform?: Platform) {
+  await dyn();
+  return getHomeStatsCore(platform);
+}
+
 
 const pub = eq(s.apps.isPublished, true);
 
@@ -84,8 +89,7 @@ async function getCategoryTree() {
   return { rootOf, descendantsOf };
 }
 
-export async function getCollections(platform?: Platform, limit?: number) {
-  await dyn();
+export async function getCollectionsCore(platform?: Platform, limit?: number) {
   const cols = await db.select().from(s.collections)
     .where(eq(s.collections.isActive, true))
     .orderBy(s.collections.sortOrder);
@@ -103,8 +107,13 @@ export async function getCollections(platform?: Platform, limit?: number) {
   return out;
 }
 
-export async function getCollectionBySlug(slug: string, platform?: Platform) {
+export async function getCollections(platform?: Platform, limit?: number) {
   await dyn();
+  return getCollectionsCore(platform, limit);
+}
+
+
+export async function getCollectionBySlugCore(slug: string, platform?: Platform) {
   const rows = await db.select().from(s.collections)
     .where(and(eq(s.collections.slug, slug), eq(s.collections.isActive, true))).limit(1);
   const col = rows[0];
@@ -116,8 +125,13 @@ export async function getCollectionBySlug(slug: string, platform?: Platform) {
   return { ...col, apps };
 }
 
-export async function getRootCategories(platform?: Platform) {
+export async function getCollectionBySlug(slug: string, platform?: Platform) {
   await dyn();
+  return getCollectionBySlugCore(slug, platform);
+}
+
+
+export async function getRootCategoriesCore(platform?: Platform) {
   const rows = await db.select({
     id: s.categories.id, slug: s.categories.slug, nameFa: s.categories.nameFa, nameEn: s.categories.nameEn, icon: s.categories.icon,
   }).from(s.categories)
@@ -143,12 +157,23 @@ export async function getRootCategories(platform?: Platform) {
     .filter((r) => r.appCount > 0);
 }
 
-export async function getFeaturedApps(limit = 8, platform?: Platform) {
+export async function getRootCategories(platform?: Platform) {
   await dyn();
+  return getRootCategoriesCore(platform);
+}
+
+
+export async function getFeaturedAppsCore(limit = 8, platform?: Platform) {
   return db.select(cardCols).from(s.apps)
     .where(and(pub, eq(s.apps.featured, true), plat(platform)))
     .orderBy(desc(s.apps.updatedAt)).limit(limit);
 }
+
+export async function getFeaturedApps(limit = 8, platform?: Platform) {
+  await dyn();
+  return getFeaturedAppsCore(limit, platform);
+}
+
 
 export async function getEditorChoice(limit = 8, platform?: Platform) {
   await dyn();
@@ -157,31 +182,45 @@ export async function getEditorChoice(limit = 8, platform?: Platform) {
     .orderBy(desc(s.apps.updatedAt)).limit(limit);
 }
 
-export async function getPopularApps(limit = 8, platform?: Platform) {
-  await dyn();
+export async function getPopularAppsCore(limit = 8, platform?: Platform) {
   return db.select(cardCols).from(s.apps)
     .where(and(pub, plat(platform)))
     .orderBy(desc(dlCount), desc(s.apps.updatedAt)).limit(limit);
 }
 
-export async function getLatestApps(limit = 8, platform?: Platform) {
+export async function getPopularApps(limit = 8, platform?: Platform) {
   await dyn();
-  return db.select(cardCols).from(s.apps)
-    .where(and(pub, plat(platform)))
-    .orderBy(desc(s.apps.updatedAt)).limit(limit);
+  return getPopularAppsCore(limit, platform);
 }
 
-// جدیدترین‌ها بر اساس تاریخ اضافه‌شدن به فروشگاه (برای نمای «تازه‌ها»)
-export async function getNewestApps(limit = 8, platform?: Platform) {
+
+export async function getLatestAppsCore(limit = 8, platform?: Platform, offset = 0) {
+  return db.select(cardCols).from(s.apps)
+    .where(and(pub, plat(platform)))
+    .orderBy(desc(s.apps.updatedAt)).limit(limit).offset(offset);
+}
+
+export async function getLatestApps(limit = 8, platform?: Platform, offset = 0) {
   await dyn();
+  return getLatestAppsCore(limit, platform, offset);
+}
+
+
+// جدیدترین‌ها بر اساس تاریخ اضافه‌شدن به فروشگاه (برای نمای «تازه‌ها»)
+export async function getNewestAppsCore(limit = 8, platform?: Platform) {
   return db.select(cardCols).from(s.apps)
     .where(and(pub, plat(platform)))
     .orderBy(desc(s.apps.createdAt)).limit(limit);
 }
 
-// اپ برگزیده‌ی یک پلتفرم: اول پرچم featured، بعد انتخاب سردبیر، بعد پرطرفدارترین
-export async function getFeaturedApp(platform?: Platform) {
+export async function getNewestApps(limit = 8, platform?: Platform) {
   await dyn();
+  return getNewestAppsCore(limit, platform);
+}
+
+
+// اپ برگزیده‌ی یک پلتفرم: اول پرچم featured، بعد انتخاب سردبیر، بعد پرطرفدارترین
+export async function getFeaturedAppCore(platform?: Platform) {
   const feat = await db.select(cardCols).from(s.apps)
     .where(and(pub, eq(s.apps.featured, true), plat(platform)))
     .orderBy(desc(s.apps.updatedAt)).limit(1);
@@ -190,9 +229,15 @@ export async function getFeaturedApp(platform?: Platform) {
     .where(and(pub, eq(s.apps.editorChoice, true), plat(platform)))
     .orderBy(desc(s.apps.updatedAt)).limit(1);
   if (ed[0]) return ed[0];
-  const pop = await getPopularApps(1, platform);
+  const pop = await getPopularAppsCore(1, platform);
   return pop[0] ?? null;
 }
+
+export async function getFeaturedApp(platform?: Platform) {
+  await dyn();
+  return getFeaturedAppCore(platform);
+}
+
 
 // دسته‌ی اصلی هر اپ (اولین دسته بر اساس ترتیب دسته‌ها) برای خط دسته در ردیف‌ها
 export async function attachPrimaryCategory<T extends { id: string }>(
@@ -233,8 +278,7 @@ export async function getOpenSourceApps(limit = 8, platform?: Platform) {
     .orderBy(desc(dlCount)).limit(limit);
 }
 
-export async function getRelatedApps(appId: string, limit = 8, platform?: Platform) {
-  await dyn();
+export async function getRelatedAppsCore(appId: string, limit = 8, platform?: Platform) {
   // برنامه‌های هم‌دسته (به‌جز خودش)، اول آن‌هایی که بیشترین دسته‌ی مشترک را دارند
   // فقط هم‌پلتفرم: شاید بپسندی نباید برنامه‌ی پلتفرم دیگر نشان دهد
   const myCats = await db.select({ categoryId: s.appCategories.categoryId })
@@ -256,6 +300,12 @@ export async function getRelatedApps(appId: string, limit = 8, platform?: Platfo
   return [...score.values()].sort((a, b) => b.n - a.n).slice(0, limit).map((e) => e.app);
 }
 
+export async function getRelatedApps(appId: string, limit = 8, platform?: Platform) {
+  await dyn();
+  return getRelatedAppsCore(appId, limit, platform);
+}
+
+
 export async function getAppByNameEn(nameEn: string) {
   await dyn();
   const rows = await db.select(cardCols).from(s.apps)
@@ -264,8 +314,7 @@ export async function getAppByNameEn(nameEn: string) {
   return rows[0] ?? null;
 }
 
-export async function getAppBySlug(slug: string) {
-  await dyn();
+export async function getAppBySlugCore(slug: string) {
   const rows = await db.select({
     id: s.apps.id, slug: s.apps.slug, packageName: s.apps.packageName, platform: s.apps.platform,
     nameFa: s.apps.nameFa, nameEn: s.apps.nameEn,
@@ -309,10 +358,45 @@ export async function getAppBySlug(slug: string) {
   const downloadCount = Number(dl[0]?.c ?? 0);
 
   // شاید بپسندی: هم‌دسته‌ای‌های هم‌پلتفرم با امتیاز تعداد دسته‌ی مشترک
-  const related = await getRelatedApps(app.id, 6, app.platform as Platform);
+  const related = await getRelatedAppsCore(app.id, 6, app.platform as Platform);
 
   return { ...app, versions, versionsTotal, categories: cats, screenshots: shots, current, permissions: perms, downloadCount, similar: related };
 }
+
+export async function getAppBySlug(slug: string) {
+  await dyn();
+  return getAppBySlugCore(slug);
+}
+
+// پوسته‌ی سبک برای صفحه‌ی اپ: فقط شناسه/پلتفرم/نسخه‌ی فعلی — برای notFound و بنر آپدیت
+export async function getAppHeadCore(slug: string) {
+  const rows = await db.select({ id: s.apps.id, slug: s.apps.slug, platform: s.apps.platform })
+    .from(s.apps).where(and(eq(s.apps.slug, slug), pub)).limit(1);
+  const app = rows[0];
+  if (!app) return null;
+  const cur = await db.select({ id: s.appVersions.id, versionName: s.appVersions.versionName })
+    .from(s.appVersions)
+    .where(and(eq(s.appVersions.appId, app.id), eq(s.appVersions.status, "active"), eq(s.appVersions.isCurrent, true)))
+    .limit(1);
+  return { ...app, current: cur[0] ?? null };
+}
+
+// متای سبک برای generateMetadata صفحه‌ی اپ (بدون واکشی کامل نسخه‌ها و اسکرین‌شات‌ها)
+export async function getAppMetaCore(slug: string) {
+  const rows = await db.select({
+    nameFa: s.apps.nameFa, nameEn: s.apps.nameEn, shortDesc: s.apps.shortDesc,
+    shortDescFa: s.apps.shortDescFa, iconUrl: s.apps.iconUrl, platform: s.apps.platform,
+  }).from(s.apps).where(and(eq(s.apps.slug, slug), pub)).limit(1);
+  return rows[0] ?? null;
+}
+
+// متای سبک برای generateMetadata صفحه‌ی مجموعه + بررسی وجود
+export async function getCollectionMetaCore(slug: string) {
+  const rows = await db.select({ nameFa: s.collections.nameFa, description: s.collections.description })
+    .from(s.collections).where(and(eq(s.collections.slug, slug), eq(s.collections.isActive, true))).limit(1);
+  return rows[0] ?? null;
+}
+
 
 export type SearchFilters = {
   category?: string;
@@ -389,8 +473,7 @@ export async function searchApps(query: string, filters: SearchFilters = {}, lim
   return { items, total: Number(total[0]?.c ?? 0) };
 }
 
-export async function getCategoryBySlug(slug: string) {
-  await dyn();
+export async function getCategoryBySlugCore(slug: string) {
   const rows = await db.select().from(s.categories).where(eq(s.categories.slug, slug)).limit(1);
   const cat = rows[0];
   if (!cat || !cat.isActive) return null;
@@ -400,9 +483,14 @@ export async function getCategoryBySlug(slug: string) {
   return { ...cat, children };
 }
 
-// پیش‌نمایش زیردسته‌ها: هر زیردسته + حداکثر ۱۰ برنامه‌ی برترش (برای صفحه دسته‌ی والد به سبک اپ‌استورها)
-export async function getChildPreviews(parentId: string, perChild = 10, platform?: Platform) {
+export async function getCategoryBySlug(slug: string) {
   await dyn();
+  return getCategoryBySlugCore(slug);
+}
+
+
+// پیش‌نمایش زیردسته‌ها: هر زیردسته + حداکثر ۱۰ برنامه‌ی برترش (برای صفحه دسته‌ی والد به سبک اپ‌استورها)
+export async function getChildPreviewsCore(parentId: string, perChild = 10, platform?: Platform) {
   const children = await db.select().from(s.categories)
     .where(and(eq(s.categories.parentId, parentId), eq(s.categories.isActive, true)))
     .orderBy(s.categories.sortOrder);
@@ -422,9 +510,14 @@ export async function getChildPreviews(parentId: string, perChild = 10, platform
   return out;
 }
 
-export async function getCategoryApps(slug: string, limit = 40, offset = 0, sort: SearchFilters["sort"] = "updated", platform?: Platform) {
+export async function getChildPreviews(parentId: string, perChild = 10, platform?: Platform) {
   await dyn();
-  const cat = await getCategoryBySlug(slug);
+  return getChildPreviewsCore(parentId, perChild, platform);
+}
+
+
+export async function getCategoryAppsCore(slug: string, limit = 40, offset = 0, sort: SearchFilters["sort"] = "updated", platform?: Platform) {
+  const cat = await getCategoryBySlugCore(slug);
   if (!cat) return null;
   const { descendantsOf } = await getCategoryTree();
   const catIds = descendantsOf(cat.id);
@@ -443,6 +536,12 @@ export async function getCategoryApps(slug: string, limit = 40, offset = 0, sort
   ]);
   return { category: cat, items, total: Number(total[0]?.c ?? 0) };
 }
+
+export async function getCategoryApps(slug: string, limit = 40, offset = 0, sort: SearchFilters["sort"] = "updated", platform?: Platform) {
+  await dyn();
+  return getCategoryAppsCore(slug, limit, offset, sort, platform);
+}
+
 
 export async function getCategoryCounts(platform?: Platform) {
   await dyn();

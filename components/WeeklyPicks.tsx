@@ -34,7 +34,7 @@ export default function WeeklyPicks({
             <div className="w-14 h-14 sm:w-16 sm:h-16 transition-transform duration-200 group-hover:scale-105 group-active:scale-95">
               {app.iconUrl ? (
                 <PxImg
-                  src={px(app.iconUrl) || app.iconUrl}
+                  src={px(app.iconUrl, "icon") || app.iconUrl}
                   alt={`آیکون ${app.nameFa}`}
                   width={64}
                   height={64}

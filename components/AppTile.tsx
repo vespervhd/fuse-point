@@ -27,7 +27,7 @@ export default function AppTile({ app, index = 0, locale = "fa" }: { app: CardAp
       <div className="w-full aspect-square transition-transform duration-200 group-hover:scale-105 group-active:scale-95">
         {app.iconUrl ? (
           <PxImg
-            src={px(app.iconUrl) || app.iconUrl}
+            src={px(app.iconUrl, "icon") || app.iconUrl}
             alt={`${STR[locale].alt_icon} ${app.nameFa}`}
             width={192}
             height={192}

@@ -45,7 +45,7 @@ export default function AppRow({
       <Link href={href} className="absolute inset-0" aria-label={name} />
       <span className="w-[34px] h-[34px] rounded-lg grid place-items-center overflow-hidden shrink-0 bg-primary/[0.13] border border-primary/25 text-primary">
         {app.iconUrl ? (
-          <PxImg src={px(app.iconUrl) || app.iconUrl} alt="" width={34} height={34} className="w-full h-full object-cover" />
+          <PxImg src={px(app.iconUrl, "icon") || app.iconUrl} alt="" width={34} height={34} className="w-full h-full object-cover" />
         ) : (
           <span className="text-base font-bold" dir="ltr">{(app.nameEn || name || "?").charAt(0)}</span>
         )}

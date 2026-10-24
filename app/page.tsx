@@ -1,17 +1,12 @@
 import Link from "next/link";
-import { ChevronLeft, SearchX } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import HeroSearch from "@/components/HeroSearch";
-import AppRow, { PlatformChip } from "@/components/AppRow";
-import PxImg from "@/components/PxImg";
-import { px } from "@/lib/img";
-import {
-  getLatestApps, getHomeStats, getFeaturedApp, attachPrimaryCategory,
-  type Platform,
-} from "@/lib/store";
+import { HomeCatalog } from "@/components/CachedCatalog";
 import { getLocale } from "@/lib/i18n-server";
-import { STR, appName, appShort, catName, num, type Locale } from "@/lib/i18n";
+import { STR, type Locale } from "@/lib/i18n";
+import type { Platform } from "@/lib/store";
 
-type Props = { searchParams: Promise<{ platform?: string }> };
+type Props = { searchParams: Promise<{ platform?: string; page?: string }> };
 
 const platQs = (p: Platform) => (p === "android" ? "" : `?platform=${p}`);
 
@@ -31,18 +26,12 @@ function EntryRow({ href, title, locale }: { href: string; title: string; locale
 }
 
 export default async function Home({ searchParams }: Props) {
-  const { platform } = await searchParams;
+  const { platform, page } = await searchParams;
   const plat: Platform = platform === "windows" || platform === "linux" ? platform : "android";
+  const pageNum = Math.max(1, parseInt(page || "1", 10) || 1);
   const locale = await getLocale();
   const d = STR[locale];
   const qs = platQs(plat);
-
-  const [featured, latest, stats] = await Promise.all([
-    getFeaturedApp(plat),
-    getLatestApps(48, plat),
-    getHomeStats(plat),
-  ]);
-  const catMap = await attachPrimaryCategory(latest);
 
   return (
     <div>
@@ -57,78 +46,8 @@ export default async function Home({ searchParams }: Props) {
           <EntryRow href={`/fresh${qs}`} title={d.fresh} locale={locale} />
         </div>
 
-        {/* بلوک برگزیده‌ی همین پلتفرم */}
-        {featured && (
-          <>
-            <p className="flex items-baseline justify-between gap-2.5 text-muted-foreground text-[13px] font-bold mx-0.5 mb-2">
-              <span>{d.featured}</span>
-            </p>
-            <Link
-              href={`/app/${featured.slug}`}
-              className="flex items-center gap-[15px] bg-card border border-border rounded-[18px] p-4 mb-7 shadow-sm hover:bg-card/80 transition-colors"
-            >
-              <span className="w-16 h-16 rounded-[17px] grid place-items-center overflow-hidden shrink-0 bg-primary/[0.13] border border-primary/25 text-primary">
-                {featured.iconUrl ? (
-                  <PxImg src={px(featured.iconUrl) || featured.iconUrl} alt="" width={64} height={64} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-2xl font-bold" dir="ltr">{(featured.nameEn || "?").charAt(0)}</span>
-                )}
-              </span>
-              <span className="flex-1 min-w-0">
-                <span className="block text-lg font-extrabold truncate" dir="auto">{appName(featured, locale)}</span>
-                {appShort(featured, locale) && (
-                  <span className="block text-muted-foreground text-[13px] mt-1 leading-[1.8] line-clamp-2">{appShort(featured, locale)}</span>
-                )}
-                <span className="flex flex-wrap gap-1.5 mt-[9px]">
-                  <PlatformChip platform={plat} locale={locale} />
-                </span>
-              </span>
-              <span className="flip-x text-muted-foreground grid place-items-center shrink-0" aria-hidden="true">
-                <ChevronLeft className="w-[18px] h-[18px]" strokeWidth={2} />
-              </span>
-            </Link>
-          </>
-        )}
-
-        {/* فهرست ادیتوریال همه‌ی برنامه‌های این پلتفرم */}
-        <p className="flex items-baseline justify-between gap-2.5 text-muted-foreground text-[13px] font-bold mx-0.5 mb-2">
-          <span>{d.allApps}</span>
-          <span className="text-xs font-medium whitespace-nowrap">{num(stats.apps, locale)} {locale === "fa" ? "اپ" : "apps"}</span>
-        </p>
-        {latest.length ? (
-          <>
-            <div className="border-t border-border">
-              {latest.map((a, i) => {
-                const c = catMap.get(a.id);
-                return (
-                  <AppRow
-                    key={a.id}
-                    app={a}
-                    locale={locale}
-                    platform={plat}
-                    index={i}
-                    categoryName={c ? catName(c, locale) : null}
-                  />
-                );
-              })}
-            </div>
-            <div className="text-center mt-8">
-              <Link href={`/search${qs}`} className="inline-flex items-center gap-1 text-sm text-primary font-bold hover:underline">
-                {d.moreApps}
-                <span className="flip-x grid place-items-center" aria-hidden="true">
-                  <ChevronLeft className="w-4 h-4" strokeWidth={2} />
-                </span>
-              </Link>
-            </div>
-          </>
-        ) : (
-          <div className="text-center text-muted-foreground py-[34px] px-2.5 border border-dashed border-border rounded-[14px] text-[14.5px] leading-[1.9]">
-            <SearchX className="w-8 h-8 mx-auto mb-2 text-primary" aria-hidden="true" />
-            {d.emptyHome}
-            <br />
-            {d.tryAnotherPlatform}
-          </div>
-        )}
+        {/* بلوک برگزیده + فهرست — با کشِ رندر (۲۴ ردیف در هر صفحه) */}
+        <HomeCatalog plat={plat} locale={locale} page={pageNum} />
       </section>
     </div>
   );
