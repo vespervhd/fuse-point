@@ -5,16 +5,14 @@ import PopularRow from "@/components/PopularRow";
 import NewBadge from "@/components/NewBadge";
 import AppCard from "@/components/AppCard";
 import Section from "@/components/Section";
-import CategoryBrowser from "@/components/CategoryBrowser";
 import DbIcon from "@/components/DbIcon";
 import WeeklyPicks from "@/components/WeeklyPicks";
-import CollectionBrowser from "@/components/CollectionBrowser";
 import TopInRail from "@/components/TopInRail";
 import HeroSearch from "@/components/HeroSearch";
 import { ChevronLeft, LayoutGrid, Download, Tags } from "lucide-react";
 import {
   getRootCategories, getPopularApps,
-  getLatestApps, getCategoryBySlug, getChildPreviews, getCollections, getHomeStats,
+  getLatestApps, getCategoryBySlug, getChildPreviews, getHomeStats,
   getEditorChoice, getCategoryApps,
 } from "@/lib/store";
 import { toFaDigits } from "@/lib/fa";
@@ -34,9 +32,9 @@ async function HomeSlide({ platform }: { platform?: Platform }) {
     .sort((a, b) => (b.appCount ?? 0) - (a.appCount ?? 0))
     .slice(0, 4);
 
-  const [popular, latest, collections, stats, weeklyPicks, ...topRails] = await Promise.all([
+  const [popular, latest, stats, weeklyPicks, ...topRails] = await Promise.all([
     getPopularApps(8, platform),
-    getLatestApps(8, platform), getCollections(platform, 6), getHomeStats(platform),
+    getLatestApps(8, platform), getHomeStats(platform),
     getEditorChoice(6, platform),
     ...topCats.map((c) => getCategoryApps(c.slug, 8, 0, "popular", platform).then((r) => ({ cat: c, items: r?.items ?? [] }))),
   ]);
@@ -60,9 +58,6 @@ async function HomeSlide({ platform }: { platform?: Platform }) {
           مشاهده‌ی برترین‌های همه‌ی دسته‌ها <ChevronLeft className="w-4 h-4" aria-hidden="true" />
         </Link>
       </div>
-
-      {/* مجموعه‌ها — مینیمال */}
-      <CollectionBrowser collections={collections} platform={platform} />
 
       {/* نوار آمار */}
       <div className="grid grid-cols-3 w-full bg-card border border-border rounded-xl shadow-sm mb-10 overflow-hidden" role="status" aria-label="آمار فروشگاه">
@@ -176,17 +171,11 @@ async function CategorySlide({ slug, platform }: { slug: string; platform: Platf
 export default async function Home({ searchParams }: Props) {
   const { cat, platform } = await searchParams;
   const plat: Platform = (platform === "windows" || platform === "linux") ? platform : "android";
-  const cats = await getRootCategories(plat);
 
   return (
     <div>
-      {/* ترتیب فروشگاهی: جستجو ← چیپ‌های دسته ← اپ‌ها */}
+      {/* ترتیب فروشگاهی: لوگوی کسوف و جستجو ← اپ‌ها (ردیف دسته‌ها و نوار مجموعه‌ها فعلاً حذف شده‌اند) */}
       {!cat && <HeroSearch />}
-      {!cat && (
-        <Suspense>
-          <CategoryBrowser cats={cats} platform={plat} />
-        </Suspense>
-      )}
       {cat ? <CategorySlide slug={cat} platform={plat} /> : <HomeSlide platform={plat} />}
     </div>
   );

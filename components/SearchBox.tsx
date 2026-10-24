@@ -117,17 +117,17 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
           placeholder="جست‌وجوی برنامه‌ها..."
           aria-label="جست‌وجوی برنامه‌ها"
           autoComplete="off"
-          className={`w-full ${h} ${radius} bg-muted border-border pe-11 ps-4 text-foreground placeholder:text-muted-foreground transition text-sm`}
+          className={`w-full ${h} ${radius} bg-muted border-border ${large ? "pe-13" : "pe-11"} ps-4 text-foreground placeholder:text-muted-foreground transition text-sm`}
         />
         <Button
           type="submit"
           aria-label="جست‌وجو"
-          size={large ? "default" : "sm"}
+          size={large ? "icon-lg" : "icon-sm"}
           className={`absolute end-1 top-1/2 -translate-y-1/2 ${large ? "rounded-xl" : "rounded-lg"} shrink-0`}
         >
           {loading
-            ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-            : <Search className="w-4 h-4" strokeWidth={2} aria-hidden="true" />}
+            ? <Loader2 className={`${large ? "w-5 h-5" : "w-4 h-4"} animate-spin`} aria-hidden="true" />
+            : <Search className={large ? "w-5 h-5" : "w-4 h-4"} strokeWidth={2} aria-hidden="true" />}
         </Button>
       </form>
 
