@@ -29,7 +29,7 @@ export default async function CollectionPage({ params }: Props) {
   return (
     <div className="animate-fade-up">
       <CollectionPlatformSync platform={platform} />
-      <nav className="text-sm text-muted mb-4" aria-label="مسیر">
+      <nav className="text-sm text-muted-foreground mb-4" aria-label="مسیر">
         <Link href="/" className="hover:text-primary">خانه</Link>
         <span className="mx-2">/</span>
         <Link href="/collections" className="hover:text-primary">کالکشن‌ها</Link>
@@ -37,15 +37,15 @@ export default async function CollectionPage({ params }: Props) {
         <span className="text-foreground font-bold">{col.nameFa}</span>
       </nav>
 
-      <section className="rounded-3xl overflow-hidden border border-border bg-surface mb-8">
+      <section className="rounded-3xl overflow-hidden border border-border bg-card mb-8">
         <div className="p-6 sm:p-8 flex items-center gap-5">
           <span className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <DbIcon icon={col.icon} className="w-9 h-9 sm:w-11 sm:h-11" />
           </span>
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold">{col.nameFa}</h1>
-            <p className="text-sm text-muted mt-1">{toFaDigits(apps.length)} برنامه</p>
-            {col.description && <p className="text-sm text-muted mt-2 leading-7">{col.description}</p>}
+            <p className="text-sm text-muted-foreground mt-1">{toFaDigits(apps.length)} برنامه</p>
+            {col.description && <p className="text-sm text-muted-foreground mt-2 leading-7">{col.description}</p>}
           </div>
         </div>
       </section>

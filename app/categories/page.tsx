@@ -22,13 +22,13 @@ export default async function CategoriesPage({ searchParams }: Props) {
         {roots.map((r) => {
           const kids = childrenOf(r.id);
           return (
-            <section key={r.id} className="bg-surface border border-border rounded-3xl p-6" aria-label={r.nameFa}>
+            <section key={r.id} className="bg-card border border-border rounded-3xl p-6" aria-label={r.nameFa}>
               <Link href={`/category/${r.slug}`} className="flex items-center gap-3 mb-4 group">
                 <span className="w-11 h-11 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
                   <DbIcon icon={r.icon} className="w-6 h-6" />
                 </span>
                 <h2 className="text-lg font-extrabold group-hover:text-primary transition">{r.nameFa}</h2>
-                <span className="text-xs font-bold bg-primary-soft text-primary rounded-full px-2.5 py-1">
+                <span className="text-xs font-bold bg-primary/10 text-primary rounded-full px-2.5 py-1">
                   {(counts.get(r.id) ?? 0).toLocaleString("fa-IR")} برنامه
                 </span>
                 <span className="text-primary text-sm">←</span>
@@ -37,14 +37,14 @@ export default async function CategoriesPage({ searchParams }: Props) {
                 <div className="flex flex-wrap gap-2">
                   {kids.map((k) => (
                     <Link key={k.id} href={`/category/${k.slug}`}
-                      className="text-sm bg-surface-2 hover:bg-primary-soft hover:text-primary border border-border rounded-full px-4 py-2 transition flex items-center gap-1.5">
+                      className="text-sm bg-muted hover:bg-primary/10 hover:text-primary border border-border rounded-full px-4 py-2 transition flex items-center gap-1.5">
                       <DbIcon icon={k.icon} className="w-4 h-4" /> {k.nameFa}
-                      <span className="text-xs text-muted font-bold">{(counts.get(k.id) ?? 0).toLocaleString("fa-IR")}</span>
+                      <span className="text-xs text-muted-foreground font-bold">{(counts.get(k.id) ?? 0).toLocaleString("fa-IR")}</span>
                     </Link>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted">زیرشاخه‌ای ثبت نشده است.</p>
+                <p className="text-sm text-muted-foreground">زیرشاخه‌ای ثبت نشده است.</p>
               )}
             </section>
           );

@@ -5,6 +5,7 @@ import { useTransition } from "react";
 import { LayoutGrid } from "lucide-react";
 import { toFaDigits } from "@/lib/fa";
 import DbIcon from "./DbIcon";
+import { Badge } from "@/components/ui/badge";
 
 type Cat = { id: string; slug: string; nameFa: string; icon?: string | null; appCount?: number };
 
@@ -32,9 +33,9 @@ export default function CategoryCards({ cats }: { cats: Cat[] }) {
           <LayoutGrid className="w-5 h-5 text-primary" aria-hidden="true" />
           دسته‌بندی‌ها
         </h2>
-        <span className="badge badge-ghost badge-sm font-bold">
+        <Badge variant="secondary" className="font-bold text-[11px] px-1.5 py-0">
           {toFaDigits(cats.length)} دسته
-        </span>
+        </Badge>
       </div>
 
       <div className="flex flex-wrap gap-2.5">
@@ -51,12 +52,12 @@ export default function CategoryCards({ cats }: { cats: Cat[] }) {
               style={isActive ? undefined : grad}
               className={`w-[76px] rounded-2xl p-2.5 flex flex-col items-center gap-1.5 text-center transition-all shrink-0 border ${
                 isActive
-                  ? "bg-primary text-primary-content border-primary shadow"
-                  : "text-primary border-base-300/60 hover:border-primary/40 hover:-translate-y-0.5"
+                  ? "bg-primary text-primary-foreground border-primary shadow"
+                  : "text-primary border-border/60 hover:border-primary/40 hover:-translate-y-0.5"
               } ${pending ? "opacity-70" : ""}`}
             >
               <DbIcon icon={c.icon} className="w-7 h-7 shrink-0" />
-              <span className="text-[10px] font-bold leading-3.5 line-clamp-2 text-base-content">{c.nameFa}</span>
+              <span className="text-[10px] font-bold leading-3.5 line-clamp-2 text-foreground">{c.nameFa}</span>
             </button>
           );
         })}

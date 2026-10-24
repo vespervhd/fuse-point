@@ -2,6 +2,23 @@
 
 import { useState } from "react";
 import { Flag } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function ReportButton({ appId, appName }: { appId: string; appName: string }) {
   const [open, setOpen] = useState(false);
@@ -29,50 +46,51 @@ export default function ReportButton({ appId, appName }: { appId: string; appNam
 
   if (done) {
     return (
-      <p className="text-sm text-muted flex items-center gap-2">
+      <p className="text-sm text-muted-foreground flex items-center gap-2">
         <Flag className="w-4 h-4" /> گزارش شما ثبت شد، بررسی می‌کنیم
       </p>
     );
   }
 
   return (
-    <div>
-      <button
-        onClick={() => setOpen(!open)}
-        className="btn btn-ghost btn-sm"
-      >
-        <Flag className="w-4 h-4" /> گزارش مشکل
-      </button>
-      {open && (
-        <div className="mt-3 bg-surface-2 border border-border rounded-2xl p-4">
-          <p className="text-sm font-bold mb-2">مشکل «{appName}» چیه؟</p>
-          <select
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            className="select select-bordered w-full select-sm mb-2"
-          >
-            <option value="">انتخاب کن…</option>
-            <option value="broken-link">لینک دانلود خرابه</option>
-            <option value="wrong-info">اطلاعات اشتباهه</option>
-            <option value="malware">مشکوک به بدافزار</option>
-            <option value="other">مورد دیگه</option>
-          </select>
-          <textarea
-            value={detail}
-            onChange={(e) => setDetail(e.target.value)}
-            placeholder="توضیح بیشتر (اختیاری)"
-            className="w-full bg-surface border border-border rounded-xl px-3 py-2 text-sm mb-2"
-            rows={2}
-          />
-          <button
-            onClick={submit}
-            disabled={!reason || sending}
-            className="btn btn-primary btn-sm"
-          >
-            {sending ? "در حال ارسال…" : "ثبت گزارش"}
-          </button>
-        </div>
-      )}
-    </div>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="sm">
+          <Flag className="w-4 h-4" /> گزارش مشکل
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="text-sm font-bold">مشکل «{appName}» چیه؟</DialogTitle>
+          <DialogDescription className="sr-only">فرم گزارش مشکل {appName}</DialogDescription>
+        </DialogHeader>
+        <Select value={reason || undefined} onValueChange={setReason}>
+          <SelectTrigger size="sm" className="w-full" aria-label="دلیل گزارش">
+            <SelectValue placeholder="انتخاب کن…" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="broken-link">لینک دانلود خرابه</SelectItem>
+            <SelectItem value="wrong-info">اطلاعات اشتباهه</SelectItem>
+            <SelectItem value="malware">مشکوک به بدافزار</SelectItem>
+            <SelectItem value="other">مورد دیگه</SelectItem>
+          </SelectContent>
+        </Select>
+        <Textarea
+          value={detail}
+          onChange={(e) => setDetail(e.target.value)}
+          placeholder="توضیح بیشتر (اختیاری)"
+          className="text-sm"
+          rows={2}
+        />
+        <Button
+          onClick={submit}
+          disabled={!reason || sending}
+          size="sm"
+          className="justify-self-start"
+        >
+          {sending ? "در حال ارسال…" : "ثبت گزارش"}
+        </Button>
+      </DialogContent>
+    </Dialog>
   );
 }

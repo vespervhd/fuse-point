@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Bell, BellOff, Package } from "lucide-react";
 import { toFaDigits } from "@/lib/fa";
+import { Button } from "@/components/ui/button";
 
 type Notif = {
   id: string; title: string; message: string | null; isRead: boolean;
@@ -31,7 +32,7 @@ export default function NotificationsPage() {
     setItems((xs) => xs.map((x) => (x.id === id ? { ...x, isRead: true } : x)));
   };
 
-  if (loading) return <p className="text-muted text-sm">در حال بارگذاری...</p>;
+  if (loading) return <p className="text-muted-foreground text-sm">در حال بارگذاری...</p>;
 
   return (
     <div className="animate-fade-up max-w-2xl mx-auto">
@@ -40,34 +41,34 @@ export default function NotificationsPage() {
           <Bell className="w-6 h-6 text-primary" aria-hidden="true" /> اعلان‌ها
         </h1>
         {items.some((x) => !x.isRead) && (
-          <button onClick={markAll} className="btn btn-ghost btn-sm">
+          <Button type="button" variant="ghost" size="sm" onClick={markAll}>
             همه را خوانده‌شده کن
-          </button>
+          </Button>
         )}
       </div>
       {items.length === 0 ? (
-        <div className="text-center py-16 bg-surface border border-border rounded-3xl">
-          <BellOff className="w-10 h-10 mx-auto mb-3 text-muted" aria-hidden="true" />
-          <p className="text-muted text-sm">اعلانی ندارید. برنامه‌های محبوبتان را به علاقه‌مندی‌ها اضافه کنید تا از نسخه‌های جدید باخبر شوید.</p>
+        <div className="text-center py-16 bg-card border border-border rounded-3xl">
+          <BellOff className="w-10 h-10 mx-auto mb-3 text-muted-foreground" aria-hidden="true" />
+          <p className="text-muted-foreground text-sm">اعلانی ندارید. برنامه‌های محبوبتان را به علاقه‌مندی‌ها اضافه کنید تا از نسخه‌های جدید باخبر شوید.</p>
         </div>
       ) : (
         <ul className="space-y-3">
           {items.map((n) => (
             <li key={n.id}
-              className={`bg-surface border rounded-2xl p-4 flex gap-3 ${n.isRead ? "border-border opacity-70" : "border-primary/40"}`}>
-              <span className="shrink-0 w-10 h-10 rounded-xl bg-surface-2 flex items-center justify-center">
-                <Package className="w-5 h-5 text-muted" aria-hidden="true" />
+              className={`bg-card border rounded-2xl p-4 flex gap-3 ${n.isRead ? "border-border opacity-70" : "border-primary/40"}`}>
+              <span className="shrink-0 w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+                <Package className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
               </span>
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-sm">{n.title}</p>
-                {n.message && <p className="text-sm text-muted mt-1">{n.message}</p>}
+                {n.message && <p className="text-sm text-muted-foreground mt-1">{n.message}</p>}
                 <div className="flex items-center gap-3 mt-2">
                   {n.appSlug && (
                     <Link href={`/app/${n.appSlug}`} onClick={() => markOne(n.id)}
                       className="text-xs text-primary font-bold hover:underline">مشاهده برنامه ←</Link>
                   )}
                   {!n.isRead && (
-                    <button onClick={() => markOne(n.id)} className="btn btn-ghost btn-xs">خوانده شد</button>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => markOne(n.id)} className="h-7 px-2 text-xs">خوانده شد</Button>
                   )}
                 </div>
               </div>

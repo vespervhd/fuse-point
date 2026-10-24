@@ -28,13 +28,13 @@ export default function CategoryBrowser({
             href={href(c.slug)}
             className="snap-start shrink-0 flex flex-col items-center gap-2 w-[72px] group"
           >
-            <span className="w-14 h-14 rounded-2xl bg-surface border border-border grid place-items-center text-primary group-hover:border-primary/50 group-hover:scale-105 transition">
+            <span className="w-14 h-14 rounded-2xl bg-card border border-border grid place-items-center text-primary group-hover:border-primary/50 group-hover:scale-105 transition">
               <DbIcon icon={c.icon} className="w-6 h-6" />
             </span>
             <span className="text-[11px] font-bold leading-4 text-center line-clamp-2">
               {c.nameFa}
             </span>
-            <span className="text-[10px] text-muted -mt-1">
+            <span className="text-[10px] text-muted-foreground -mt-1">
               {toFaDigits(c.appCount ?? 0)}
             </span>
           </Link>

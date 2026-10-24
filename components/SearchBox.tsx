@@ -4,6 +4,8 @@ import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { Search, Loader2 } from "lucide-react";
 import PxImg from "./PxImg";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 type Suggestion = {
   slug: string;
@@ -106,7 +108,7 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
   return (
     <div ref={boxRef} className={`relative ${compact ? "w-full" : "w-full max-w-xl"}`}>
       <form onSubmit={submit} role="search" className="relative">
-        <input
+        <Input
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
@@ -115,22 +117,23 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
           placeholder="جست‌وجوی برنامه‌ها..."
           aria-label="جست‌وجوی برنامه‌ها"
           autoComplete="off"
-          className={`w-full ${h} ${radius} bg-surface-2 border border-border pe-11 ps-4 text-fg placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition text-sm`}
+          className={`w-full ${h} ${radius} bg-muted border-border pe-11 ps-4 text-foreground placeholder:text-muted-foreground transition text-sm`}
         />
-        <button
+        <Button
           type="submit"
           aria-label="جست‌وجو"
-          className={`absolute end-1 top-1/2 -translate-y-1/2 btn btn-primary ${large ? "rounded-xl" : "btn-sm rounded-lg"} shrink-0`}
+          size={large ? "default" : "sm"}
+          className={`absolute end-1 top-1/2 -translate-y-1/2 ${large ? "rounded-xl" : "rounded-lg"} shrink-0`}
         >
           {loading
             ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
             : <Search className="w-4 h-4" strokeWidth={2} aria-hidden="true" />}
-        </button>
+        </Button>
       </form>
 
       {open && items.length > 0 && (
         <div
-          className="absolute top-full mt-2 inset-x-0 z-50 bg-surface border border-border rounded-xl shadow-xl overflow-hidden animate-fade-up"
+          className="absolute top-full mt-2 inset-x-0 z-50 bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-fade-up"
           role="listbox"
           aria-label="پیشنهادهای جست‌وجو"
         >
@@ -141,32 +144,33 @@ function SearchBoxInner({ compact = false, slim = false, large = false }: { comp
                   href={`/app/${s.slug}`}
                   onClick={() => setOpen(false)}
                   onMouseEnter={() => setHi(i)}
-                  className={`flex items-center gap-3 px-3 py-2.5 transition ${i === hi ? "bg-surface-2" : ""}`}
+                  className={`flex items-center gap-3 px-3 py-2.5 transition ${i === hi ? "bg-muted" : ""}`}
                 >
                   {s.iconUrl ? (
                     <PxImg src={s.iconUrl} alt="" width={32} height={32} className="w-8 h-8 rounded-lg object-cover shrink-0" />
                   ) : (
-                    <span className="w-8 h-8 rounded-lg bg-primary-soft text-primary flex items-center justify-center text-sm font-bold shrink-0">
+                    <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-bold shrink-0">
                       {s.nameFa.charAt(0)}
                     </span>
                   )}
                   <span className="flex-1 min-w-0">
                     <span className="block text-sm font-bold truncate">{s.nameFa}</span>
                     {s.nameEn && s.nameEn !== s.nameFa && (
-                      <span className="block text-xs text-muted truncate" dir="ltr" style={{ textAlign: "right" }}>{s.nameEn}</span>
+                      <span className="block text-xs text-muted-foreground truncate" dir="ltr" style={{ textAlign: "right" }}>{s.nameEn}</span>
                     )}
                   </span>
                 </Link>
               </li>
             ))}
           </ul>
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => goSearch(q)}
-            className="btn btn-ghost w-full"
+            className="w-full"
           >
             دیدن همه‌ی نتایج «{q.trim()}»
-          </button>
+          </Button>
         </div>
       )}
     </div>

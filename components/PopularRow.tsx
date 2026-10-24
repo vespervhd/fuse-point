@@ -21,9 +21,9 @@ export default function PopularRow({ app, platform, index = 0 }: { app: PopularA
       href={href}
       title={app.nameFa}
       aria-label={`${rank} — ${app.nameFa}`}
-      className="card bg-base-200 transition-all hover:scale-[1.03]"
+      className="block bg-card border border-border rounded-xl shadow-sm transition-all hover:scale-[1.03]"
     >
-      <div className="card-body p-3 flex flex-row items-center gap-2.5">
+      <div className="p-3 flex flex-row items-center gap-2.5">
         <span
           className={`font-extrabold text-lg shrink-0 w-6 text-center ${top3 ? "text-warning" : "opacity-40"}`}
           aria-hidden="true"
@@ -34,7 +34,7 @@ export default function PopularRow({ app, platform, index = 0 }: { app: PopularA
           <PxImg src={px(app.iconUrl) || "/icons/icon-192.png"} alt="" width={44} height={44}
             className="w-11 h-11 rounded-xl object-cover shrink-0" />
         ) : (
-          <span className="w-11 h-11 rounded-xl bg-base-300 grid place-items-center text-lg font-bold opacity-60 shrink-0" dir="ltr">
+          <span className="w-11 h-11 rounded-xl bg-muted grid place-items-center text-lg font-bold opacity-60 shrink-0" dir="ltr">
             {app.nameEn.charAt(0)}
           </span>
         )}

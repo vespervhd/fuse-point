@@ -5,6 +5,8 @@ import AppCard from "@/components/AppCard";
 import { toFaDigits } from "@/lib/fa";
 import type { Metadata } from "next";
 import { SearchX } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 
 type Props = { searchParams: Promise<{ q?: string; sort?: string; oss?: string; page?: string; platform?: string; cat?: string }> };
@@ -42,20 +44,20 @@ export default async function SearchPage({ searchParams }: Props) {
       <h1 className="text-2xl font-extrabold mb-1">
         {q ? <>نتایج جست‌وجو برای «{q}»</> : "جست‌وجو"}
       </h1>
-      <p className="text-sm text-muted mb-6">{q ? `${toFaDigits(total)} نتیجه` : "عبارتی را در کادر جست‌وجوی بالا وارد کنید."}</p>
+      <p className="text-sm text-muted-foreground mb-6">{q ? `${toFaDigits(total)} نتیجه` : "عبارتی را در کادر جست‌وجوی بالا وارد کنید."}</p>
 
       {q && (
         <div className="flex flex-wrap gap-2 mb-6">
           {([["updated", "مرتبط‌ترین"], ["popular", "محبوب‌ترین"], ["newest", "جدیدترین"], ["name", "نام"]] as const).map(([k, label]) => (
             <Link key={k} href={`/search?q=${encodeURIComponent(q)}&sort=${k}${oss ? "&oss=1" : ""}${platQs}${catQs}`}
               className={`text-sm px-4 py-2 rounded-xl border transition ${sort === k
-                ? "bg-primary text-primary-fg border-primary font-bold" : "bg-surface border-border hover:border-primary/50"}`}>
+                ? "bg-primary text-primary-foreground border-primary font-bold" : "bg-card border-border hover:border-primary/50"}`}>
               {label}
             </Link>
           ))}
           <Link href={`/search?q=${encodeURIComponent(q)}&sort=${sort}${oss ? "" : "&oss=1"}${platQs}${catQs}`}
             className={`text-sm px-4 py-2 rounded-xl border transition ${oss
-              ? "bg-primary text-primary-fg border-primary font-bold" : "bg-surface border-border hover:border-primary/50"}`}>
+              ? "bg-primary text-primary-foreground border-primary font-bold" : "bg-card border-border hover:border-primary/50"}`}>
             فقط متن‌باز
           </Link>
           <SearchCategoryFilter cats={cats.map((c: any) => ({ slug: c.slug, nameFa: c.nameFa }))} current={cat} base={base} />
@@ -67,19 +69,19 @@ export default async function SearchPage({ searchParams }: Props) {
           {items.map((a, i) => <AppCard key={a.id} app={a} index={i} variant="horizontal" />)}
         </div>
       ) : (
-        <div className="bg-surface border border-border rounded-3xl p-10 text-center">
-          <SearchX className="w-10 h-10 mx-auto mb-3 text-muted" aria-hidden="true" />
+        <div className="bg-card border border-border rounded-3xl p-10 text-center">
+          <SearchX className="w-10 h-10 mx-auto mb-3 text-muted-foreground" aria-hidden="true" />
           <p className="font-bold mb-1">نتیجه‌ای یافت نشد</p>
-          <p className="text-sm text-muted">املای عبارت را بررسی کنید یا از کلمات ساده‌تر استفاده کنید.</p>
+          <p className="text-sm text-muted-foreground">املای عبارت را بررسی کنید یا از کلمات ساده‌تر استفاده کنید.</p>
         </div>
       ))}
 
       {pages > 1 && (
         <nav className="flex justify-center mt-8" aria-label="صفحه‌بندی">
-          <div className="join">
+          <div className="flex flex-wrap justify-center gap-1">
             {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
               <Link key={p} href={`${base}${catQs}&page=${p}`} aria-current={p === page ? "page" : undefined}
-                className={`join-item btn ${p === page ? "btn-primary btn-active" : "btn-ghost"}`}>
+                className={cn(buttonVariants({ variant: p === page ? "default" : "ghost", size: "sm" }))}>
                 {toFaDigits(p)}
               </Link>
             ))}

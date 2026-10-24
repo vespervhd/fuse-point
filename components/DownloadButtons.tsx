@@ -1,6 +1,7 @@
 "use client";
 
 import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { getDownloadOptions, type DownloadAppInfo } from "./DownloadActions";
 
 // ─── آیکون‌های پلتفرم (اینلاین، بدون وابستگی) ───
@@ -32,13 +33,13 @@ export function PlatformIcon({ platform, className }: { platform: string; classN
   return platformIcon(platform, className ?? "");
 }
 
-// رنگ دیزی هر پلتفرم/مقصد
+// رنگ توکنی هر پلتفرم/مقصد (روی Button پیش‌فرض سوار می‌شود)
 const BTN_TINT: Record<string, string> = {
-  android: "btn-success",
-  windows: "btn-info",
-  linux: "btn-warning",
-  web: "btn-accent",
-  github: "btn-neutral",
+  android: "bg-success text-success-foreground hover:bg-success/90",
+  windows: "bg-info text-info-foreground hover:bg-info/90",
+  linux: "bg-warning text-warning-foreground hover:bg-warning/90",
+  web: "bg-accent text-accent-foreground hover:bg-accent/80",
+  github: "bg-muted text-foreground hover:bg-muted/80",
 };
 
 const platformFa: Record<string, string> = {
@@ -57,22 +58,23 @@ type PillProps = {
   text: string;
 };
 
-// دکمه‌ی دانلود دیزی: آیکون پلتفرم + نام + آیکون دانلود
+// دکمه‌ی دانلود: آیکون پلتفرم + نام + آیکون دانلود
 function NeonPill({ href, external, downloadable, tint, icon, label, text }: PillProps) {
   return (
-    <a
-      href={href}
-      target={external ? "_blank" : undefined}
-      rel={external ? "noopener noreferrer" : undefined}
-      download={downloadable ? "" : undefined}
-      title={label}
-      aria-label={label}
-      className={`btn rounded-full ${tint}`}
-    >
-      <span className="[&>svg]:w-5 [&>svg]:h-5">{icon}</span>
-      {text}
-      <Download className="w-5 h-5" aria-hidden="true" />
-    </a>
+    <Button asChild className={`rounded-full ${tint}`}>
+      <a
+        href={href}
+        target={external ? "_blank" : undefined}
+        rel={external ? "noopener noreferrer" : undefined}
+        download={downloadable ? "" : undefined}
+        title={label}
+        aria-label={label}
+      >
+        <span className="[&>svg]:w-5 [&>svg]:h-5">{icon}</span>
+        {text}
+        <Download className="w-5 h-5" aria-hidden="true" />
+      </a>
+    </Button>
   );
 }
 
@@ -84,7 +86,7 @@ const CLEAN_LABEL: Record<string, string> = {
   fdroid: "دانلود",
 };
 
-// دکمه‌های دانلود — قرصی دیزی با رنگ هر پلتفرم
+// دکمه‌های دانلود — قرصی با رنگ هر پلتفرم
 export default function DownloadButtons({ app }: { app: DownloadAppInfo }) {
   const opts = getDownloadOptions(app);
   if (!opts.length) return null;

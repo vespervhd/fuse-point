@@ -21,7 +21,7 @@ export default function Section({
           </Link>
         )}
       </div>
-      {children || (empty && <p className="text-muted text-sm bg-surface border border-border rounded-xl p-6 text-center">{empty}</p>)}
+      {children || (empty && <p className="text-muted-foreground text-sm bg-card border border-border rounded-xl p-6 text-center">{empty}</p>)}
     </section>
   );
 }

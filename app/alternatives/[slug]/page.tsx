@@ -48,7 +48,7 @@ export default async function AlternativePage({ params }: { params: Promise<{ sl
           <Leaf className="w-4 h-4" aria-hidden="true" /> جایگزین‌های آزاد و متن‌باز
         </span>
         <h1 className="text-2xl sm:text-3xl font-extrabold mb-3">جایگزین {entry.forFa}</h1>
-        <p className="text-muted max-w-2xl mx-auto">
+        <p className="text-muted-foreground max-w-2xl mx-auto">
           به‌جای {entry.forFa} می‌توانید از این برنامه‌های آزاد استفاده کنید — بدون ردیاب، بدون تبلیغ، با احترام به حریم خصوصی شما.
         </p>
       </div>
@@ -58,12 +58,12 @@ export default async function AlternativePage({ params }: { params: Promise<{ sl
           {apps.map(({ app, why }, i) => (
             <div key={app.id} className="flex flex-col">
               <AppTile app={app} index={i} />
-              <p className="text-xs text-muted mt-2 leading-5 text-center">{why}</p>
+              <p className="text-xs text-muted-foreground mt-2 leading-5 text-center">{why}</p>
             </div>
           ))}
         </div>
       ) : (
-        <p className="text-center text-muted">به‌زودی جایگزین‌ها اضافه می‌شوند.</p>
+        <p className="text-center text-muted-foreground">به‌زودی جایگزین‌ها اضافه می‌شوند.</p>
       )}
     </div>
   );

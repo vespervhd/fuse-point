@@ -49,7 +49,7 @@ export default function TopInRail({
                   className="w-full h-full rounded-[24%] object-cover shadow"
                 />
               ) : (
-                <span className="w-full h-full rounded-[24%] bg-primary-soft text-primary grid place-items-center text-xl font-bold" aria-hidden="true">
+                <span className="w-full h-full rounded-[24%] bg-primary/10 text-primary grid place-items-center text-xl font-bold" aria-hidden="true">
                   {(app.nameFa || "?").trim().charAt(0)}
                 </span>
               )}
@@ -58,7 +58,7 @@ export default function TopInRail({
               {app.nameFa}
             </span>
             {(app.githubStars ?? 0) > 0 && (
-              <span className="inline-flex items-center gap-1 text-[10px] text-muted -mt-1">
+              <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground -mt-1">
                 <Star className="w-3 h-3 fill-amber-400 text-amber-400" aria-hidden="true" />
                 {toFaDigits(app.githubStars ?? 0)}
               </span>

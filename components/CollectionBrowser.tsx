@@ -43,15 +43,15 @@ export default function CollectionBrowser({
           همه
         </Link>
       </div>
-      <div className="card bg-base-200">
-        <ul className="divide-y divide-base-300/60">
+      <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+        <ul className="divide-y divide-border/60">
           {collections.map((c) => {
             const Icon = colIcon(c.nameFa);
             return (
               <li key={c.id}>
                 <Link
                   href={`/collection/${c.slug}`}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-base-300/50 transition"
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition"
                 >
                   <span className="w-10 h-10 rounded-xl bg-primary/10 text-primary grid place-items-center shrink-0">
                     <Icon className="w-5 h-5" aria-hidden="true" />

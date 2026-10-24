@@ -4,6 +4,7 @@ import PlatformBadge from "@/components/PlatformBadge";
 import { toFaDigits } from "@/lib/fa";
 import { px } from "@/lib/img";
 import { Star, Download } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export type CardApp = {
   id: string;
@@ -39,7 +40,7 @@ function Icon({ app }: { app: CardApp }) {
       alt={`آیکون ${app.nameFa}`}
       width={56}
       height={56}
-      className="w-14 h-14 rounded-xl object-cover shrink-0 bg-base-300"
+      className="w-14 h-14 rounded-xl object-cover shrink-0 bg-muted"
     />
   ) : (
     <Initial name={app.nameFa} />
@@ -49,9 +50,9 @@ function Icon({ app }: { app: CardApp }) {
 function LicenseBadge({ app }: { app: CardApp }) {
   const open = !!app.isOpenSource;
   return (
-    <span className={`badge badge-sm ${open ? "badge-success badge-soft" : "badge-info badge-soft"}`}>
+    <Badge variant={open ? "success" : "info"} className="text-[11px] px-1.5 py-0">
       {open ? "متن‌باز" : "رایگان"}
-    </span>
+    </Badge>
   );
 }
 
@@ -74,7 +75,7 @@ function Stats({ app }: { app: CardApp }) {
 
 export type CardVariant = "standard" | "horizontal";
 
-// کارت برنامه — دو واریانت daisyUI:
+// کارت برنامه — دو واریانت:
 // standard: کارت کامل (صفحه‌ی اصلی، علاقه‌مندی‌ها) — آیکون + نام + توضیح + بج‌ها
 // horizontal: فشرده‌ی افقی (نتایج جست‌وجو) — آیکون + نام + بج پلتفرم + آمار
 export default function AppCard({
@@ -98,7 +99,7 @@ export default function AppCard({
       <Link
         href={href}
         style={anim}
-        className="animate-card-in card-hover group card card-side bg-base-200 p-3 gap-3 items-center"
+        className="animate-card-in card-hover group flex flex-row bg-card border border-border rounded-xl shadow-sm p-3 gap-3 items-center"
       >
         <Icon app={app} />
         <div className="min-w-0 flex-1">
@@ -119,19 +120,19 @@ export default function AppCard({
     <Link
       href={href}
       style={anim}
-      className="animate-card-in card-hover group card bg-base-200"
+      className="animate-card-in card-hover group flex flex-col bg-card border border-border rounded-xl shadow-sm"
     >
-      <div className="card-body p-4">
+      <div className="p-4">
         <div className="flex items-center gap-3">
           <Icon app={app} />
           <div className="min-w-0 flex-1">
-            <h3 title={app.nameFa} className="card-title text-[15px] leading-6 group-hover:text-primary transition-colors line-clamp-2">
+            <h3 title={app.nameFa} className="font-semibold text-[15px] leading-6 group-hover:text-primary transition-colors line-clamp-2">
               {app.nameFa}
             </h3>
             {desc && <p className="text-xs opacity-60 truncate mt-0.5">{desc}</p>}
           </div>
         </div>
-        <div className="card-actions items-center mt-3">
+        <div className="flex flex-wrap items-center gap-2 mt-3">
           <PlatformBadge platform={app.platform} />
           <LicenseBadge app={app} />
           <span className="flex-1" />

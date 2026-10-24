@@ -7,7 +7,7 @@ function Initial({ name }: { name: string }) {
   const ch = (name || "?").trim().charAt(0);
   return (
     <span
-      className="w-full h-full rounded-[24%] bg-primary-soft text-primary flex items-center justify-center text-4xl font-bold"
+      className="w-full h-full rounded-[24%] bg-primary/10 text-primary flex items-center justify-center text-4xl font-bold"
       aria-hidden="true"
     >
       {ch}

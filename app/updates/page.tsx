@@ -33,10 +33,10 @@ export default async function UpdatesPage() {
   if (!latestDl.size) {
     return (
       <div className="max-w-2xl mx-auto text-center py-16">
-        <Inbox className="w-14 h-14 mx-auto mb-4 text-muted" aria-hidden="true" />
+        <Inbox className="w-14 h-14 mx-auto mb-4 text-muted-foreground" aria-hidden="true" />
         <h1 className="text-xl font-extrabold mb-2">هنوز چیزی دانلود نکردی</h1>
-        <p className="text-muted mb-6">برنامه‌هایی که دانلود می‌کنی اینجا دنبال می‌شن و وقتی نسخه‌ی جدید بیاد خبرت می‌کنم</p>
-        <Link href="/" className="inline-block bg-primary text-primary-fg font-bold px-6 py-3 rounded-2xl">
+        <p className="text-muted-foreground mb-6">برنامه‌هایی که دانلود می‌کنی اینجا دنبال می‌شن و وقتی نسخه‌ی جدید بیاد خبرت می‌کنم</p>
+        <Link href="/" className="inline-block bg-primary text-primary-foreground font-bold px-6 py-3 rounded-2xl">
           مرور برنامه‌ها
         </Link>
       </div>
@@ -71,7 +71,7 @@ export default async function UpdatesPage() {
       <h1 className="text-2xl font-extrabold mb-1 flex items-center gap-2">
         <RefreshCw className="w-6 h-6 text-primary" aria-hidden="true" /> به‌روزرسانی‌ها
       </h1>
-      <p className="text-sm text-muted mb-6">
+      <p className="text-sm text-muted-foreground mb-6">
         {updates.length > 0
           ? `${toFaDigits(updates.length)} برنامه نسخه‌ی جدید دارن`
           : "همه‌ی برنامه‌هات به‌روزن"}
@@ -81,23 +81,23 @@ export default async function UpdatesPage() {
         <div className="space-y-3 mb-8">
           {updates.map((app) => (
             <Link key={app.id} href={`/app/${app.slug}`}
-              className="flex items-center gap-4 bg-surface border border-border rounded-2xl p-4 hover:border-primary/50 transition">
+              className="flex items-center gap-4 bg-card border border-border rounded-2xl p-4 hover:border-primary/50 transition">
               {(app.iconUrl ? (
                 <PxImg src={px(app.iconUrl) || app.iconUrl} alt={app.nameFa} width={56} height={56}
-                  className="w-14 h-14 rounded-2xl object-cover shrink-0 bg-surface-2" />
+                  className="w-14 h-14 rounded-2xl object-cover shrink-0 bg-muted" />
               ) : (
-                <span className="w-14 h-14 rounded-2xl bg-surface-2 flex items-center justify-center text-2xl font-bold shrink-0">
+                <span className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center text-2xl font-bold shrink-0">
                   {app.nameFa.charAt(0)}
                 </span>
               ))}
               <div className="flex-1 min-w-0">
                 <h3 className="font-bold truncate">{app.nameFa}</h3>
-                <p className="text-xs text-muted" dir="ltr" style={{ textAlign: "right" }}>{app.nameEn}</p>
+                <p className="text-xs text-muted-foreground" dir="ltr" style={{ textAlign: "right" }}>{app.nameEn}</p>
                 <p className="text-xs text-primary font-bold mt-1">
                   نسخه‌ی جدید: {(app as { newVersion?: string }).newVersion || "جدید"} 🆕
                 </p>
               </div>
-              <span className="shrink-0 bg-primary text-primary-fg text-sm font-bold px-4 py-2 rounded-xl">
+              <span className="shrink-0 bg-primary text-primary-foreground text-sm font-bold px-4 py-2 rounded-xl">
                 به‌روزرسانی
               </span>
             </Link>
@@ -113,8 +113,8 @@ export default async function UpdatesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {upToDate.map((app) => (
               <Link key={app.id} href={`/app/${app.slug}`}
-                className="flex items-center gap-3 bg-surface border border-border rounded-2xl p-3 hover:border-primary/50 transition opacity-75">
-                <span className="w-10 h-10 rounded-xl bg-surface-2 flex items-center justify-center text-lg font-bold shrink-0">
+                className="flex items-center gap-3 bg-card border border-border rounded-2xl p-3 hover:border-primary/50 transition opacity-75">
+                <span className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-lg font-bold shrink-0">
                   {app.nameFa.charAt(0)}
                 </span>
                 <span className="font-bold text-sm truncate">{app.nameFa}</span>

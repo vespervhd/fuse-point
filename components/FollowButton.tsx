@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Bell, BellOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function FollowButton({ appId }: { appId: string }) {
   const [following, setFollowing] = useState(false);
@@ -31,21 +32,23 @@ export default function FollowButton({ appId }: { appId: string }) {
 
   if (loading && !following) {
     return (
-      <button disabled aria-label="در حال بارگذاری" className="btn btn-ghost btn-circle shrink-0">
+      <Button variant="ghost" size="icon" disabled aria-label="در حال بارگذاری" className="size-12 shrink-0 rounded-full">
         <Bell className="w-6 h-6" aria-hidden="true" />
-      </button>
+      </Button>
     );
   }
 
   return (
-    <button
+    <Button
+      variant={following ? "default" : "ghost"}
+      size="icon"
       onClick={toggle}
       disabled={loading}
       aria-pressed={following}
       title={following ? "لغو دنبال کردن" : "دنبال کن تا از نسخه جدید باخبر شی"}
-      className={`btn btn-circle shrink-0 ${following ? "btn-primary" : "btn-ghost"}`}
+      className="size-12 shrink-0 rounded-full"
     >
       {following ? <Bell className="w-6 h-6" aria-hidden="true" /> : <BellOff className="w-6 h-6" aria-hidden="true" />}
-    </button>
+    </Button>
   );
 }

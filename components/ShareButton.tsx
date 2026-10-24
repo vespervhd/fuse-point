@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Share2, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function ShareButton({ appName, slug }: { appName: string; slug: string }) {
   const [copied, setCopied] = useState(false);
@@ -39,17 +40,19 @@ export default function ShareButton({ appName, slug }: { appName: string; slug: 
   };
 
   return (
-    <button
+    <Button
+      variant="ghost"
+      size="icon"
       onClick={share}
       aria-label="اشتراک‌گذاری"
       title={copied ? "لینک کپی شد" : "اشتراک‌گذاری"}
-      className="btn btn-ghost btn-circle shrink-0"
+      className="size-12 shrink-0 rounded-full"
     >
       {copied ? (
         <Check className="w-6 h-6 text-green-500" aria-hidden="true" />
       ) : (
         <Share2 className="w-6 h-6" aria-hidden="true" />
       )}
-    </button>
+    </Button>
   );
 }

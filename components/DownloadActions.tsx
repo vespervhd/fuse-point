@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Download, Globe, ChevronDown, Package } from "lucide-react";
 import { formatBytes, toFaDigits } from "@/lib/fa";
+import { Button } from "@/components/ui/button";
 
 // ─── آیکون‌های برند (اینلاین، بدون وابستگی) ───
 const GithubIcon = ({ className }: { className?: string }) => (
@@ -166,17 +167,19 @@ export default function DownloadActions({ app }: { app: DownloadAppInfo }) {
   return (
     <section aria-label="دانلود" className="mt-6">
       <ActionButton option={primary} big />
-      <button
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="btn btn-ghost btn-sm w-full mt-3"
+        className="w-full mt-3"
       >
         <ChevronDown
           className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`}
           aria-hidden="true"
         />
         {open ? "بستن گزینه‌ها" : `گزینه‌های بیشتر (${toFaDigits(rest.length)})`}
-      </button>
+      </Button>
       <div
         className={`grid transition-all duration-300 ease-in-out ${
           open ? "grid-rows-[1fr] opacity-100 mt-1" : "grid-rows-[0fr] opacity-0"
@@ -196,31 +199,37 @@ export default function DownloadActions({ app }: { app: DownloadAppInfo }) {
 
 function ActionButton({ option: o, big }: { option: Option; big?: boolean }) {
   return (
+    <Button
+      asChild
+      variant={o.primary ? "default" : "ghost"}
+      size={o.primary && big ? "lg" : "default"}
+      className={
+        o.primary
+          ? "w-full"
+          : "w-full justify-start h-auto py-3 text-start"
+      }
+    >
     <a
       href={o.href}
       {...(o.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className={
-        o.primary
-          ? `btn btn-primary w-full ${big ? "btn-lg" : ""}`
-          : `btn btn-ghost w-full justify-start h-auto py-3 text-start`
-      }
     >
       <span className={o.primary ? "" : "text-primary shrink-0"}>{o.icon}</span>
       <span className={`text-start ${big && o.primary ? "" : "flex-1"}`}>
         <span className={`block font-bold ${big && o.primary ? "text-lg" : "text-sm"}`}>{o.label}</span>
         <span
           className={`block text-xs mt-0.5 ${
-            o.primary ? "opacity-80" : "text-muted"
+            o.primary ? "opacity-80" : "text-muted-foreground"
           } ${o.key === "github" ? "font-mono" : ""}`}
           dir={o.key === "github" ? "ltr" : undefined}
         >
           {o.sub}
         </span>
       </span>
-      {!o.primary && <Download className="w-4 h-4 text-muted ms-auto shrink-0" aria-hidden="true" />}
+      {!o.primary && <Download className="w-4 h-4 text-muted-foreground ms-auto shrink-0" aria-hidden="true" />}
       {o.primary && o.key === "apk" && (
         <Package className="w-5 h-5 opacity-70" aria-hidden="true" />
       )}
     </a>
+    </Button>
   );
 }

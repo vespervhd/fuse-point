@@ -23,8 +23,11 @@ import Alternatives from "@/components/Alternatives";
 import { findAlternatives } from "@/data/alternatives";
 import {
   RefreshCw, Download, Star,
-  BadgeCheck, TriangleAlert,
+  BadgeCheck, TriangleAlert, ChevronDown,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { siteUrl } from "@/lib/site-url";
 
 
@@ -50,8 +53,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 function InfoRow({ k, v, ltr = false }: { k: string; v: React.ReactNode; ltr?: boolean }) {
   return (
-    <div className="flex justify-between gap-4 py-2 border-b border-base-300 last:border-0 text-[13px]">
-      <dt className="opacity-60 shrink-0">{k}</dt>
+    <div className="flex justify-between gap-4 py-2 border-b border-border last:border-0 text-[13px]">
+      <dt className="text-muted-foreground shrink-0">{k}</dt>
       <dd className="font-medium text-left break-all min-w-0" dir={ltr ? "ltr" : "rtl"}>{v}</dd>
     </div>
   );
@@ -121,8 +124,8 @@ export default async function AppPage({ params }: Props) {
   return (
     <div className="animate-fade-up max-w-3xl mx-auto">
       {/* دانلودسنتر به سبک iOS */}
-      <div className="card bg-base-200 shadow-sm">
-        <div className="card-body p-5 sm:p-6">
+      <Card className="shadow-sm py-0 gap-0">
+        <CardContent className="p-5 sm:p-6">
           <div className="flex gap-4 items-start">
             {app.iconUrl ? (
               <PxImg src={px(app.iconUrl) || "/icons/icon-192.png"} alt={`آیکون ${app.nameFa}`} width={88} height={88}
@@ -135,9 +138,9 @@ export default async function AppPage({ params }: Props) {
             <div className="flex-1 min-w-0 pt-1">
               <h1 title={app.nameFa} className="text-[19px] font-extrabold leading-7 break-words line-clamp-2">{app.nameFa}</h1>
               {app.developerName && (
-                <p className="text-[13px] opacity-60 mt-0.5">{app.developerName}</p>
+                <p className="text-[13px] text-muted-foreground mt-0.5">{app.developerName}</p>
               )}
-              <p className="text-[12px] mt-1.5 flex items-center gap-1.5 opacity-60">
+              <p className="text-[12px] mt-1.5 flex items-center gap-1.5 text-muted-foreground">
                 <PlatformIcon platform={app.platform} className="w-4 h-4" />
                 {v?.versionName && <span dir="ltr">{v.versionName}</span>}
               </p>
@@ -152,25 +155,25 @@ export default async function AppPage({ params }: Props) {
           {/* قرص‌های اطلاعات — متقارن */}
           <div className="flex flex-wrap justify-center gap-2 mt-4">
             {v?.fileSize ? (
-              <span className="badge badge-lg gap-1.5">
+              <Badge variant="outline" className="h-7 px-3.5 text-sm rounded-full gap-1.5 border-border bg-muted/50">
                 <Download className="w-4 h-4" aria-hidden="true" /> {formatBytes(v.fileSize)}
-              </span>
+              </Badge>
             ) : null}
             {(app.githubStars ?? 0) > 0 && (
-              <span className="badge badge-lg gap-1.5">
+              <Badge variant="outline" className="h-7 px-3.5 text-sm rounded-full gap-1.5 border-border bg-muted/50">
                 <Star className="w-4 h-4" aria-hidden="true" /> {toFaDigits(app.githubStars ?? 0)}
-              </span>
+              </Badge>
             )}
             {v?.verifiedAt && (
-              <span className="badge badge-lg badge-success gap-1.5">
+              <Badge variant="success" className="h-7 px-3.5 text-sm rounded-full gap-1.5">
                 <BadgeCheck className="w-4 h-4" aria-hidden="true" /> تأیید شده
-              </span>
+              </Badge>
             )}
           </div>
 
           {/* بنر آپدیت */}
           {hasUpdate && v && (
-            <div className="alert alert-success mt-4" role="status">
+            <div className="mt-4 flex items-center gap-3 rounded-xl bg-success px-4 py-3 text-success-foreground shadow-sm" role="status">
               <RefreshCw className="w-5 h-5 shrink-0" aria-hidden="true" />
               <p className="text-sm">
                 <b>نسخه‌ی جدید موجوده!</b>{" "}
@@ -185,7 +188,7 @@ export default async function AppPage({ params }: Props) {
             </div>
           )}
 
-          <div className="divider my-4" />
+          <Separator className="my-4" />
 
           {/* دانلود */}
           <DownloadButtons
@@ -206,8 +209,8 @@ export default async function AppPage({ params }: Props) {
                 : null,
             }}
           />
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* تصاویر */}
       {app.screenshots.length > 0 && (
@@ -243,38 +246,38 @@ export default async function AppPage({ params }: Props) {
 
       <div className="h-px bg-border" />
 
-      {/* اطلاعات — daisyUI */}
+      {/* اطلاعات */}
       <section className="py-6" aria-label="اطلاعات">
         <h2 className="font-extrabold text-[15px] px-1 mb-3">اطلاعات</h2>
 
         {/* اعداد کلیدی */}
-        <div className="stats w-full bg-base-200 shadow-sm mb-3">
+        <div className="flex w-full bg-card text-card-foreground border border-border rounded-xl shadow-sm mb-3 overflow-hidden">
           {app.platform === "android" ? (
             <>
-              <div className="stat px-4 py-3">
-                <div className="stat-title text-[11px]">نسخه</div>
-                <div className="stat-value text-lg font-bold" dir="ltr">{v?.versionName ?? "—"}</div>
+              <div className="flex-1 min-w-0 px-4 py-3">
+                <div className="text-[11px] text-muted-foreground">نسخه</div>
+                <div className="text-lg font-bold" dir="ltr">{v?.versionName ?? "—"}</div>
               </div>
-              <div className="stat px-4 py-3">
-                <div className="stat-title text-[11px]">حجم</div>
-                <div className="stat-value text-lg font-bold">{formatBytes(v?.fileSize)}</div>
+              <div className="flex-1 min-w-0 px-4 py-3 border-s border-border">
+                <div className="text-[11px] text-muted-foreground">حجم</div>
+                <div className="text-lg font-bold">{formatBytes(v?.fileSize)}</div>
               </div>
             </>
           ) : (
-            <div className="stat px-4 py-3">
-              <div className="stat-title text-[11px]">پلتفرم</div>
-              <div className="stat-value text-lg font-bold">{app.platform === "windows" ? "ویندوز" : "لینوکس"}</div>
+            <div className="flex-1 min-w-0 px-4 py-3">
+              <div className="text-[11px] text-muted-foreground">پلتفرم</div>
+              <div className="text-lg font-bold">{app.platform === "windows" ? "ویندوز" : "لینوکس"}</div>
             </div>
           )}
-          <div className="stat px-4 py-3">
-            <div className="stat-title text-[11px]">مجوز</div>
-            <div className="stat-value text-[13px] font-bold break-words" dir="ltr">{app.license || "—"}</div>
+          <div className="flex-1 min-w-0 px-4 py-3 border-s border-border">
+            <div className="text-[11px] text-muted-foreground">مجوز</div>
+            <div className="text-[13px] font-bold break-words" dir="ltr">{app.license || "—"}</div>
           </div>
         </div>
 
         {/* جزئیات */}
-        <div className="card bg-base-200 shadow-sm">
-          <div className="card-body p-4">
+        <Card className="shadow-sm py-0 gap-0">
+          <CardContent className="p-4">
             <dl>
               {app.platform === "android" && (
                 <InfoRow k="حداقل اندروید" v={androidVersion(v?.minSdk)} />
@@ -287,45 +290,49 @@ export default async function AppPage({ params }: Props) {
                 </a>
               ) : "داخلی"} />
               <div className="flex justify-between items-center gap-4 py-2 text-[13px]">
-                <dt className="opacity-60 shrink-0">وضعیت بررسی</dt>
+                <dt className="text-muted-foreground shrink-0">وضعیت بررسی</dt>
                 <dd>
                   {v?.verifiedAt ? (
-                    <span className="badge badge-success badge-sm gap-1">
+                    <Badge variant="success" className="gap-1 rounded-full">
                       <BadgeCheck className="w-3.5 h-3.5" aria-hidden="true" /> {formatDate(v.verifiedAt)}
-                    </span>
+                    </Badge>
                   ) : (
-                    <span className="badge badge-ghost badge-sm">در انتظار بررسی</span>
+                    <Badge variant="secondary" className="rounded-full">در انتظار بررسی</Badge>
                   )}
                 </dd>
               </div>
             </dl>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* هش و مجوزها */}
         {(v?.sha256 || app.permissions.length > 0) && (
           <div className="space-y-2 mt-3">
             {v?.sha256 && (
-              <div className="collapse collapse-arrow bg-base-200 shadow-sm">
-                <input type="checkbox" />
-                <div className="collapse-title text-[13px] font-bold py-3 min-h-0">هش SHA-256</div>
-                <div className="collapse-content">
-                  <code className="block p-3 bg-base-300 rounded-xl break-all font-mono text-[11px]" dir="ltr">{v.sha256}</code>
+              <details className="group bg-card text-card-foreground border border-border rounded-xl shadow-sm overflow-hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[13px] font-bold [&::-webkit-details-marker]:hidden">
+                  هش SHA-256
+                  <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+                </summary>
+                <div className="px-4 pb-4">
+                  <code className="block p-3 bg-muted rounded-xl break-all font-mono text-[11px]" dir="ltr">{v.sha256}</code>
                 </div>
-              </div>
+              </details>
             )}
             {app.permissions.length > 0 && (
-              <div className="collapse collapse-arrow bg-base-200 shadow-sm">
-                <input type="checkbox" />
-                <div className="collapse-title text-[13px] font-bold py-3 min-h-0">مجوزهای درخواستی ({toFaDigits(app.permissions.length)})</div>
-                <div className="collapse-content">
+              <details className="group bg-card text-card-foreground border border-border rounded-xl shadow-sm overflow-hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[13px] font-bold [&::-webkit-details-marker]:hidden">
+                  مجوزهای درخواستی ({toFaDigits(app.permissions.length)})
+                  <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+                </summary>
+                <div className="px-4 pb-4">
                   <div className="flex flex-wrap gap-1.5 max-h-44 overflow-y-auto">
                     {app.permissions.map((p) => (
-                      <span key={p.id} className="badge badge-ghost badge-sm font-mono" dir="ltr">{p.permission}</span>
+                      <Badge key={p.id} variant="secondary" className="font-mono rounded-full" dir="ltr">{p.permission}</Badge>
                     ))}
                   </div>
                 </div>
-              </div>
+              </details>
             )}
           </div>
         )}
@@ -350,7 +357,7 @@ export default async function AppPage({ params }: Props) {
             <div className="flex flex-wrap gap-2 px-1">
               {app.categories.map((c) => (
                 <Link key={c.slug} href={`/category/${c.slug}`}
-                  className="text-[13px] bg-surface rounded-full px-4 py-2 inline-flex items-center gap-1.5">
+                  className="text-[13px] bg-card border border-border rounded-full px-4 py-2 inline-flex items-center gap-1.5">
                   <DbIcon icon={c.icon} className="w-4 h-4 text-primary" /> {c.nameFa}
                 </Link>
               ))}
@@ -363,7 +370,7 @@ export default async function AppPage({ params }: Props) {
       <div className="py-6 px-1 space-y-3">
         <ReportButton appId={app.id} appName={app.nameFa} />
         <Link href={`/report?app=${app.slug}`}
-          className="flex items-center justify-center gap-2 text-[13px] text-muted py-2">
+          className="flex items-center justify-center gap-2 text-[13px] text-muted-foreground py-2">
           <TriangleAlert className="w-4 h-4" aria-hidden="true" /> گزارش مشکل یا لینک خراب
         </Link>
       </div>

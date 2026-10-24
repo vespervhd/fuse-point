@@ -19,17 +19,17 @@ export default function FavoritesPage() {
 
   if (state === "loading") {
     return <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {[1, 2, 3, 4].map((i) => <div key={i} className="h-32 bg-surface border border-border rounded-2xl animate-pulse" />)}
+      {[1, 2, 3, 4].map((i) => <div key={i} className="skeleton h-32 border border-border rounded-2xl" />)}
     </div>;
   }
 
   if (state === "denied") {
     return (
-      <div className="bg-surface border border-border rounded-3xl p-10 text-center max-w-md mx-auto">
-        <Lock className="w-10 h-10 mx-auto mb-3 text-muted" aria-hidden="true" />
+      <div className="bg-card border border-border rounded-3xl p-10 text-center max-w-md mx-auto">
+        <Lock className="w-10 h-10 mx-auto mb-3 text-muted-foreground" aria-hidden="true" />
         <p className="font-extrabold mb-1">وارد نشده‌اید</p>
-        <p className="text-sm text-muted mb-4">برای دیدن علاقه‌مندی‌ها وارد حساب شوید.</p>
-        <Link href="/login" className="inline-block bg-primary text-primary-fg font-bold px-6 py-2.5 rounded-xl">ورود</Link>
+        <p className="text-sm text-muted-foreground mb-4">برای دیدن علاقه‌مندی‌ها وارد حساب شوید.</p>
+        <Link href="/login" className="inline-block bg-primary text-primary-foreground font-bold px-6 py-2.5 rounded-xl">ورود</Link>
       </div>
     );
   }
@@ -49,10 +49,10 @@ export default function FavoritesPage() {
           ))}
         </div>
       ) : (
-        <div className="bg-surface border border-border rounded-3xl p-10 text-center">
-          <Heart className="w-10 h-10 mx-auto mb-3 text-muted" aria-hidden="true" />
+        <div className="bg-card border border-border rounded-3xl p-10 text-center">
+          <Heart className="w-10 h-10 mx-auto mb-3 text-muted-foreground" aria-hidden="true" />
           <p className="font-bold mb-1">هنوز چیزی ذخیره نکرده‌اید</p>
-          <p className="text-sm text-muted">روی قلب هر برنامه بزنید تا اینجا ذخیره شود.</p>
+          <p className="text-sm text-muted-foreground">روی قلب هر برنامه بزنید تا اینجا ذخیره شود.</p>
         </div>
       )}
     </div>

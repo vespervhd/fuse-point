@@ -67,28 +67,28 @@ async function HomeSlide({ platform }: { platform?: Platform }) {
       {/* مجموعه‌ها — مینیمال */}
       <CollectionBrowser collections={collections} platform={platform} />
 
-      {/* نوار آمار — daisyUI stats */}
-      <div className="stats w-full bg-base-200 shadow-sm mb-10" role="status" aria-label="آمار فروشگاه">
-        <div className="stat px-4 py-3">
-          <div className="stat-figure text-primary">
+      {/* نوار آمار */}
+      <div className="grid grid-cols-3 w-full bg-card border border-border rounded-xl shadow-sm mb-10 overflow-hidden" role="status" aria-label="آمار فروشگاه">
+        <div className="px-4 py-3">
+          <div className="text-primary">
             <LayoutGrid className="w-6 h-6" aria-hidden="true" />
           </div>
-          <div className="stat-title text-[11px]">برنامه</div>
-          <div className="stat-value text-xl">{toFaDigits(stats.apps)}</div>
+          <div className="text-[11px] text-muted-foreground">برنامه</div>
+          <div className="text-xl font-bold">{toFaDigits(stats.apps)}</div>
         </div>
-        <div className="stat px-4 py-3">
-          <div className="stat-figure text-secondary">
+        <div className="px-4 py-3 border-s border-border">
+          <div className="text-secondary">
             <Download className="w-6 h-6" aria-hidden="true" />
           </div>
-          <div className="stat-title text-[11px]">دانلود</div>
-          <div className="stat-value text-xl">{toFaDigits(stats.downloads)}</div>
+          <div className="text-[11px] text-muted-foreground">دانلود</div>
+          <div className="text-xl font-bold">{toFaDigits(stats.downloads)}</div>
         </div>
-        <div className="stat px-4 py-3">
-          <div className="stat-figure text-accent">
+        <div className="px-4 py-3 border-s border-border">
+          <div className="text-warning">
             <Tags className="w-6 h-6" aria-hidden="true" />
           </div>
-          <div className="stat-title text-[11px]">دسته‌بندی</div>
-          <div className="stat-value text-xl">{toFaDigits(stats.categories)}</div>
+          <div className="text-[11px] text-muted-foreground">دسته‌بندی</div>
+          <div className="text-xl font-bold">{toFaDigits(stats.categories)}</div>
         </div>
       </div>
 
@@ -100,9 +100,9 @@ async function HomeSlide({ platform }: { platform?: Platform }) {
               className="flex-none w-32 sm:w-[150px] snap-start flex flex-col gap-2 group">
               {a.iconUrl ? (
                 <PxImg src={px(a.iconUrl) || "/icons/icon-192.png"} alt={`آیکون ${a.nameFa}`} width={130} height={130}
-                  className="w-28 h-28 sm:w-[130px] sm:h-[130px] rounded-[28px] object-cover bg-surface-2" />
+                  className="w-28 h-28 sm:w-[130px] sm:h-[130px] rounded-[28px] object-cover bg-muted" />
               ) : (
-                <span className="w-28 h-28 sm:w-[130px] sm:h-[130px] rounded-[28px] bg-surface-2 grid place-items-center text-5xl font-bold text-muted" dir="ltr">
+                <span className="w-28 h-28 sm:w-[130px] sm:h-[130px] rounded-[28px] bg-muted grid place-items-center text-5xl font-bold text-muted-foreground" dir="ltr">
                   {a.nameEn.charAt(0)}
                 </span>
               )}
@@ -128,7 +128,7 @@ async function HomeSlide({ platform }: { platform?: Platform }) {
 
 async function CategorySlide({ slug, platform }: { slug: string; platform: Platform }) {
   const cat = await getCategoryBySlug(slug);
-  if (!cat) return <p className="text-muted text-center py-10">دسته‌بندی یافت نشد.</p>;
+  if (!cat) return <p className="text-muted-foreground text-center py-10">دسته‌بندی یافت نشد.</p>;
   const previews = await getChildPreviews(cat.id, 10, platform);
   const total = previews.reduce((s, p) => s + p.total, 0);
 
@@ -140,7 +140,7 @@ async function CategorySlide({ slug, platform }: { slug: string; platform: Platf
         </span>
         <div>
           <h1 className="text-2xl font-extrabold">{cat.nameFa}</h1>
-          <p className="text-sm text-muted">{toFaDigits(total)} برنامه</p>
+          <p className="text-sm text-muted-foreground">{toFaDigits(total)} برنامه</p>
         </div>
       </div>
       {previews.length ? (
@@ -151,7 +151,7 @@ async function CategorySlide({ slug, platform }: { slug: string; platform: Platf
                 <Link href={`/category/${ch.slug}${platform === "android" ? "" : `?platform=${platform}`}`} className="flex items-center gap-2 group">
                   <DbIcon icon={ch.icon} className="w-6 h-6 text-primary" />
                   <h2 className="text-lg font-extrabold group-hover:text-primary transition">{ch.nameFa}</h2>
-                  <span className="text-xs text-muted">({toFaDigits(t)})</span>
+                  <span className="text-xs text-muted-foreground">({toFaDigits(t)})</span>
                 </Link>
                 {t > apps.length && (
                   <Link href={`/category/${ch.slug}${platform === "android" ? "" : `?platform=${platform}`}`} className="text-sm text-primary font-bold hover:underline shrink-0">
@@ -170,7 +170,7 @@ async function CategorySlide({ slug, platform }: { slug: string; platform: Platf
           ))}
         </div>
       ) : (
-        <p className="text-muted text-center py-10">به‌زودی برنامه‌های جدید اضافه می‌شود.</p>
+        <p className="text-muted-foreground text-center py-10">به‌زودی برنامه‌های جدید اضافه می‌شود.</p>
       )}
     </div>
   );

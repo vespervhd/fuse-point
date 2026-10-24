@@ -75,7 +75,7 @@ function PlatformNavInner() {
       className="fixed bottom-4 inset-x-0 z-40 flex justify-center pointer-events-none"
       aria-label="انتخاب پلتفرم"
     >
-      <div className="pointer-events-auto flex items-center rounded-full p-1 gap-0.5 bg-base-200/90 backdrop-blur-md shadow-xl">
+      <div className="pointer-events-auto flex items-center rounded-full p-1 gap-0.5 bg-card/90 backdrop-blur-md shadow-xl">
         {PLATFORMS.map((p) => {
           const active = current === p.slug;
           return (
@@ -88,7 +88,7 @@ function PlatformNavInner() {
               aria-label={p.label}
               className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
                 active
-                  ? "bg-primary text-primary-content shadow"
+                  ? "bg-primary text-primary-foreground shadow"
                   : "opacity-55 hover:opacity-100"
               }`}
             >

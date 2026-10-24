@@ -8,20 +8,20 @@ export default function AppGrid({ title, subtitle, apps }: {
   return (
     <div className="animate-fade-up">
       <h1 className="text-2xl font-extrabold mb-1">{title}</h1>
-      {subtitle && <p className="text-sm text-muted mb-6">{subtitle}</p>}
+      {subtitle && <p className="text-sm text-muted-foreground mb-6">{subtitle}</p>}
       {!subtitle && <div className="mb-6" />}
       {apps.length ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {apps.map((a, i) => <AppCard key={a.id} app={a} index={i} />)}
         </div>
       ) : (
-        <div className="bg-surface border border-border rounded-3xl p-10 text-center">
-          <Inbox className="w-10 h-10 mx-auto mb-3 text-muted" aria-hidden="true" />
+        <div className="bg-card border border-border rounded-3xl p-10 text-center">
+          <Inbox className="w-10 h-10 mx-auto mb-3 text-muted-foreground" aria-hidden="true" />
           <p className="font-bold mb-1">موردی برای نمایش وجود ندارد</p>
-          <p className="text-sm text-muted">هنوز داده‌ی کافی ثبت نشده است.</p>
+          <p className="text-sm text-muted-foreground">هنوز داده‌ی کافی ثبت نشده است.</p>
         </div>
       )}
-      <p className="text-xs text-muted mt-6">{toFaDigits(apps.length)} برنامه</p>
+      <p className="text-xs text-muted-foreground mt-6">{toFaDigits(apps.length)} برنامه</p>
     </div>
   );
 }
