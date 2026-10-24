@@ -1,6 +1,5 @@
 import Link from "next/link";
 import PxImg from "@/components/PxImg";
-import RowBookmark from "@/components/RowBookmark";
 import { px } from "@/lib/img";
 import { appName, bytesL, platName, STR, type Locale } from "@/lib/i18n";
 
@@ -60,8 +59,7 @@ export default function SimilarCard({
           )}
         </span>
       </span>
-      <span className="flex flex-col items-end justify-between shrink-0 relative z-[2]">
-        <RowBookmark appId={app.id} slug={app.slug} locale={locale} size={30} />
+      <span className="flex flex-col items-end justify-end shrink-0 relative z-[2]">
         <Link
           href={`/app/${app.slug}`}
           className="rounded-lg px-[11px] py-1.5 text-[10.5px] font-extrabold bg-primary text-primary-foreground"
