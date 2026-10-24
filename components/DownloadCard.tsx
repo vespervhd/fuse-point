@@ -2,6 +2,7 @@
 
 import { Globe } from "lucide-react";
 import AppIcon from "@/components/AppIcon";
+import BidiText from "@/components/BidiText";
 import { px } from "@/lib/img";
 import { getDownloadOptions, type DownloadAppInfo } from "./DownloadActions";
 import { sparkBurst } from "@/lib/fx/spark";
@@ -154,7 +155,7 @@ export function DownloadCard({
             <AppIcon src={iconUrl ? px(iconUrl, "icon") || iconUrl : null} name={title} width={100} height={100} />
           </div>
           <h1 className="dl2-title">{title}</h1>
-          {subtitle && <p className="dl2-subtitle">{subtitle}</p>}
+          {subtitle && <p className="dl2-subtitle"><BidiText text={subtitle} /></p>}
           <div className="dl2-badges">
             {versionChip && (
               <span className="dl2-version"><i />{versionChip}</span>

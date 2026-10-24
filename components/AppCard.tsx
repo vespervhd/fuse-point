@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AppIcon from "@/components/AppIcon";
+import BidiText from "@/components/BidiText";
 import PlatformBadge from "@/components/PlatformBadge";
 import { toFaDigits } from "@/lib/fa";
 import { px } from "@/lib/img";
@@ -120,7 +121,7 @@ export default function AppCard({
             <h3 title={app.nameFa} className="font-semibold text-[15px] leading-6 group-hover:text-primary transition-colors line-clamp-2">
               {app.nameFa}
             </h3>
-            {desc && <p className="text-xs opacity-60 truncate mt-0.5">{desc}</p>}
+            {desc && <p className="text-[11px] opacity-60 truncate mt-0.5"><BidiText text={desc} /></p>}
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2 mt-3">

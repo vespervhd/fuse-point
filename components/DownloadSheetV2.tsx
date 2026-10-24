@@ -128,7 +128,7 @@ export default function DownloadSheetV2({ app, appName, iconUrl, sha256 }: Props
                 style={{ background: "color-mix(in srgb, var(--muted) 60%, transparent)" }}>
                 <div className="flex items-center justify-between px-4 py-3">
                   <span className="inline-flex items-center gap-2 text-muted-foreground"><FileDown className="w-4 h-4" aria-hidden="true" /> حجم</span>
-                  <b dir="ltr">{fileSize ? formatBytes(fileSize) : "—"}</b>
+                  <b dir="ltr">{fileSize ? formatBytes(fileSize) : "Varies"}</b>
                 </div>
                 <div className="flex items-center justify-between px-4 py-3">
                   <span className="inline-flex items-center gap-2 text-muted-foreground"><Globe className="w-4 h-4" aria-hidden="true" /> منبع</span>

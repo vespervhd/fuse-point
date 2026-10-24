@@ -9,6 +9,7 @@ import { ChevronLeft, SearchX, Sparkles, LayoutGrid, Layers, Inbox } from "lucid
 import { cacheLife } from "next/cache";
 import AppRow, { PlatformChip } from "@/components/AppRow";
 import AppIcon from "@/components/AppIcon";
+import BidiText from "@/components/BidiText";
 import DbIcon from "@/components/DbIcon";
 import { BackLink, ViewHead, EmptyState, SectionHead } from "@/components/Bits";
 import { px } from "@/lib/img";
@@ -82,7 +83,7 @@ export async function HomeCatalog({ plat, locale, page }: { plat: Platform; loca
             <span className="flex-1 min-w-0">
               <span className="block text-lg font-extrabold truncate" dir="auto">{appName(featured, locale)}</span>
               {appShort(featured, locale) && (
-                <span className="block text-muted-foreground text-[13px] mt-1 leading-[1.8] line-clamp-2">{appShort(featured, locale)}</span>
+                <span className="block text-muted-foreground text-[12px] mt-1 leading-[1.8] line-clamp-2"><BidiText text={appShort(featured, locale)} /></span>
               )}
               <span className="flex flex-wrap gap-1.5 mt-[9px]">
                 <PlatformChip platform={plat} locale={locale} />

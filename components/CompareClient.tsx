@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AppIcon from "@/components/AppIcon";
+import BidiText from "@/components/BidiText";
 import { px } from "@/lib/img";
 import { getCompareList } from "@/components/CompareButton";
 import { STR, dateL, type Locale } from "@/lib/i18n";
@@ -57,9 +58,9 @@ export default function CompareClient({ locale = "fa" }: { locale?: Locale }) {
   );
 
   const rows: [string, (a: CApp) => React.ReactNode][] = [
-    [d.cmp_desc, (a) => <span className="text-xs text-muted-foreground line-clamp-3">{toPlainText(a.shortDescFa) || "—"}</span>],
+    [d.cmp_desc, (a) => <span className="text-[11px] text-muted-foreground line-clamp-3">{toPlainText(a.shortDescFa) ? <BidiText text={toPlainText(a.shortDescFa)} /> : "—"}</span>],
     [d.cmp_version, (a) => a.versionName || "—"],
-    [d.cmp_size, (a) => a.fileSize ? `${(a.fileSize / 1048576).toLocaleString(locale === "fa" ? "fa-IR" : "en-US", { maximumFractionDigits: 1 })} ${d.cmp_megabyte}` : "—"],
+    [d.cmp_size, (a) => a.fileSize ? `${(a.fileSize / 1048576).toLocaleString(locale === "fa" ? "fa-IR" : "en-US", { maximumFractionDigits: 1 })} ${d.cmp_megabyte}` : "Varies"],
     [d.cmp_downloads, (a) => fmt(a.downloadCount)],
     [d.cmp_rating, (a) => a.rating ? <span className="inline-flex items-center gap-1"><Star className="w-3.5 h-3.5" aria-hidden="true" /> {a.rating.toLocaleString(locale === "fa" ? "fa-IR" : "en-US")}</span> : "—"],
     [d.cmp_cats, (a) => <span className="text-xs">{a.categories || "—"}</span>],
