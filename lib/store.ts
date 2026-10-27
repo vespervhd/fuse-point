@@ -13,11 +13,12 @@ async function dyn() {
 const dlCount = sql<number>`(select count(*) from ${s.downloadEvents} where ${s.downloadEvents.appId} = ${s.apps.id})`.as("download_count");
 const curVersion = sql<string | null>`(select ${s.appVersions.versionName} from ${s.appVersions} where ${s.appVersions.appId} = ${s.apps.id} and ${s.appVersions.isCurrent} = true and ${s.appVersions.status} = 'active' limit 1)`.as("version_name");
 const curFileSize = sql<number | null>`(select ${s.appVersions.fileSize} from ${s.appVersions} where ${s.appVersions.appId} = ${s.apps.id} and ${s.appVersions.isCurrent} = true and ${s.appVersions.status} = 'active' limit 1)`.as("file_size");
+const curVersionId = sql<string | null>`(select ${s.appVersions.id} from ${s.appVersions} where ${s.appVersions.appId} = ${s.apps.id} and ${s.appVersions.isCurrent} = true and ${s.appVersions.status} = 'active' limit 1)`.as("version_id");
 
 const cardCols = {
   id: s.apps.id, slug: s.apps.slug, nameFa: s.apps.nameFa, nameEn: s.apps.nameEn,
   iconUrl: s.apps.iconUrl, shortDesc: s.apps.shortDesc, shortDescFa: s.apps.shortDescFa,
-  versionName: curVersion, fileSize: curFileSize, downloadCount: dlCount, githubStars: s.apps.githubStars,
+  versionName: curVersion, versionId: curVersionId, fileSize: curFileSize, downloadCount: dlCount, githubStars: s.apps.githubStars,
   platform: s.apps.platform, isOpenSource: s.apps.isOpenSource, createdAt: s.apps.createdAt,
   updatedAt: s.apps.updatedAt,
 };

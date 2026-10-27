@@ -3,52 +3,13 @@
 import { Globe } from "lucide-react";
 import AppIcon from "@/components/AppIcon";
 import BidiText from "@/components/BidiText";
+import FavoriteButton from "@/components/FavoriteButton";
 import { px } from "@/lib/img";
 import { getDownloadOptions, type DownloadAppInfo } from "./DownloadActions";
-import { sparkBurst } from "@/lib/fx/spark";
 import { STR, bytesL, platName, type Locale } from "@/lib/i18n";
 
-// ─── آیکون‌های خطی — هم‌خانواده‌ی نمونه‌ی دوم کادر دانلود ───
-const PhoneIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <rect x="6.5" y="2.5" width="11" height="19" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
-    <path d="M10 18.2h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-  </svg>
-);
-const MonitorIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <rect x="2.8" y="4" width="18.4" height="12.5" rx="2" stroke="currentColor" strokeWidth="1.7" />
-    <path d="M9.5 20.5h5M12 16.5v4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-  </svg>
-);
-const TerminalIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <rect x="2.8" y="4" width="18.4" height="16" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
-    <path d="m6.5 9 3 3-3 3M12.5 15.5H17" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-function PlatformGlyph({ platform }: { platform: string }) {
-  if (platform === "windows") return <MonitorIcon />;
-  if (platform === "linux") return <TerminalIcon />;
-  return <PhoneIcon />;
-}
-
-const BoxIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M12 3 19 7v10l-7 4-7-4V7l7-4Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-    <path d="m5.5 7 6.5 4 6.5-4M12 11v10" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-  </svg>
-);
-
-const FileIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M7 3.5h7l4.5 4.5v12.5a1 1 0 0 1-1 1h-10.5a1 1 0 0 1-1-1v-17a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-    <path d="M14 3.5v4.5h4.5M9.5 13h5M9.5 16.5h5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-  </svg>
-);
-
 const DownloadGlyph = () => (
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="size-5 shrink-0">
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     <path d="m7 10 5 5 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -56,7 +17,7 @@ const DownloadGlyph = () => (
 );
 
 const ShieldGlyph = () => (
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="size-4 shrink-0">
     <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     <path d="m9 12 2 2 4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
@@ -69,7 +30,7 @@ const GithubIcon = ({ className }: { className?: string }) => (
 );
 
 const HistoryGlyph = () => (
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="size-4 shrink-0">
     <path d="M3.5 12a8.5 8.5 0 1 1 2.5 6.1M3.6 12H7m-3.4 0L5 8.8M12 7.8V12l3 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
@@ -106,6 +67,7 @@ function smartSource(app: DownloadAppInfo): { href: string; github: boolean } | 
 }
 
 type CardProps = {
+  appId: string | null;
   title: string;
   subtitle: string | null;
   subtitleNote?: string | null;
@@ -121,17 +83,18 @@ type CardProps = {
   source: { href: string; github: boolean } | null;
   hasOlderVersions: boolean;
   locale: Locale;
-  // کپسول‌های دنبال‌کردن/نشان — از صفحه (بیرون از کش) به‌صورت prop می‌آیند تا
-  // داخل کارت رندر شوند؛ خودشان کلاینت‌اند و وضعیت کاربر را از مرورگر می‌خوانند
+  // کپسول دنبال‌کردن از صفحه (بیرون از کش) به‌صورت prop می‌آید تا
+  // پایینِ کارت رندر شود؛ خود کپسول کلاینت است و وضعیت کاربر را فقط از
+  // مرورگر می‌خواند، پس چیزی از نشست در کش نمی‌رود
   capsules?: React.ReactNode;
 };
 
-// کارت دانلود — عین نمونه‌ی دوم کادر دانلود، با داده‌ی واقعی و رنگ‌های توکنی تم؛
-// تنها تغییرِ دستوری مالک: فلشِ روی دکمه‌ی دانلود حذف شده، فقط آیکون دانلود مانده؛
-// پنل اعتماد («تجربه دانلود بهتر») به دستور مالک کاملاً حذف شده و کپسول‌ها
-// پایینِ کارت، زیر ناحیه‌ی دانلود، قرار می‌گیرند
+// کارت دانلود — چیدمان نمونه‌ی تأییدشده‌ی فروشگاهی: آیکون + نام + توضیح،
+// چیپ‌های اصلی فقط پلتفرم/حجم/ورژن، ردیف دانلود + قلب علاقه‌مندی، لینک‌های
+// ثانویه (منبع رسمی، نسخه‌های دیگر) و یادداشت امنیتی. فرمت فایل در زیرنویس
+// دکمه‌ی دانلود می‌ماند، پس هیچ اطلاعاتی از دست نمی‌رود.
 export function DownloadCard({
-  title, subtitle, subtitleNote, iconUrl, versionName, platform, fileSize, fileType, fileUrl,
+  appId, title, subtitle, subtitleNote, iconUrl, versionName, platform, fileSize, fileType, fileUrl,
   downloadHref, downloadExternal, pendingBadge, source, hasOlderVersions, locale, capsules,
 }: CardProps) {
   const d = STR[locale];
@@ -155,95 +118,96 @@ export function DownloadCard({
 
   return (
     <section aria-label={`${d.download} ${title}`}>
-      <article className="dl2-card">
-        <div className="dl2-identity">
-          <div className="dl2-icon" aria-hidden="true">
-            <AppIcon src={iconUrl ? px(iconUrl, "icon") || iconUrl : null} name={title} width={100} height={100} />
+      <article className="rounded-[20px] border border-border bg-card p-5">
+        <div className="flex items-start gap-3.5">
+          <div className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-2xl bg-muted" aria-hidden="true">
+            <AppIcon
+              src={iconUrl ? px(iconUrl, "icon") || iconUrl : null}
+              name={title}
+              width={64}
+              height={64}
+              imgClassName="size-16 object-cover"
+              letterClassName="text-2xl font-extrabold"
+            />
           </div>
-          <h1 className="dl2-title">{title}</h1>
-          {subtitle && <p className="dl2-subtitle"><BidiText text={subtitle} /></p>}
-          {subtitleNote && <p className="dl2-subtitle-note">{subtitleNote}</p>}
-          <div className="dl2-badges">
-            {versionChip && (
-              <span className="dl2-version"><i />{versionChip}</span>
-            )}
-            {pendingBadge && <span className="dl2-pending">{pendingBadge}</span>}
-          </div>
-        </div>
-
-        <p className="dl2-section-label">{d.dlAppInfo}</p>
-
-        <div className="dl2-meta">
-          <div className="dl2-meta-item">
-            <span className="dl2-meta-label">{d.platform}</span>
-            <span className="dl2-meta-value">{platName(locale, platform)}</span>
-          </div>
-          <div className="dl2-meta-item">
-            <span className="dl2-meta-label">{d.fileSize}</span>
-            <span className="dl2-meta-value">{bytesL(fileSize, locale)}</span>
-          </div>
-          <div className="dl2-meta-item">
-            <span className="dl2-meta-label">{d.dlFormat}</span>
-            <span className="dl2-meta-value" dir="ltr">{format}</span>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-[17px] font-extrabold leading-7">{title}</h1>
+            {subtitle && <p className="mt-0.5 text-[13.5px] leading-6 text-muted-foreground"><BidiText text={subtitle} /></p>}
+            {subtitleNote && <p className="mt-0.5 text-xs text-muted-foreground">{subtitleNote}</p>}
           </div>
         </div>
 
-        <div className="dl2-area">
+        {pendingBadge && (
+          <p className="mt-3 inline-block rounded-full border border-border px-3 py-1 text-xs font-bold">{pendingBadge}</p>
+        )}
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          <span className="rounded-full border border-border px-3 py-1 text-xs font-bold">{platName(locale, platform)}</span>
+          <span className="rounded-full border border-border px-3 py-1 text-xs font-bold">{bytesL(fileSize, locale)}</span>
+          {versionChip && <span className="rounded-full border border-border px-3 py-1 text-xs font-bold" dir="ltr">{versionChip}</span>}
+        </div>
+
+        <div className="mt-4 flex items-stretch gap-2.5">
           {downloadHref && (
             <a
-              className="dl2-download"
+              className="motion-press flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-primary-foreground"
               href={downloadHref}
               {...(downloadExternal
                 ? { target: "_blank", rel: "noopener noreferrer" }
                 : { download: "" })}
-              onClick={(e) => sparkBurst(e.currentTarget)}
               aria-label={`${d.dlBtnTitle} ${title}`}
             >
               <DownloadGlyph />
-              <span className="dl2-btn-text">
-                <span className="dl2-btn-title">{d.dlBtnTitle}</span>
-                <span className="dl2-btn-sub">{btnSub}</span>
+              <span className="text-center">
+                <span className="block text-[15.5px] font-extrabold leading-6">{d.dlBtnTitle}</span>
+                <span className="block text-xs font-bold opacity-80">{btnSub}</span>
               </span>
             </a>
           )}
-
-          {(source || hasOlderVersions) && (
-            <div className="dl2-links">
-              {source && (
-                <a
-                  className="dl2-secondary"
-                  href={source.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {source.github
-                    ? <GithubIcon className="dl2-secondary-icon" />
-                    : <Globe className="dl2-secondary-icon" aria-hidden="true" />}
-                  {d.dlSource}
-                </a>
-              )}
-              {hasOlderVersions && (
-                <a className="dl2-secondary" href="#versions" onClick={openVersions}>
-                  <HistoryGlyph />
-                  {d.dlVersions}
-                </a>
-              )}
-            </div>
-          )}
-
-          <p className="dl2-note">
-            <ShieldGlyph />
-            <span>{d.dlNote}</span>
-          </p>
+          {appId && <FavoriteButton appId={appId} appName={title} />}
         </div>
 
-        {capsules && <div className="dl2-capsules">{capsules}</div>}
+        {(source || hasOlderVersions) && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {source && (
+              <a
+                className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-border px-3.5 text-[13px] font-bold text-muted-foreground hover:text-foreground"
+                href={source.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {source.github
+                  ? <GithubIcon className="size-4 shrink-0" />
+                  : <Globe className="size-4 shrink-0" aria-hidden="true" />}
+                {d.dlSource}
+              </a>
+            )}
+            {hasOlderVersions && (
+              <a
+                className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-border px-3.5 text-[13px] font-bold text-muted-foreground hover:text-foreground"
+                href="#versions"
+                onClick={openVersions}
+              >
+                <HistoryGlyph />
+                {d.dlVersions}
+              </a>
+            )}
+          </div>
+        )}
+
+        <p className="mt-3 flex items-start gap-2 text-xs leading-5 text-muted-foreground">
+          <ShieldGlyph />
+          <span>{d.dlNote}</span>
+        </p>
+
+        {capsules && <div className="mt-4">{capsules}</div>}
       </article>
     </section>
   );
 }
 
 type SectionProps = {
+  appId: string;
   app: DownloadAppInfo;
   title: string;
   subtitle: string | null;
@@ -257,13 +221,14 @@ type SectionProps = {
 // بخش دانلود اصلی صفحه‌ی اپ — کارت همیشه بالای صفحه است و دکمه‌اش از مسیر
 // ترکینگ داخلی می‌گذرد؛ لینک ثانویه طبق قانون منبع هوشمند است و «نسخه‌های دیگر»
 // کشوی نسخه‌های قبلیِ همان صفحه را باز می‌کند (نه لینک خارجی ریلیزها)
-export default function DownloadCardSection({ app, title, subtitle, subtitleNote, iconUrl, hasOlderVersions, locale, capsules }: SectionProps) {
+export default function DownloadCardSection({ appId, app, title, subtitle, subtitleNote, iconUrl, hasOlderVersions, locale, capsules }: SectionProps) {
   const opts = getDownloadOptions(app);
   const primary = opts.find((o) => o.primary) ?? opts[0] ?? null;
   const v = app.version;
 
   return (
     <DownloadCard
+      appId={appId}
       title={title}
       subtitle={subtitle}
       subtitleNote={subtitleNote}

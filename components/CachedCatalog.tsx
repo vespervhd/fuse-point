@@ -23,7 +23,7 @@ import { STR, appName, appShort, catName, num, appsCount, type Locale } from "@/
 
 // صفحه‌بندیِ پنجره‌ای با همان استایلِ صفحه‌ی دسته (دکمه‌های ۴۰px)؛ برای فهرست‌های
 // طولانی (مثلاً ۷۵ صفحه در صفحه‌ی اصلی) همه‌ی شماره‌ها رندر نمی‌شوند.
-function Pager({ base, page, pages, locale }: { base: string; page: number; pages: number; locale: Locale }) {
+export function Pager({ base, page, pages, locale }: { base: string; page: number; pages: number; locale: Locale }) {
   if (pages <= 1) return null;
   const win: number[] = [];
   for (let p = Math.max(1, page - 3); p <= Math.min(pages, page + 3); p++) win.push(p);
@@ -180,7 +180,8 @@ export async function FreshLists({ plat, locale }: { plat: Platform; locale: Loc
   );
 }
 
-// ─── نمای دسته‌بندی‌ها (گرید کاشی‌ها) ───
+// ─── نمای دسته‌بندی‌ها: کاشی‌های کوچک رنگی با آیکن، بدون هیچ نوشته‌ای ───
+// (دستور مالک: فقط آیکن؛ نام دسته فقط برای دسترس‌پذیری در aria-label می‌ماند)
 export async function CategoriesGrid({ plat, locale }: { plat: Platform; locale: Locale }) {
   "use cache";
   cacheLife({ stale: 60, revalidate: 600, expire: 3600 });
@@ -190,19 +191,19 @@ export async function CategoriesGrid({ plat, locale }: { plat: Platform; locale:
   if (!cats.length) {
     return <EmptyState icon={<LayoutGrid className="w-6 h-6" aria-hidden="true" />} text={d.emptyHome} sub={d.tryAnotherPlatform} />;
   }
+  const PASTELS = ["#e6ecdd", "#fbe3e3", "#e2e6fb", "#fdeec9", "#e0f2f1", "#fce4ec"];
   return (
-    <div className="grid grid-cols-2 gap-[11px]">
-      {cats.map((c) => (
+    <div className="flex flex-wrap gap-2.5">
+      {cats.map((c, i) => (
         <Link
           key={c.id}
           href={`/category/${c.slug}${qs}`}
-          className="flex flex-col items-start gap-2.5 bg-card border border-border rounded-[18px] p-[18px] shadow-sm hover:border-primary/60 transition-colors"
+          aria-label={catName(c, locale)}
+          title={catName(c, locale)}
+          style={{ background: PASTELS[i % PASTELS.length] }}
+          className="motion-card grid size-[72px] shrink-0 place-items-center rounded-2xl border border-border/60 text-[#1e2b52] hover:border-primary/50"
         >
-          <span className="w-[46px] h-[46px] rounded-[13px] grid place-items-center text-primary bg-primary/10 border border-primary/[0.22]">
-            <DbIcon icon={c.icon} className="w-[23px] h-[23px]" />
-          </span>
-          <span className="text-[15px] font-extrabold leading-[1.7]">{catName(c, locale)}</span>
-          <span className="text-muted-foreground text-xs">{appsCount(c.appCount, locale)}</span>
+          <DbIcon icon={c.icon} className="size-7" />
         </Link>
       ))}
     </div>

@@ -3,7 +3,8 @@ import { Vazirmatn, Cinzel, Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { BottomSpacer } from "@/components/PlatformNav";
+import PageTransition from "@/components/PageTransition";
+import PlatformNav, { BottomSpacer } from "@/components/PlatformNav";
 import { SWRegister, InstallButton } from "@/components/PWA";
 import ErrorReporter from "@/components/ErrorReporter";
 import { siteUrl } from "@/lib/site-url";
@@ -50,14 +51,14 @@ export async function generateMetadata(): Promise<Metadata> {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#1a1428",
+  themeColor: "#f2f1ec",
 };
 
 // فروشگاه دیتامحور است: رندر سمت سرور برای هر درخواست (بدون prerender استاتیک)
 export const instant = false;
 
 // تم پیش‌فرض (آسمان زنده) + خواندن انتخاب کاربر
-const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('vesper-theme');if(t!=='sky'&&t!=='embers'&&t!=='aurora'&&t!=='constellation'){t='sky';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','sky');}})();`;
+const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('vesper-theme');if(t!=='light'&&t!=='sky'&&t!=='embers'&&t!=='aurora'&&t!=='constellation'){t='light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();`;
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
@@ -69,25 +70,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <body className={`${inter.variable} ${vazir.variable} ${cinzel.variable} min-h-full flex flex-col`}>
         <SWRegister />
         <ErrorReporter />
-        <div className="ambient" aria-hidden="true">
-          <span className="glow glow-a" />
-          <span className="glow glow-b" />
-          <div className="amb-layer amb-stars-a" />
-          <div className="amb-layer amb-stars-b" />
-          <div className="amb-layer amb-meteor" />
-          <div className="amb-layer amb-aurora">
-            <span className="band band-1" />
-            <span className="band band-2" />
-            <span className="band band-3" />
-          </div>
-          <div className="amb-layer amb-embers-a" />
-          <div className="amb-layer amb-embers-b" />
-          <div className="amb-layer amb-constellation" />
-          <div className="amb-layer amb-const-dots" />
-        </div>
         <Header locale={locale} />
-        <main className="flex-1 w-full max-w-[1120px] mx-auto px-4 py-6 relative z-[1]">{children}</main>
+        <main className="flex-1 w-full max-w-[680px] mx-auto px-4 pt-4 relative z-[1]"><PageTransition>{children}</PageTransition></main>
         <Footer locale={locale} />
+        <PlatformNav locale={locale} />
         <BottomSpacer />
         <InstallButton />
       </body>
