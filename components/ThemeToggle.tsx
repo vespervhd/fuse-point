@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { sparkBurst } from "@/lib/fx/spark";
 import { STR, THEME_NAMES, type Locale } from "@/lib/i18n";
 
-const THEMES = ["sky", "embers", "aurora", "constellation"] as const;
+const THEMES = ["light", "sky", "embers", "aurora", "constellation"] as const;
 type Theme = (typeof THEMES)[number];
 
-// دکمه‌ی دایره‌ای تم هدر — دایره با نقطه‌ی نورانی به رنگ تم (عین نمونه)؛ چرخه‌ی چهار تم زنده
+// Circle theme button — dot only, no text (approved sample). Cycles all 5
+// themes and persists with the existing vesper-theme key. The inline script
+// in layout.tsx applies the saved theme before first paint, so there is no flash.
 export default function ThemeToggle({ locale = "fa" }: { locale?: Locale }) {
-  const [theme, setTheme] = useState<Theme>("sky");
+  const [theme, setTheme] = useState<Theme>("light");
   const d = STR[locale];
 
   useEffect(() => {
@@ -17,14 +18,13 @@ export default function ThemeToggle({ locale = "fa" }: { locale?: Locale }) {
     if (t && (THEMES as readonly string[]).includes(t)) setTheme(t as Theme);
   }, []);
 
-  const cycle = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const cycle = () => {
     const next = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
     setTheme(next);
     try {
       localStorage.setItem("vesper-theme", next);
     } catch {}
     document.documentElement.setAttribute("data-theme", next);
-    sparkBurst(e.currentTarget);
   };
 
   const label = `${d.themeChange} — ${d.themeIs}: ${THEME_NAMES[locale][theme]}`;
@@ -34,9 +34,9 @@ export default function ThemeToggle({ locale = "fa" }: { locale?: Locale }) {
       onClick={cycle}
       aria-label={label}
       title={label}
-      className="theme-dot-btn"
+      className="motion-press grid size-8 shrink-0 place-items-center rounded-full border border-border bg-card text-foreground"
     >
-      <span className="dot" aria-hidden="true" />
+      <span className="block size-3 rounded-full bg-primary" aria-hidden="true" />
     </button>
   );
 }

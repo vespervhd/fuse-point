@@ -3,6 +3,7 @@
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { User } from "lucide-react";
 import { STR, type Locale } from "@/lib/i18n";
 
 type Platform = "android" | "windows" | "linux";
@@ -94,39 +95,47 @@ function PlatformNavInner({ locale }: { locale: Locale }) {
   };
 
   return (
-    <>
-      <nav
-        className="fixed bottom-[calc(12px+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-40"
-        aria-label={d.platform}
-      >
-        <div className="inline-flex bg-card rounded-full p-1 gap-0.5 shadow-md" role="tablist" aria-label={d.platform}>
-          {PLATFORMS.map((p) => {
-            const active = current === p;
-            const label = p === "android" ? d.plat_android : p === "windows" ? d.plat_windows : d.plat_linux;
-            return (
-              <Link
-                key={p}
-                href={href(p)}
-                onClick={() => savePlatform(p)}
-                role="tab"
-                aria-selected={active}
-                aria-label={label}
-                title={label}
-                className={`p-2.5 rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-primary ${
-                  active
-                    ? "bg-primary/15 text-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <span className="block w-[30px] h-[30px]">
-                  <PlatformMark platform={p} />
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-    </>
+    <nav
+      className="fixed bottom-[calc(12px+env(safe-area-inset-bottom))] left-1/2 z-40 -translate-x-1/2"
+      aria-label={d.platform}
+    >
+      <div className="motion-pop inline-flex max-w-[calc(100vw-2rem)] items-center gap-1 rounded-full border border-border bg-card p-1.5 shadow-lg" role="tablist" aria-label={d.platform}>
+        {PLATFORMS.map((p) => {
+          const active = current === p;
+          const label = p === "android" ? d.plat_android : p === "windows" ? d.plat_windows : d.plat_linux;
+          return (
+            <Link
+              key={p}
+              href={href(p)}
+              onClick={() => savePlatform(p)}
+              role="tab"
+              aria-selected={active}
+              aria-label={label}
+              title={label}
+              className={`motion-press inline-flex h-10 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-bold whitespace-nowrap ${
+                active ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <span className="block size-5" aria-hidden="true">
+                <PlatformMark platform={p} />
+              </span>
+              {/* Names hide on very narrow phones so the bar never overflows;
+                  icons + aria-labels still identify each platform there. */}
+              <span className="hidden min-[420px]:inline">{label}</span>
+            </Link>
+          );
+        })}
+        <span className="mx-0.5 h-6 w-px shrink-0 bg-border" aria-hidden="true" />
+        <Link
+          href="/admin"
+          aria-label={d.accountBtn}
+          title={d.accountBtn}
+          className="motion-press grid size-10 shrink-0 place-items-center rounded-full border border-border text-muted-foreground hover:text-foreground"
+        >
+          <User className="size-5" aria-hidden="true" />
+        </Link>
+      </div>
+    </nav>
   );
 }
 

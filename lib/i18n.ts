@@ -99,6 +99,13 @@ const fa = {
   whySub: "اعتماد و امنیت، اولویت اول فیوز پوینته — این‌ها قول‌های ما نیستن، روش کارمونه:",
   footDesc: "فروشگاه اپ‌های آزاد برای اندروید، ویندوز و لینوکس.",
   footStatus: "آرشیو در حال توسعه",
+  footContact: "تماس",
+  footStore: "فروشگاه",
+  footTrust: "اعتماد",
+  footExplore: "کاوش",
+  badgeFree: "نرم‌افزار آزاد",
+  badgeSha: "نمایش SHA-256",
+  accountBtn: "حساب",
   notifications: "اعلان‌ها",
   notifSub: "نسخه‌های تازه‌ی اپ‌هایی که دنبال می‌کنی، اینجا میاد",
   notifNew: "نسخه‌ی تازه‌ی {n} منتشر شد",
@@ -461,6 +468,13 @@ const en: Dict = {
   whySub: "Trust and security come first at Fuse Point — these aren't promises, they're how it works:",
   footDesc: "A free & open-source app store for Android, Windows and Linux.",
   footStatus: "Archive growing",
+  footContact: "Contact",
+  footStore: "Store",
+  footTrust: "Trust",
+  footExplore: "Explore",
+  badgeFree: "Free software",
+  badgeSha: "SHA-256 shown",
+  accountBtn: "Account",
   notifications: "Notifications",
   notifSub: "New versions of apps you follow land here",
   notifNew: "A new version of {n} is out",
@@ -787,8 +801,8 @@ export const catName = (c: { nameFa: string; nameEn?: string | null }, l: Locale
   l === "fa" ? c.nameFa : c.nameEn || c.nameFa;
 
 export const THEME_NAMES: Record<Locale, Record<string, string>> = {
-  fa: { sky: "آسمان زنده", embers: "اخگر زنده", aurora: "شفق زنده", constellation: "صور فلکی زنده" },
-  en: { sky: "Living Sky", embers: "Living Embers", aurora: "Living Aurora", constellation: "Living Constellation" },
+  fa: { light: "روشن", sky: "آسمان زنده", embers: "اخگر زنده", aurora: "شفق زنده", constellation: "صور فلکی زنده" },
+  en: { light: "Light", sky: "Living Sky", embers: "Living Embers", aurora: "Living Aurora", constellation: "Living Constellation" },
 };
 
 export const YEAR = { fa: "۱۴۰۵", en: "2026" } as const;

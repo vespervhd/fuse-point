@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ShieldCheck, Hash } from "lucide-react";
 import { LogoMark, Wordmark } from "./Logo";
 import { STR, YEAR, type Locale } from "@/lib/i18n";
 
@@ -8,59 +9,103 @@ const GithubIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// فوتر مینیمال — عین نمونه‌ی تأییدشده: خط جریان، ردیف برند، وضعیت آرشیو، یک ردیف لینک، گیت‌هابِ مالک، ©
-// (تلگرام فعلاً حذف شده به دستور مالک؛ گیت‌هاب به پروفایل شخصی او وصل است)
+// TravelCo-style footer (user's pick): brand + short description + contact,
+// link columns from existing routes only, GitHub as the only social,
+// trust badges with only truthful properties, bottom bar. No newsletter box,
+// no Telegram — both explicitly excluded by the owner.
 export default function Footer({ locale = "fa" }: { locale?: Locale }) {
   const d = STR[locale];
-  const links = [
-    { href: "/categories", label: d.cats },
-    { href: "/collections", label: d.cols },
-    { href: "/how-we-verify", label: d.whyTitle },
-    { href: "/favorites", label: d.favs },
-    { href: "/request", label: d.reqApp },
+  const cols: { title: string; links: { href: string; label: string }[] }[] = [
+    {
+      title: d.footStore,
+      links: [
+        { href: "/categories", label: d.cats },
+        { href: "/collections", label: d.cols },
+        { href: "/fresh", label: d.fresh },
+      ],
+    },
+    {
+      title: d.footTrust,
+      links: [
+        { href: "/how-we-verify", label: d.whyTitle },
+        { href: "/open-source", label: d.ext_openSource },
+        { href: "/guides", label: d.ext_guides },
+      ],
+    },
+    {
+      title: d.footExplore,
+      links: [
+        { href: "/popular", label: d.ext_popular },
+        { href: "/latest", label: d.ext_latest },
+        { href: "/top", label: d.ext_top },
+      ],
+    },
   ];
   return (
-    <footer className="relative mt-14 border-t border-border">
-      <div className="foot-line" aria-hidden="true" />
-      <div className="w-full max-w-[1120px] mx-auto px-4 pt-[22px] pb-[26px]">
-        <div className="flex items-center gap-[9px]">
-          <LogoMark size={30} />
-          <Wordmark size={16.5} />
-        </div>
-        <p className="text-muted-foreground text-xs leading-[1.9] mt-3">{d.footDesc}</p>
-
-        <div className="flex items-start gap-[9px] mt-3.5">
-          <span className="w-2 h-2 rounded-full bg-[#43b581] shadow-[0_0_9px_#43b581] mt-[7px] shrink-0" aria-hidden="true" />
+    <footer className="mt-12 border-t border-border bg-card">
+      <div className="mx-auto w-full max-w-[680px] px-4 py-8">
+        <div className="flex flex-col gap-8 sm:grid sm:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
-            <b className="block text-[13.5px] font-extrabold">{d.footStatus}</b>
+            <div className="flex items-center gap-2">
+              <LogoMark size={28} />
+              <Wordmark size={15} />
+            </div>
+            <p className="mt-3 text-xs leading-6 text-muted-foreground">{d.footDesc}</p>
+            <div className="mt-3 flex gap-2">
+              <a
+                href="https://github.com/vespervhd"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                className="motion-press grid size-9 place-items-center rounded-[10px] border border-border text-muted-foreground hover:text-foreground"
+              >
+                <GithubIcon className="size-[18px]" />
+              </a>
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              {d.footContact}:{" "}
+              <a
+                href="https://github.com/vespervhd"
+                target="_blank"
+                rel="noopener noreferrer"
+                dir="ltr"
+                className="font-bold text-primary"
+              >
+                github.com/vespervhd
+              </a>
+            </p>
           </div>
-        </div>
-
-        <nav className="flex flex-wrap gap-x-1 gap-y-0.5 mt-3" aria-label="Fuse Point">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="text-[13.5px] font-bold min-h-[44px] px-2.5 py-2 rounded-[10px] inline-flex items-center hover:bg-card hover:text-primary transition-colors"
-            >
-              {l.label}
-            </Link>
+          {cols.map((col) => (
+            <nav key={col.title} aria-label={col.title}>
+              <h3 className="text-[13px] font-extrabold">{col.title}</h3>
+              <ul className="mt-3 space-y-1">
+                {col.links.map((l) => (
+                  <li key={l.href}>
+                    <Link
+                      href={l.href}
+                      className="inline-flex min-h-[36px] items-center text-[13px] font-bold text-muted-foreground hover:text-foreground"
+                    >
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           ))}
-        </nav>
-
-        <div className="flex gap-2 mt-2">
-          <a
-            href="https://github.com/vespervhd"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub"
-            className="w-9 h-9 border border-border rounded-[10px] grid place-items-center text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-colors"
-          >
-            <GithubIcon className="w-[18px] h-[18px]" />
-          </a>
         </div>
 
-        <div className="mt-4 pt-3.5 border-t border-border text-muted-foreground text-xs flex flex-wrap items-center justify-between gap-2.5">
+        <div className="mt-8 flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-bold text-muted-foreground">
+            <ShieldCheck className="size-4 text-primary" aria-hidden="true" />
+            {d.badgeFree}
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-bold text-muted-foreground">
+            <Hash className="size-4 text-primary" aria-hidden="true" />
+            {d.badgeSha}
+          </span>
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4 text-xs text-muted-foreground">
           <span dir="ltr">© Fuse Point</span>
           <span className="flex items-center gap-3">
             <Link href="/page/terms" className="hover:text-foreground">{d.terms}</Link>

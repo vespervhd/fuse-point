@@ -71,6 +71,7 @@ export async function AppTop({ slug, locale, capsules }: { slug: string; locale:
     (locale === "fa" ? true : !app.shortDesc);
   return (
     <DownloadCardSection
+      appId={app.id}
       app={{
         platform: app.platform,
         githubRepo: app.githubRepo,
